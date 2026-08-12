@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>吴珊 · 非洲自驾行程路书</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #7c9cff;
+      --accent-2: #5eead4;
+      --warn: #f472b6;
+      --prep: #8b9cb3;
+      --north: #7c9cff;
+      --sahara: #e9c46a;
+      --west: #f472b6;
+      --south: #34d399;
+      --east: #2dd4bf;
+      --exit: #a78bfa;
+      --return: #8b9cb3;
+      --unik: #fb923c;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(124, 156, 255, 0.08);
+      border: 1px solid rgba(124, 156, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #c8d8ff;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.north { background: var(--north); }
+    .dot.sahara { background: var(--sahara); }
+    .dot.west { background: var(--west); }
+    .dot.south { background: var(--south); }
+    .dot.east { background: var(--east); }
+    .dot.exit { background: var(--exit); }
+    .dot.return { background: var(--return); }
+    .dot.unik { background: var(--unik); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1150px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(124, 156, 255, 0.06); }
+    .phase, .exp {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.north { background: rgba(124, 156, 255, 0.15); color: #c8d8ff; }
+    .phase.sahara { background: rgba(233, 196, 106, 0.15); color: #f5e6b8; }
+    .phase.west { background: rgba(244, 114, 182, 0.15); color: #fbcfe8; }
+    .phase.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .phase.east { background: rgba(45, 212, 191, 0.15); color: #99f6e4; }
+    .phase.exit { background: rgba(167, 139, 250, 0.15); color: #ddd6fe; }
+    .phase.return { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.unik { background: rgba(251, 146, 60, 0.15); color: #fed7aa; }
+    .exp.cs95 { background: rgba(124, 156, 255, 0.12); color: #a5b4fc; }
+    .exp.unik { background: rgba(251, 146, 60, 0.12); color: #fdba74; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(124, 156, 255, 0.15); color: #c8d8ff; }
+    .conf.low { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .visit-range { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .time-conf {
+      display: inline-block; margin-top: 4px;
+      font-size: 0.72rem; padding: 1px 7px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .time-conf.anchor { background: rgba(126, 231, 135, 0.12); color: #9cf0a4; }
+    .time-conf.phase { background: rgba(124, 156, 255, 0.12); color: #c8d8ff; }
+    .time-conf.backlog { background: rgba(147, 164, 189, 0.15); color: #b8c5d9; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    td a:hover { color: #b8ccff; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(124, 156, 255, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-intro {
+      margin: 14px 0 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .guide-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      background: rgba(124, 156, 255, 0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .guide-days {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; font-weight: 600; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); font-weight: 600; }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .guide-tips ul li { margin-bottom: 6px; color: var(--text); }
+    .country-no {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(45, 212, 191, 0.18);
+      color: #5eead4;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(45, 212, 191, 0.2);
+      border-color: var(--accent-2); color: #99f6e4;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>吴珊 · 非洲自驾行程路书</h1>
+      <p class="subtitle">
+        博主：<strong>吴珊</strong>（<a href="https://www.douyin.com/search/%E5%90%B4%E7%8F%8A%E7%9A%84%E8%87%AA%E9%A9%BE%E7%8E%AF%E7%90%83%E6%97%85%E8%A1%8C" target="_blank" rel="noopener">吴珊的自驾环球旅行</a> · 抖音等）·
+        两次与非洲相关的自驾：<strong>① 长安 CS95</strong> 2017 年北京出发亚欧非环球（707 天 / 8.3 万+ km / 61 国，含完整非洲纵穿）；
+        <strong>② 长安 UNI-K</strong> 2021 年底海运专赴南部非洲（津巴布韦落地 · 博茨瓦纳等 · 车宿露营）。
+        完整路线见 <a href="#trip-overview-guide">↓ 行程总览</a>。
+        同类路书：<a href="../yaoyang-africa-route/index.html">耀阳 · 穿越非洲</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">CS95 启程</div><div class="value">2017-06-04</div></div>
+      <div class="card"><div class="label">CS95 非洲锚点</div><div class="value">2018-04-12 厄加勒斯角</div></div>
+      <div class="card"><div class="label">CS95 回国</div><div class="value">2019-05 霍尔果斯</div></div>
+      <div class="card"><div class="label">UNI-K 入非</div><div class="value">≈2021-12 海运</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      路线整理自公开报道、吴珊自述及「吴珊的自驾环球旅行」系列视频标题/简介，<strong>非官方逐日行程表</strong>。
+      CS95 环线的「第 N 天」自 <strong>2017-06-04 北京出发</strong> 起算；有明确日序或日期的节点置信度高，仅国家层为中等或低。
+      UNI-K 段为疫情后二次入非，与 CS95 环球<strong>独立成次</strong>，表中用「UNI-K 专旅」标注。
+      <strong>造访时间</strong>为月份区间估算（见「时间·锚定/推断/积压」）；视频常滞后剪辑。
+    </div>
+
+    <h2 class="phase-title">阶段概览（造访估算）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2017 入非</span>
+      <span>2017–18 西非·中非</span>
+      <span>2018 南非·东非</span>
+      <span>2018–19 北归</span>
+      <span>2021+ UNI-K</span>
+    </div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · CS95 非洲段 + UNI-K 专旅 · 可下载 <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="cs95">CS95 环线</button>
+          <button type="button" class="map-filter" data-filter="north">北非·撒哈拉</button>
+          <button type="button" class="map-filter" data-filter="west">西非·中非</button>
+          <button type="button" class="map-filter" data-filter="south">南部·东非</button>
+          <button type="button" class="map-filter" data-filter="unik">UNI-K</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#7c9cff"></i>CS95 · 北非</span>
+        <span><i style="background:#e9c46a"></i>撒哈拉</span>
+        <span><i style="background:#f472b6"></i>西非·中非</span>
+        <span><i style="background:#34d399"></i>南部非洲</span>
+        <span><i style="background:#2dd4bf"></i>东非</span>
+        <span><i style="background:#fb923c"></i>UNI-K 专旅</span>
+        <span id="map-legend-hint">📍 点击标记查看地点</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="trip-overview-guide">
+      <details open>
+        <summary>两次非洲之旅 · 行程总览</summary>
+        <div class="guide-body">
+          <p class="guide-intro">吴珊是较早以<strong>国产 SUV 自驾纵穿非洲</strong>的中国女性博主之一。第一次为 CS95 参与的<strong>亚欧非环球</strong>（非洲为其中一段）；第二次单独将 UNI-K 海运至南部非洲深度漫游。</p>
+          <p class="guide-note"><strong>第一次 · 长安 CS95 亚欧非环（非洲段）</strong></p>
+          <ul class="guide-days">
+            <li><strong>2017-06-04</strong> — 北京出发；经欧洲陆路至直布罗陀</li>
+            <li><strong>2017-10-20</strong> — 直布罗陀海峡渡轮入非 · 摩洛哥（第 139 天抵拉巴特）</li>
+            <li><strong>2017-10 — 2018-01</strong> — 撒哈拉穿越（曾误加柴油致抛锚）；西撒哈拉/毛里塔尼亚</li>
+            <li><strong>2018 初</strong> — 埃及海关扣车 · 约 3 万美元押金；尼日利亚拉各斯（华人互助中心）</li>
+            <li><strong>2018-01-21 前后</strong> — 喀麦隆（第 231 天 · 遭持刀抢劫）</li>
+            <li><strong>2018-02</strong> — 加蓬边境单人推车 280 km · 安哥拉罗安达（第 266 天 · 中国商会换胎）</li>
+            <li><strong>2018 春</strong> — 纳米比亚（当地报纸助通关）；南非约翰内斯堡（第 378 天 · 警车队护送）</li>
+            <li><strong>2018-04-12</strong> — 抵<strong>厄加勒斯角</strong>（非洲最南端 · 315 天 / 53,841 km / 45 国）</li>
+            <li><strong>2018-04 — 2018-秋</strong> — 东非：肯尼亚马赛马拉等；再经埃及北上</li>
+            <li><strong>2019-05</strong> — 自新疆霍尔果斯入境回国 · 全程 707 天 / 83,615 km / 61 国</li>
+          </ul>
+          <p class="guide-note"><strong>第二次 · 长安 UNI-K 非洲专旅</strong></p>
+          <ul class="guide-days">
+            <li><strong>≈2021-12</strong> — 车辆海运至非洲（报道称总花费 40 万+），落地<strong>津巴布韦</strong></li>
+            <li><strong>2022 前后</strong> — 津巴布韦 · 博茨瓦纳（乔贝国家公园）· 车内露营；自选车牌「UNIK」</li>
+            <li>疫情期曾在国内用 UNI-K 走西北线（重庆—若羌），与非洲段为不同行程</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.douyin.com/search/%E5%90%B4%E7%8F%8A%7%80%E5%8A%A0%E7%95%99%E5%B0%94%E8%A7%92" target="_blank" rel="noopener">抖音 · 吴珊 厄加勒斯角</a>
+            ·
+            <a href="https://www.douyin.com/search/%E5%90%B4%E7%8F%8A%E7%9A%84%E8%87%AA%E9%A9%BE%E7%8E%AF%E7%90%83%E6%97%85%E8%A1%8C" target="_blank" rel="noopener">吴珊的自驾环球旅行</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="exp-filter">行程</label>
+      <select id="exp-filter">
+        <option value="all">全部</option>
+        <option value="cs95">CS95 亚欧非环</option>
+        <option value="unik">UNI-K 专旅</option>
+      </select>
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备·欧洲</option>
+        <option value="north">北非</option>
+        <option value="sahara">撒哈拉</option>
+        <option value="west">西非·中非</option>
+        <option value="south">南部非洲</option>
+        <option value="east">东非</option>
+        <option value="exit">北非·埃及归程</option>
+        <option value="return">回国</option>
+        <option value="unik">UNI-K</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、注意事项、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot north"></span>北非</span>
+      <span><span class="dot sahara"></span>撒哈拉</span>
+      <span><span class="dot west"></span>西非·中非</span>
+      <span><span class="dot south"></span>南部非洲</span>
+      <span><span class="dot east"></span>东非</span>
+      <span><span class="dot exit"></span>埃及归程</span>
+      <span><span class="dot unik"></span>UNI-K</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>国序</th>
+            <th>行程</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 难忘瞬间</th>
+            <th>造访时间（估）</th>
+            <th>视频/报道</th>
+            <th>置信度</th>
+            <th>参考</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="cs95-difficulties">
+      <details>
+        <summary>CS95 非洲段 · 难关与经验（据公开报道）</summary>
+        <div class="guide-body">
+          <ul class="guide-tips">
+            <li>
+              <h3>⛽ 撒哈拉 · 误加油品</h3>
+              <ul>
+                <li>汽油车误加柴油导致抛锚；在沙漠中等待救援，凸显油品识别与备用方案的重要性。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🛃 埃及 · 车辆扣押</h3>
+              <ul>
+                <li>海关以手续问题扣车，需缴纳约 <strong>3 万美元押金</strong> 方继续行程；跨国自驾文件/Carnet 务必提前核对。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇳🇬 尼日利亚 · 华人网络</h3>
+              <ul>
+                <li>拉各斯华人互助中心提供补给与信息；西非大城市华人社区是重要后勤节点。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇨🇲 喀麦隆 · 治安</h3>
+              <ul>
+                <li>第 231 天遭遇持刀抢劫；西非—中非过渡段安保风险高，宜结伴、昼行、少露财。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇬🇦 加蓬 · 边境推车</h3>
+              <ul>
+                <li>边境手续复杂，单人推车约 <strong>280 km</strong>、耗时约 2 天；极端情况下需体力与心理双重准备。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇦🇴 安哥拉 · 中国商会</h3>
+              <ul>
+                <li>第 266 天抵罗安达；轮胎损坏，由当地中国商会协助更换。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇿🇦 南非 · 厄加勒斯角</h3>
+              <ul>
+                <li><strong>2018-04-12</strong> 抵非洲大陆最南端；公开数据：315 天 / 53,841 km / 45 国（至该点）。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="unik-guide">
+      <details>
+        <summary>UNI-K 专旅 · 海运南部非洲</summary>
+        <div class="guide-body">
+          <p class="guide-intro">与 CS95 环球不同，此次为<strong>单车海运、南部非洲深度游</strong>，以车宿露营为主。</p>
+          <ul class="guide-days">
+            <li><strong>海运成本</strong> — 报道称整车运非及相关花费 40 万元+；落地津巴布韦</li>
+            <li><strong>津巴布韦</strong> — 入境后陆路探索；自定义车牌「UNIK」</li>
+            <li><strong>博茨瓦纳</strong> — 乔贝国家公园等地；野生动物与露营内容为主</li>
+            <li><strong>车宿</strong> — 系列多次强调「以车为家」；与 CS95 环球的连续纵穿风格不同，更偏区域慢游</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-12 · 来源：公开报道（厄加勒斯角节点、707 天环球数据）、吴珊系列视频及抖音检索 · 路线为粉丝整理，非官方路书。</p>
+      <p>相关路书：<a href="../yaoyang-africa-route/index.html">耀阳 · 穿越非洲（Tank 300）</a> · <a href="../yaoyang-middleeast-route/index.html">耀阳 · 中东 240 天（Tank 330）</a></p>
+      <p><strong>待补</strong>：CS95 各国城市级视频直链、精确过境日期；欢迎按「吴珊 + 国家名」检索后补链。</p>
+      <p>地图数据：<a href="route.kml" download>route.kml</a>（关键点连线，非 GPS 精确轨迹）</p>
+    </footer>
+  </div>
+
+  <script>
+    var DOUYIN_SEARCH = "https://www.douyin.com/search/%E5%90%B4%E7%8F%8A%E7%9A%84%E8%87%AA%E9%A9%BE%E7%8E%AF%E7%90%83%E6%97%85%E8%A1%8C";
+
+    var phaseLabel = {
+      prep: "筹备", north: "北非", sahara: "撒哈拉", west: "西非·中非",
+      south: "南部非洲", east: "东非", exit: "埃及归程", return: "回国", unik: "UNI-K"
+    };
+    var expLabel = { cs95: "CS95 环", unik: "UNI-K" };
+
+    var countryNoMap = {
+      "摩洛哥": 1, "西撒哈拉": 2, "毛里塔尼亚": 3, "埃及": 4,
+      "尼日利亚": 5, "喀麦隆": 6, "加蓬": 7, "安哥拉": 8,
+      "纳米比亚": 9, "南非": 10, "肯尼亚": 11, "坦桑尼亚": 12,
+      "津巴布韦": 13, "博茨瓦纳": 14
+    };
+
+    function getCountryNo(country) {
+      if (!country || country === "—" || country === "综述" || country === "欧洲") return "";
+      var n = countryNoMap[country];
+      return n != null ? n : "";
+    }
+
+    function formatVisit(row) {
+      var range = "—";
+      if (row.visitFrom && row.visitTo) {
+        range = row.visitFrom === row.visitTo
+          ? "≈" + row.visitFrom
+          : "≈" + row.visitFrom + " — " + row.visitTo;
+      } else if (row.visitFrom) {
+        range = "≈" + row.visitFrom + " 起";
+      }
+      if (row.dayNo) range += " <span class=\"cell-muted\">（第 " + row.dayNo + " 天）</span>";
+      var html = "<span class=\"visit-range\">" + range + "</span>";
+      if (row.videoPub) {
+        html += "<br><span class=\"cell-muted\">📺 " + row.videoPub + "</span>";
+      }
+      var timeLabels = { anchor: "时间·锚定", phase: "时间·推断", backlog: "时间·积压" };
+      if (row.timeConf && timeLabels[row.timeConf]) {
+        html += "<br><span class=\"time-conf " + row.timeConf + "\">" + timeLabels[row.timeConf] + "</span>";
+      }
+      return html;
+    }
+
+    var rows = [
+      { exp:"cs95", phase:"prep", country:"中国", place:"北京", dayNo:"1", notes:"长安 CS95 亚欧非环球启程；团队含吴珊等中国自驾者", moment:"「一个人，一台车，一条路」式环球起点", visitFrom:"2017-06", visitTo:"2017-06", timeConf:"anchor", videoTitle:"2017-06-04 北京出发", conf:"high" },
+      { exp:"cs95", phase:"prep", country:"欧洲", place:"经欧洲至直布罗陀", notes:"亚欧陆路通道；具体经停国依环球全集", moment:"", visitFrom:"2017-06", visitTo:"2017-10", timeConf:"phase", videoTitle:"欧洲段（环球）", conf:"mid" },
+      { exp:"cs95", phase:"north", country:"摩洛哥", place:"直布罗陀海峡 · 拉巴特", dayNo:"139", notes:"2017-10-20 渡轮入非；第 139 天抵摩洛哥首都拉巴特", moment:"Africa, we are in!", visitFrom:"2017-10", visitTo:"2017-11", timeConf:"anchor", videoTitle:"入非 · 摩洛哥", conf:"high" },
+      { exp:"cs95", phase:"sahara", country:"综述", place:"撒哈拉沙漠", notes:"汽油 CS95 误加柴油导致抛锚；沙漠等待救援", moment:"油品标号与语言沟通是生死细节", visitFrom:"2017-11", visitTo:"2017-12", timeConf:"anchor", videoTitle:"撒哈拉误加油", conf:"high" },
+      { exp:"cs95", phase:"sahara", country:"西撒哈拉", place:"途经", notes:"自摩洛哥南下进入 disputed 区", moment:"", visitFrom:"2017-12", visitTo:"2018-01", timeConf:"phase", videoTitle:"", conf:"low" },
+      { exp:"cs95", phase:"sahara", country:"毛里塔尼亚", place:"努瓦克肖特 / 内陆", notes:"撒哈拉—萨赫勒过渡；路况与补给困难", moment:"", visitFrom:"2017-12", visitTo:"2018-01", timeConf:"phase", videoTitle:"", conf:"mid" },
+      { exp:"cs95", phase:"exit", country:"埃及", place:"海关 · 扣车", notes:"入境手续问题，车辆被扣；约 3 万美元押金后放行（报道）", moment:"「车被扣了」式环球噩梦", visitFrom:"2018-01", visitTo:"2018-02", timeConf:"anchor", videoTitle:"埃及海关扣车", conf:"high" },
+      { exp:"cs95", phase:"west", country:"尼日利亚", place:"拉各斯 · 华人互助中心", notes:"西非最大城市；华人互助中心提供补给与信息", moment:"海外华人网络是生命线", visitFrom:"2018-01", visitTo:"2018-02", timeConf:"phase", videoTitle:"拉各斯华人中心", conf:"high" },
+      { exp:"cs95", phase:"west", country:"喀麦隆", place:"杜阿拉 / 沿途", dayNo:"231", notes:"第 231 天（≈2018-01-21）；遭遇持刀抢劫", moment:"西非—中非过渡段治安高危", visitFrom:"2018-01", visitTo:"2018-02", timeConf:"anchor", videoTitle:"喀麦隆抢劫", conf:"high" },
+      { exp:"cs95", phase:"west", country:"加蓬", place:"边境 · 利伯维尔方向", notes:"边境手续冗长；单人推车约 280 km、约 2 天", moment:"推车 280 公里的极限体力战", visitFrom:"2018-02", visitTo:"2018-02", timeConf:"anchor", videoTitle:"加蓬边境推车", conf:"high" },
+      { exp:"cs95", phase:"west", country:"安哥拉", place:"罗安达", dayNo:"266", notes:"第 266 天（≈2018-02-25）；轮胎损坏，中国商会协助换胎", moment:"罗安达的中国温度", visitFrom:"2018-02", visitTo:"2018-03", timeConf:"anchor", videoTitle:"安哥拉换胎", conf:"high" },
+      { exp:"cs95", phase:"south", country:"纳米比亚", place:"温得和克 / 沙漠公路", notes:"当地报纸报道助通关；沙漠与海岸景观", moment:"", visitFrom:"2018-03", visitTo:"2018-04", timeConf:"phase", videoTitle:"纳米比亚", conf:"mid" },
+      { exp:"cs95", phase:"south", country:"南非", place:"约翰内斯堡", dayNo:"378", notes:"第 378 天（≈2018-06-17）；获警察车队护送", moment:"", visitFrom:"2018-06", visitTo:"2018-06", timeConf:"anchor", videoTitle:"约堡警护", conf:"mid" },
+      { exp:"cs95", phase:"south", country:"南非", place:"厄加勒斯角（Agulhas）", dayNo:"315", notes:"2018-04-12 抵非洲大陆最南端；公开数据：315 天 / 53,841 km / 45 国（至该点）", moment:"「站在非洲的最南端」", visitFrom:"2018-04", visitTo:"2018-04", timeConf:"anchor", videoTitle:"2018-04-12 厄加勒斯角", conf:"high" },
+      { exp:"cs95", phase:"south", country:"南非", place:"开普敦", notes:"好望角/开普敦方向；南部非洲人文与海岸", moment:"", visitFrom:"2018-04", visitTo:"2018-05", timeConf:"phase", videoTitle:"开普敦", conf:"mid" },
+      { exp:"cs95", phase:"east", country:"肯尼亚", place:"马赛马拉", notes:"东非动物大迁徙；泥泞道路与 safari 内容", moment:"「非洲五大」与迁徙季", visitFrom:"2018-05", visitTo:"2018-07", timeConf:"phase", videoTitle:"马赛马拉", conf:"mid" },
+      { exp:"cs95", phase:"east", country:"坦桑尼亚", place:"途经", notes:"东非段推断；可能与肯尼亚联线", moment:"", visitFrom:"2018-06", visitTo:"2018-08", timeConf:"phase", videoTitle:"", conf:"low" },
+      { exp:"cs95", phase:"exit", country:"埃及", place:"开罗 · 金字塔", notes:"自东非/苏丹方向北上；金字塔与归程准备", moment:"", visitFrom:"2018-08", visitTo:"2018-10", timeConf:"phase", videoTitle:"埃及金字塔", conf:"mid" },
+      { exp:"cs95", phase:"return", country:"中国", place:"新疆 · 霍尔果斯", notes:"2019-05 自霍尔果斯入境；全程 707 天 / 83,615 km / 61 国", moment:"「环球」陆地收官", visitFrom:"2019-05", visitTo:"2019-05", timeConf:"anchor", videoTitle:"707 天回国", conf:"high" },
+      { exp:"cs95", phase:"return", country:"综述", place:"CS95 环球数据", notes:"61 国 · 83,615 km · 707 天；非洲为其中纵穿段，非单独成次", moment:"国产 CS95 完成亚欧非", visitFrom:"2017-06", visitTo:"2019-05", timeConf:"anchor", videoTitle:"长安 CS95 环球", conf:"high" },
+      { exp:"unik", phase:"unik", country:"中国", place:"筹备 · 海运", notes:"长安 UNI-K 单独海运至非洲；报道称总花费 40 万+", moment:"第二次「把车运去非洲」", visitFrom:"2021-06", visitTo:"2021-12", timeConf:"phase", videoTitle:"UNI-K 运非", conf:"mid" },
+      { exp:"unik", phase:"unik", country:"津巴布韦", place:"哈拉雷 / 落地", notes:"海运落地首站；办理车牌「UNIK」", moment:"UNI-K 非洲陆地起点", visitFrom:"2021-12", visitTo:"2022-06", timeConf:"phase", videoTitle:"津巴布韦入境", conf:"mid" },
+      { exp:"unik", phase:"unik", country:"博茨瓦纳", place:"乔贝国家公园", notes:"野生动物 · 象群 · 露营；南部非洲 safari", moment:"车宿乔贝", visitFrom:"2022-01", visitTo:"2022-08", timeConf:"phase", videoTitle:"博茨瓦纳乔贝", conf:"mid" },
+      { exp:"unik", phase:"unik", country:"综述", place:"车宿 · 以车为家", notes:"UNI-K 空间布局、露营、水电与安防；与 CS95 连续纵穿风格不同", moment:"「把 UNI-K 当移动家」", visitFrom:"2022-01", visitTo:"2022-12", timeConf:"backlog", videoTitle:"UNI-K 车宿系列", conf:"mid" },
+      { exp:"unik", phase:"unik", country:"中国", place:"西北线（国内）", notes:"疫情期国内 UNI-K 西北自驾（重庆—若羌等）；<strong>非非洲段</strong>，仅供车辆 continuity 参考", moment:"", visitFrom:"2020-08", visitTo:"2021-05", timeConf:"backlog", videoTitle:"国内 UNI-K 西北", conf:"mid" }
+    ];
+
+    function renderTable(filterExp, filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterExp !== "all" && row.exp !== filterExp) return;
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.visitFrom, row.visitTo, row.videoTitle, row.dayNo].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? row.videoTitle + "<br><span class=\"cell-muted\"><a href=\"" + DOUYIN_SEARCH + "\" target=\"_blank\" rel=\"noopener\">抖音检索</a></span>"
+          : "—";
+        var linkCell = "<a href=\"" + DOUYIN_SEARCH + "\" target=\"_blank\" rel=\"noopener\">抖音</a>";
+        var countryNo = getCountryNo(row.country);
+        var countryNoCell = countryNo ? "<span class=\"country-no\" title=\"第 " + countryNo + " 国\">" + countryNo + "</span>" : "—";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + countryNoCell + "</td>" +
+          "<td><span class=\"exp " + row.exp + "\">" + expLabel[row.exp] + "</span></td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td>" + formatVisit(row) + "</td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "欧洲·入非", sub: "2017", start: "2017-06-01", end: "2017-11-30", color: "#7c9cff" },
+        { name: "撒哈拉·西非", sub: "2017–18", start: "2017-11-01", end: "2018-02-28", color: "#e9c46a" },
+        { name: "中非·南非", sub: "2018", start: "2018-02-01", end: "2018-06-30", color: "#34d399" },
+        { name: "厄加勒斯角", sub: "2018-04", start: "2018-04-01", end: "2018-05-31", color: "#2dd4bf" },
+        { name: "东非·埃及", sub: "2018", start: "2018-05-01", end: "2018-11-30", color: "#a78bfa" },
+        { name: "霍尔果斯回国", sub: "2019", start: "2019-04-01", end: "2019-06-30", color: "#8b9cb3" },
+        { name: "UNI-K 专旅", sub: "2021+", start: "2021-10-01", end: "2023-01-01", color: "#fb923c" }
+      ];
+      var min = new Date("2017-06-01").getTime();
+      var max = new Date("2023-06-01").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    function refreshTable() {
+      renderTable(
+        document.getElementById("exp-filter").value,
+        document.getElementById("phase-filter").value,
+        document.getElementById("search").value
+      );
+    }
+
+    document.getElementById("exp-filter").addEventListener("change", refreshTable);
+    document.getElementById("phase-filter").addEventListener("change", refreshTable);
+    document.getElementById("search").addEventListener("input", refreshTable);
+
+    renderBar();
+    refreshTable();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", north: "#7c9cff", sahara: "#e9c46a", west: "#f472b6",
+        south: "#34d399", east: "#2dd4bf", exit: "#a78bfa", return: "#8b9cb3", unik: "#fb923c"
+      };
+      var map, layerGroup;
+
+      var routeSegments = [
+        { filter: ["all", "cs95"], phase: "prep", points: [
+          { lat: 39.904, lng: 116.407, name: "北京", country: "中国", visit: "2017-06-04", note: "CS95 启程" },
+          { lat: 36.141, lng: -5.353, name: "直布罗陀", country: "海峡", visit: "2017-10-20", note: "入非" }
+        ]},
+        { filter: ["all", "cs95", "north"], phase: "north", points: [
+          { lat: 34.021, lng: -6.849, name: "拉巴特", country: "摩洛哥", visit: "2017-10 · 第139天", note: "入非首站" }
+        ]},
+        { filter: ["all", "cs95", "north"], phase: "sahara", points: [
+          { lat: 25.000, lng: -2.500, name: "撒哈拉", country: "沙漠", visit: "2017-11—12", note: "误加油" },
+          { lat: 18.074, lng: -15.958, name: "努瓦克肖特", country: "毛里塔尼亚", visit: "2017-12—2018-01", note: "萨赫勒" }
+        ]},
+        { filter: ["all", "cs95", "west"], phase: "west", points: [
+          { lat: 30.044, lng: 31.235, name: "开罗", country: "埃及", visit: "2018-01—02", note: "扣车" },
+          { lat: 6.524, lng: 3.379, name: "拉各斯", country: "尼日利亚", visit: "2018-01—02", note: "华人中心" },
+          { lat: 4.051, lng: 9.704, name: "杜阿拉", country: "喀麦隆", visit: "2018-01 · 第231天", note: "抢劫" },
+          { lat: 0.416, lng: 9.467, name: "利伯维尔", country: "加蓬", visit: "2018-02", note: "推车280km" },
+          { lat: -8.839, lng: 13.289, name: "罗安达", country: "安哥拉", visit: "2018-02 · 第266天", note: "换胎" }
+        ]},
+        { filter: ["all", "cs95", "south"], phase: "south", points: [
+          { lat: -22.561, lng: 17.066, name: "温得和克", country: "纳米比亚", visit: "2018-03—04", note: "南部入口" },
+          { lat: -34.834, lng: 20.002, name: "厄加勒斯角", country: "南非", visit: "2018-04-12", note: "非洲最南端" },
+          { lat: -26.204, lng: 28.047, name: "约翰内斯堡", country: "南非", visit: "2018-06 · 第378天", note: "警护" },
+          { lat: -33.925, lng: 18.424, name: "开普敦", country: "南非", visit: "2018-04—05", note: "好望角方向" }
+        ]},
+        { filter: ["all", "cs95", "south"], phase: "east", points: [
+          { lat: -1.406, lng: 35.150, name: "马赛马拉", country: "肯尼亚", visit: "2018-05—07", note: "大迁徙" }
+        ]},
+        { filter: ["all", "cs95"], phase: "exit", points: [
+          { lat: 30.044, lng: 31.235, name: "开罗", country: "埃及", visit: "2018-08—10", note: "归程北上" }
+        ]},
+        { filter: ["all", "cs95"], phase: "return", dashed: true, points: [
+          { lat: 44.214, lng: 80.420, name: "霍尔果斯", country: "中国", visit: "2019-05", note: "707天回国" }
+        ]},
+        { filter: ["all", "unik"], phase: "unik", points: [
+          { lat: -17.829, lng: 31.053, name: "哈拉雷", country: "津巴布韦", visit: "≈2021-12", note: "UNI-K 落地" },
+          { lat: -17.800, lng: 25.150, name: "乔贝", country: "博茨瓦纳", visit: "≈2022", note: "车宿 safari" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? 3 : 5,
+              opacity: 0.9,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6,
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.9,
+              weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+        });
+        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: filter === "unik" ? 6 : 4 });
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO',
+        subdomains: "abcd",
+        maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

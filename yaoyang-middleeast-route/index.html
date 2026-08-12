@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>耀阳环游记 · 穿越中东240天自驾行程</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #f4a261;
+      --accent-2: #2a9d8f;
+      --warn: #e76f51;
+      --prep: #8b9cb3;
+      --entry: #5eb3ff;
+      --south: #e76f51;
+      --gulf: #e9c46a;
+      --levant: #bc6c25;
+      --iraq: #d4a574;
+      --iran: #c1121f;
+      --return: #8b9cb3;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(244, 162, 97, 0.08);
+      border: 1px solid rgba(244, 162, 97, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6d5b8;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.entry { background: var(--entry); }
+    .dot.south { background: var(--south); }
+    .dot.gulf { background: var(--gulf); }
+    .dot.levant { background: var(--levant); }
+    .dot.iraq { background: var(--iraq); }
+    .dot.iran { background: var(--iran); }
+    .dot.return { background: var(--return); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1100px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(244, 162, 97, 0.06); }
+    .phase {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.entry { background: rgba(94, 179, 255, 0.15); color: #b6dcff; }
+    .phase.south { background: rgba(231, 111, 81, 0.15); color: #ffb4a0; }
+    .phase.gulf { background: rgba(233, 196, 106, 0.15); color: #f5e6b8; }
+    .phase.levant { background: rgba(188, 108, 37, 0.15); color: #e8c4a0; }
+    .phase.iraq { background: rgba(212, 165, 116, 0.15); color: #f0dcc4; }
+    .phase.iran { background: rgba(193, 18, 31, 0.15); color: #f5a0a8; }
+    .phase.return { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(244, 162, 97, 0.15); color: #f6d5b8; }
+    .conf.low { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    td a:hover { color: #ffd4a8; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(244, 162, 97, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-intro { margin: 14px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .guide-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      background: rgba(244, 162, 97, 0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .guide-days { margin: 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; font-weight: 600; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); font-weight: 600; }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .guide-tips ul li { margin-bottom: 6px; }
+    .country-no {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(42, 157, 143, 0.18);
+      color: #7dd3c0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(42, 157, 143, 0.2);
+      border-color: var(--accent-2); color: #9ee4d4;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .map-legend i { display: inline-block; width: 22px; height: 4px; border-radius: 2px; }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>耀阳环游记 · 穿越中东 240 天自驾行程</h1>
+      <p class="subtitle">
+        博主：<strong>耀阳环游记</strong>（张耀阳 / 张啸 &amp; 妻子纳兰 ·
+        <a href="https://www.toutiao.com/search?keyword=%E8%80%80%E9%98%B3%E7%8E%AF%E6%B8%B8%E8%AE%B0" target="_blank" rel="noopener">今日头条</a> /
+        <a href="https://m.ixigua.com/user/1789618390838696" target="_blank" rel="noopener">西瓜视频</a>）·
+        2024 年 11 月从<strong>塔吉克斯坦</strong>出发，驾驶 <strong>坦克 330</strong>（3.0T V6 · B6 防弹改装 · 约 4 吨 · 90 升副油箱）穿越战火中东，
+        <strong>240 天 · 15 国</strong>，2025 年中<strong>成功回国</strong>（后半段因以伊开战、伊拉克爆引擎而仓促收尾）。
+        完整路线见 <a href="#trip-overview-guide">↓ 240 天行程总览</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">出发</div><div class="value">2024-11</div></div>
+      <div class="card"><div class="label">时长</div><div class="value">240 天</div></div>
+      <div class="card"><div class="label">车辆</div><div class="value">坦克 330</div></div>
+      <div class="card"><div class="label">回国</div><div class="value">≈2025-06</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      整理自头条/西瓜「穿越中东」系列、耀阳自述及<a href="https://www.dzwww.com/xinwen/shehuixinwen/202507/t20250721_16241438.htm" target="_blank" rel="noopener">海报新闻 2025-07 采访</a>，<strong>非官方逐日行程表</strong>。
+      「15 国」为博主口径；下表国序按视频主线与采访推断，<strong>土耳其</strong>等多条内容称「进不去/未入境」，标为低置信或过境。
+      结尾因答应孩子暑假回国、伊朗/土库曼 Pass 有效期，<strong>视频仓促收官</strong>，哈萨克斯坦段待补。
+      <strong>置信度：</strong>高 = 专集/采访地点；中 = 系列提及；低 = 15 国清单推断。
+    </div>
+
+    <h2 class="phase-title">阶段概览（造访估算）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2024-11 塔吉克</span>
+      <span>2025-01 阿富汗</span>
+      <span>2025-03 半岛/黎凡特</span>
+      <span>2025-06 以伊开战</span>
+      <span>2025-07 回国</span>
+    </div>
+
+    <section class="map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · 关键点连线 · <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="entry">中亚入口</button>
+          <button type="button" class="map-filter" data-filter="south">南亚·半岛</button>
+          <button type="button" class="map-filter" data-filter="core">叙·伊·伊</button>
+          <button type="button" class="map-filter" data-filter="return">回国线</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#5eb3ff"></i>中亚入口</span>
+        <span><i style="background:#e76f51"></i>南亚/也门</span>
+        <span><i style="background:#e9c46a"></i>阿曼/海湾</span>
+        <span><i style="background:#bc6c25"></i>黎凡特</span>
+        <span><i style="background:#d4a574"></i>伊拉克</span>
+        <span><i style="background:#c1121f"></i>伊朗</span>
+        <span><i style="background:#8b9cb3;border-top:2px dashed #8b9cb3;height:0"></i>土库曼/哈萨克/回国</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="trip-overview-guide">
+      <details open>
+        <summary>240 天 · 15 国行程总览（据采访 &amp; 系列）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">非洲 Tank 300 已捐博物馆后，新购 <strong>坦克 330</strong>（300 系 3.0T V6 限量版）并做 B6 防弹改装。2024 年 11 月自塔吉克斯坦入境，原计划 2025 年 7 月 1 日前轻松回国，因中东局势恶化与车辆故障大幅延误。</p>
+          <p class="guide-note"><strong>主线（高置信 · 有专集/采访）</strong></p>
+          <ul class="guide-days">
+            <li><strong>🇹🇯 塔吉克斯坦</strong> — 2024 年 11 月出发</li>
+            <li><strong>🇦🇫 阿富汗</strong> — 1 月误入恐袭村落、阿巴边境两次被塔利班扣留</li>
+            <li><strong>🇵🇰 巴基斯坦</strong> — 与阿富汗边境战区</li>
+            <li><strong>🇾🇪 也门</strong> — 抵达时美国轰炸首都，局势急转</li>
+            <li><strong>🇴🇲 阿曼</strong> — 「颠覆想象的土豪国」</li>
+            <li><strong>🇵🇸 巴勒斯坦</strong> — 偶遇「难民首富」</li>
+            <li><strong>🇸🇾 叙利亚</strong> — 冒险进入，情况颠覆想象</li>
+            <li><strong>🇮🇶 伊拉克</strong> — 摩苏尔探索、发动机报废（长城 4S 修 12 天）、军方 450 km 接力护送、当地人十多次免单</li>
+            <li><strong>🇮🇷 伊朗</strong> — 6 月以伊开战经霍尔木兹海峡；无入境章被扣两次；72 小时火线逃离</li>
+            <li><strong>🇹🇲 土库曼斯坦</strong> — Pass 约 2000 美元 · 8 工作日申请 · 当月有效</li>
+            <li><strong>🇰🇿 哈萨克斯坦</strong> — 回国狂奔；海关冲突（视频称待揭秘）</li>
+            <li><strong>🇨🇳 中国</strong> — 2025 年中回国 · 答应孩子过暑假</li>
+          </ul>
+          <p class="guide-note"><strong>15 国中其余节点（低置信 · 待补链）</strong></p>
+          <ul class="guide-days">
+            <li>可能还包括：乌兹别克斯坦、阿联酋、沙特、约旦、黎巴嫩等 — 以博主完整国单为准</li>
+            <li><strong>🇹🇷 土耳其</strong> — 系列称「进不去」，可能未实际入境</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.dzwww.com/xinwen/shehuixinwen/202507/t20250721_16241438.htm" target="_blank" rel="noopener">海报新闻采访原文</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备·改装</option>
+        <option value="entry">中亚入口</option>
+        <option value="south">南亚/半岛</option>
+        <option value="gulf">海湾/阿曼</option>
+        <option value="levant">黎凡特</option>
+        <option value="iraq">伊拉克</option>
+        <option value="iran">伊朗</option>
+        <option value="return">回国线</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、注意事项、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot entry"></span>中亚</span>
+      <span><span class="dot south"></span>南亚/半岛</span>
+      <span><span class="dot gulf"></span>海湾</span>
+      <span><span class="dot levant"></span>黎凡特</span>
+      <span><span class="dot iraq"></span>伊拉克</span>
+      <span><span class="dot iran"></span>伊朗</span>
+      <span><span class="dot return"></span>回国</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>国序</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 难忘瞬间</th>
+            <th>造访时间</th>
+            <th>视频笔记</th>
+            <th>置信度</th>
+            <th>参考链接</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="vehicle-guide">
+      <details>
+        <summary>坦克 330 · B6 防弹改装 · 与非洲 Tank 300 的区别</summary>
+        <div class="guide-body">
+          <ul class="guide-tips">
+            <li>
+              <h3>🚗 坦克 330（底车）</h3>
+              <ul>
+                <li>非洲线 Tank 300 已捐<strong>哈尔滨世纪汽车历史博物馆</strong>；中东线<strong>重新购车</strong>，选 <strong>坦克 330</strong>（基于 300 边境版 · 3.0T V6 + 48V · 33 万 · 首批限量 1000 台）。</li>
+                <li>再经 <strong>B6 级防弹改装</strong> · 90 升副油箱 · 整备约 <strong>4 吨</strong>（原厂约 2.5 吨）；初衷防抢劫，实际直面战火。</li>
+                <li>出发视频：<a href="https://www.bilibili.com/video/BV1iByUY7EhP/" target="_blank" rel="noopener">爆改国产防弹车即将出发</a> · <a href="https://www.bilibili.com/video/BV1PxBeYBEAb/" target="_blank" rel="noopener">穿越炮火中东倒计时</a></li>
+              </ul>
+            </li>
+            <li>
+              <h3>⛽ 伊拉克「爆引擎」</h3>
+              <ul>
+                <li>摩苏尔方向误加 80 号油，95 汽油机报废；伊拉克长城 4S 维修约 12 天，直接打乱伊朗/土库曼 Pass 时间表。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>📋 跨境 Pass 费用（耀阳自述）</h3>
+              <ul>
+                <li>伊朗 Pass：1000+ 美元 · 土库曼：2000+ 美元 · 提前 8 工作日 · 当月有效。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="danger-guide">
+      <details>
+        <summary>险情时间线 · 扣留 / 战火 / 护送</summary>
+        <div class="guide-body">
+          <ol class="guide-days">
+            <li><strong>2025-01 · 阿富汗</strong> — 误入恐袭村落被塔利班扣留 2h；向导失误进阿巴边境战区，再被扣留；给翻译披外套换好感</li>
+            <li><strong>2025 · 也门</strong> — 抵达时美国轰炸首都，中东「开锅」</li>
+            <li><strong>2025 · 伊拉克</strong> — 北部 450 km 二十多批军人接力装甲护送；摩苏尔 locals 十多次免单</li>
+            <li><strong>2025-06 · 霍尔木兹</strong> — 以伊开战，必经海峡无法绕行；伊朗境内两次.spy 嫌疑扣押（免签无入境章成疑点）</li>
+            <li><strong>2025-06 · 回国狂奔</strong> — 引擎修复后距土库曼时限仅 4 天；答应孩子暑假，一路狂奔</li>
+            <li><strong>2025 · 哈萨克斯坦</strong> — 海关与士兵冲突（自述「差点打起来」），视频待揭秘</li>
+          </ol>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-12 · 来源：头条/西瓜「穿越中东」系列 · <a href="https://www.dzwww.com/xinwen/shehuixinwen/202507/t20250721_16241438.htm" target="_blank" rel="noopener">海报新闻 2025-07-21 采访</a> · 路线为粉丝整理。</p>
+      <p>相关：<a href="../yaoyang-africa-route/index.html">耀阳 · 穿越非洲路书</a> · 非洲线见 <code>~/Projects/yaoyang-africa-route/</code></p>
+      <p><strong>待补</strong>：15 国完整清单、各国视频 ID、土耳其是否入境、哈萨克斯坦收官全集。</p>
+    </footer>
+  </div>
+
+  <script>
+    var TT_HOME = "https://m.ixigua.com/user/1789618390838696";
+    function videoUrl(id) {
+      return id ? "https://www.toutiao.com/video/" + id + "/" : "";
+    }
+    function xiguaUrl(id) {
+      return id ? "https://m.ixigua.com/video/" + id : TT_HOME;
+    }
+
+    var phaseLabel = {
+      prep: "筹备", entry: "中亚", south: "南亚/半岛", gulf: "海湾",
+      levant: "黎凡特", iraq: "伊拉克", iran: "伊朗", return: "回国"
+    };
+
+    var countryNoMap = {
+      "塔吉克斯坦": 1, "阿富汗": 2, "巴基斯坦": 3, "乌兹别克斯坦": 4,
+      "也门": 5, "阿曼": 6, "阿联酋": 7, "沙特阿拉伯": 8,
+      "约旦": 9, "巴勒斯坦": 10, "叙利亚": 11, "伊拉克": 12,
+      "伊朗": 13, "土库曼斯坦": 14, "哈萨克斯坦": 15
+    };
+
+    function getCountryNo(country) {
+      if (!country || country === "—" || country === "综述" || country === "中国" || country === "土耳其") return "";
+      var n = countryNoMap[country];
+      return n != null ? n : "";
+    }
+
+    var rows = [
+      { phase:"prep", country:"综述", place:"北京 · 筹备", notes:"新购<strong>坦克 330</strong>（3.0T V6）→ B6 防弹改装 · 90L 副油箱 · 约 4 吨；详见 <a href=\"#vehicle-guide\" class=\"guide-jump\">↓ 车辆说明</a>", moment:"「改装为防抢劫，没想到直面战火」", visit:"2024 秋", videoId:"BV1iByUY7EhP", videoTitle:"中国夫妇爆改国产防弹车 穿越炮火中东即将出发", conf:"high" },
+      { phase:"entry", country:"塔吉克斯坦", place:"入境 · 出发", notes:"2024 年 11 月正式出发；中亚陆路进入中东纵穿起点", moment:"240 天中东线 Day 1", visit:"2024-11", videoId:"", videoTitle:"穿越中东出发（系列）", conf:"high" },
+      { phase:"south", country:"阿富汗", place:"全国 · 阿巴边境", notes:"1 月纪录片拍摄误入恐袭村落，塔利班扣留 2h；向导失误进河滩狼群区，再入阿巴边境战区二次扣留；给翻译披外套", moment:"「再见了我的阿富汗兄弟」", visit:"2025-01", videoId:"", videoTitle:"再见了我的阿富汗兄弟 · 揭开奥斯卡的秘密", conf:"high" },
+      { phase:"south", country:"巴基斯坦", place:"边境战区", notes:"与阿富汗边境一带；二次塔利班扣留发生地", moment:"", visit:"2025-01", videoId:"", videoTitle:"", conf:"high" },
+      { phase:"entry", country:"乌兹别克斯坦", place:"途经", notes:"15 国清单推断节点；待专集补链", moment:"", visit:"2024–2025", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"gulf", country:"也门", place:"入境", notes:"抵达时美国轰炸也门首都；中东局势急转，此后进度远慢于计划", moment:"「中东开锅了」", visit:"2025", videoId:"", videoTitle:"", conf:"high" },
+      { phase:"gulf", country:"阿曼", place:"全国", notes:"专集：颠覆想象的土豪国；市场换汇、市井人文", moment:"「中东不只有战争与沙子」", visit:"2025", videoId:"", videoTitle:"自驾穿越中东阿曼站", conf:"high" },
+      { phase:"gulf", country:"阿联酋", place:"途经", notes:"15 国推断；待补", moment:"", visit:"2025", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"gulf", country:"沙特阿拉伯", place:"途经", notes:"15 国推断；待补", moment:"", visit:"2025", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"levant", country:"约旦", place:"途经", notes:"15 国推断；待补", moment:"", visit:"2025", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"levant", country:"巴勒斯坦", place:"难民营/边境区", notes:"偶遇「难民首富」；称中国强大已传遍世界", moment:"", visit:"2025", videoId:"", videoTitle:"偶遇巴勒斯坦难民首富", conf:"high" },
+      { phase:"levant", country:"叙利亚", place:"入境探索", notes:"冒险进入叙利亚；情况颠覆想象；后段与伊拉克衔接", moment:"", visit:"2025", videoId:"", videoTitle:"穿越中东冒险进入叙利亚", conf:"high" },
+      { phase:"iraq", country:"伊拉克", place:"摩苏尔（Mosul）", notes:"等伊朗 Pass 期间北上探索；误加劣质油致<strong>发动机报废</strong>；长城 4S 维修约 12 天", moment:"「发动机跳得像爆米花机」", visit:"2025-06", videoId:"", videoTitle:"开进伊拉克 · 进入摩苏尔困难重重", conf:"high" },
+      { phase:"iraq", country:"伊拉克", place:"北部 · 军方护送", notes:"采访：二十多批军人接力装甲车护送 450 km；「一定要保证中国朋友的安全」", moment:"旅行生涯从未遇过的护送规模", visit:"2025", videoId:"", videoTitle:"只因我们是中国人（系列）", conf:"high" },
+      { phase:"iraq", country:"伊拉克", place:"摩苏尔等地", notes:"当地餐厅十多次免单；老人知毛主席；摩苏尔民众对中国极友好", moment:"「离家越远越感受祖国强大」", visit:"2025", videoId:"", videoTitle:"女人在伊拉克能…（系列）", conf:"high" },
+      { phase:"iran", country:"伊朗", place:"霍尔木兹海峡", notes:"2025 年 6 月以伊开战；回国必经之路，无法绕行，硬着头皮穿越", moment:"最危险时刻之一", visit:"2025-06", videoId:"", videoTitle:"穿越中东最危险的时刻 · 72小时逃离伊朗", conf:"high" },
+      { phase:"iran", country:"伊朗", place:"境内 · 德黑兰方向", notes:"严查间谍；外国面孔 + 自驾无伊朗入境章 → <strong>两次军方扣押</strong>；手机展示此前旅行视频才释疑", moment:"「审讯室旁边就是牢房」", visit:"2025-06", videoId:"", videoTitle:"万里归国 · 在伊朗被抓了两次", conf:"high" },
+      { phase:"iran", country:"伊朗", place:"全国", notes:"系列：炮火中的伊朗、伊朗果然全是坑、与翻译离别泪目", moment:"72 小时穿越伊朗火线", visit:"2025-06", videoId:"", videoTitle:"炮火中的伊朗，真实的伊朗到底什么样？", conf:"mid" },
+      { phase:"return", country:"土库曼斯坦", place:"入境", notes:"Pass 约 2000 美元 + 8 工作日申请 + 当月有效；与伊朗 Pass（1000+ 美元）一并预订", moment:"「土库曼汽油呲一地」", visit:"2025-06", videoId:"", videoTitle:"8个月240天穿越中东，九九八十一我们成功啦", conf:"high" },
+      { phase:"return", country:"哈萨克斯坦", place:"海关/口岸", notes:"回国狂奔最后一关；自述海关索要小费、与士兵几乎冲突；「最后视频仓促结束，还有一重未揭秘」", moment:"比俄罗斯还难？海关差点打起来", visit:"2025-06~07", videoId:"", videoTitle:"（哈萨克斯坦段 · 待补 ID）", conf:"mid" },
+      { phase:"return", country:"中国", place:"北京 · 回国", notes:"2025 年中抵家；答应孩子过暑假；采访称<strong>成功穿越中东</strong>，筹备纵穿美洲", moment:"「8个月240天，穿越炮火中的中东，我们终于成功啦！」", visit:"2025-06~07", videoId:"", videoTitle:"8个月240天穿越中东，九九八十一我们成功啦", conf:"high" },
+      { phase:"return", country:"土耳其", place:"未入境", notes:"系列标题「穿越中东土耳其进不去」；可能未计入实际造访", moment:"", visit:"—", videoId:"", videoTitle:"穿越中东土耳其进不去", conf:"mid" },
+      { phase:"return", country:"综述", place:"240 天总结", notes:"比计划困难得多；以伊开战打乱节奏；伊拉克修车 + 孩子暑假 → 仓促收官；详见 <a href=\"#danger-guide\" class=\"guide-jump\">↓ 险情时间线</a>", moment:"「作为爸爸不能老玩失踪」", visit:"2025", videoId:"", videoTitle:"美伊以战争开始，揭秘穿越中东的故事", conf:"high" }
+    ];
+
+    function openGuideSection(id, scroll) {
+      var section = document.getElementById(id);
+      if (!section) return;
+      var details = section.querySelector("details");
+      if (details) details.open = true;
+      if (scroll !== false) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderTable(filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.visit, row.videoTitle].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? (row.videoId
+            ? "<a href=\"" + videoUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">" + row.videoTitle + "</a>"
+            : row.videoTitle + "<br><span class=\"cell-muted\">ID 待补 · 见主页合集</span>")
+          : "—";
+        var linkCell = row.videoId
+          ? "<a href=\"" + videoUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">头条</a> · <a href=\"" + xiguaUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">西瓜</a>"
+          : "<a href=\"" + TT_HOME + "\" target=\"_blank\" rel=\"noopener\">主页</a>";
+        var countryNo = getCountryNo(row.country);
+        var countryNoCell = countryNo ? "<span class=\"country-no\" title=\"第 " + countryNo + " 国\">" + countryNo + "</span>" : "—";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + countryNoCell + "</td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td>" + row.visit + "</td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "塔吉克·出发", sub: "2024.11", start: "2024-11-01", end: "2024-12-31", color: "#5eb3ff" },
+        { name: "阿富汗·巴基斯坦", sub: "2025.1", start: "2025-01-01", end: "2025-02-28", color: "#e76f51" },
+        { name: "也门·阿曼·黎凡特", sub: "2025.2–4", start: "2025-02-01", end: "2025-04-30", color: "#e9c46a" },
+        { name: "叙利亚·伊拉克", sub: "2025.4–6", start: "2025-04-01", end: "2025-06-15", color: "#d4a574" },
+        { name: "伊朗·霍尔木兹", sub: "2025.6", start: "2025-06-01", end: "2025-06-30", color: "#c1121f" },
+        { name: "土库曼·哈萨克", sub: "2025.6–7", start: "2025-06-15", end: "2025-07-31", color: "#8b9cb3" }
+      ];
+      var min = new Date("2024-11-01").getTime();
+      var max = new Date("2025-08-01").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("phase-filter").addEventListener("change", function (e) {
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", function (e) {
+      renderTable(document.getElementById("phase-filter").value, e.target.value);
+    });
+    document.getElementById("tbody").addEventListener("click", function (e) {
+      var link = e.target.closest('a.guide-jump[href^="#"]');
+      if (!link) return;
+      e.preventDefault();
+      openGuideSection(link.getAttribute("href").slice(1), true);
+    });
+
+    renderBar();
+    renderTable("all", "");
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", entry: "#5eb3ff", south: "#e76f51", gulf: "#e9c46a",
+        levant: "#bc6c25", iraq: "#d4a574", iran: "#c1121f", return: "#8b9cb3"
+      };
+      var map, layerGroup;
+
+      var routeSegments = [
+        { filter: ["all", "entry"], phase: "entry", points: [
+          { lat: 38.559, lng: 68.774, name: "杜尚别", country: "塔吉克斯坦", visit: "2024-11", note: "出发" },
+          { lat: 41.299, lng: 69.240, name: "塔什干", country: "乌兹别克斯坦", visit: "2024–25", note: "推断" }
+        ]},
+        { filter: ["all", "south"], phase: "south", points: [
+          { lat: 34.555, lng: 69.207, name: "喀布尔", country: "阿富汗", visit: "2025-01", note: "塔利班扣留×2" },
+          { lat: 33.684, lng: 73.048, name: "伊斯兰堡", country: "巴基斯坦", visit: "2025-01", note: "阿巴边境" },
+          { lat: 15.369, lng: 44.191, name: "萨那", country: "也门", visit: "2025", note: "轰炸首都" }
+        ]},
+        { filter: ["all", "south"], phase: "gulf", points: [
+          { lat: 23.588, lng: 58.383, name: "马斯喀特", country: "阿曼", visit: "2025", note: "土豪国" }
+        ]},
+        { filter: ["all", "core"], phase: "levant", points: [
+          { lat: 31.947, lng: 35.214, name: "约旦河西岸", country: "巴勒斯坦", visit: "2025", note: "难民首富" },
+          { lat: 33.513, lng: 36.276, name: "大马士革", country: "叙利亚", visit: "2025", note: "冒险进入" }
+        ]},
+        { filter: ["all", "core"], phase: "iraq", points: [
+          { lat: 36.340, lng: 43.118, name: "摩苏尔", country: "伊拉克", visit: "2025-06", note: "爆引擎·12天" },
+          { lat: 33.315, lng: 44.366, name: "巴格达", country: "伊拉克", visit: "2025", note: "免单·护送" }
+        ]},
+        { filter: ["all", "core"], phase: "iran", points: [
+          { lat: 26.532, lng: 56.255, name: "霍尔木兹海峡", country: "伊朗", visit: "2025-06", note: "以伊开战" },
+          { lat: 35.689, lng: 51.389, name: "德黑兰", country: "伊朗", visit: "2025-06", note: "扣押×2" }
+        ]},
+        { filter: ["all", "return"], phase: "return", dashed: true, points: [
+          { lat: 37.960, lng: 58.326, name: "阿什哈巴德", country: "土库曼斯坦", visit: "2025-06", note: "Pass 2000$" },
+          { lat: 43.222, lng: 76.851, name: "阿拉木图", country: "哈萨克斯坦", visit: "2025-07", note: "海关冲突" },
+          { lat: 39.904, lng: 116.407, name: "北京", country: "中国", visit: "2025-07", note: "成功回国" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? 3 : 5,
+              opacity: 0.9,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6, color: color, fillColor: color, fillOpacity: 0.9, weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+        });
+        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 4 });
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO', subdomains: "abcd", maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>吴珊 · 非洲自驾（关键点）</name>
+    <description>粉丝整理路线，非 GPS 精确轨迹。CS95 亚欧非环非段 + UNI-K 专旅。2026-08-12</description>
+    <Folder><name>CS95 · 启程·入非</name>
+      <Placemark><name>北京</name><Point><coordinates>116.407,39.904,0</coordinates></Point></Placemark>
+      <Placemark><name>直布罗陀海峡</name><Point><coordinates>-5.353,36.141,0</coordinates></Point></Placemark>
+      <Placemark><name>拉巴特 · 摩洛哥</name><Point><coordinates>-6.849,34.021,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>CS95 · 撒哈拉·西非</name>
+      <Placemark><name>撒哈拉沙漠</name><Point><coordinates>-2.500,25.000,0</coordinates></Point></Placemark>
+      <Placemark><name>努瓦克肖特 · 毛里塔尼亚</name><Point><coordinates>-15.958,18.074,0</coordinates></Point></Placemark>
+      <Placemark><name>拉各斯 · 尼日利亚</name><Point><coordinates>3.379,6.524,0</coordinates></Point></Placemark>
+      <Placemark><name>杜阿拉 · 喀麦隆</name><Point><coordinates>9.704,4.051,0</coordinates></Point></Placemark>
+      <Placemark><name>利伯维尔 · 加蓬</name><Point><coordinates>9.467,0.416,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>CS95 · 南部·东非</name>
+      <Placemark><name>罗安达 · 安哥拉</name><Point><coordinates>13.289,-8.839,0</coordinates></Point></Placemark>
+      <Placemark><name>温得和克 · 纳米比亚</name><Point><coordinates>17.066,-22.561,0</coordinates></Point></Placemark>
+      <Placemark><name>约翰内斯堡 · 南非</name><Point><coordinates>28.047,-26.204,0</coordinates></Point></Placemark>
+      <Placemark><name>厄加勒斯角 · 南非</name><Point><coordinates>20.002,-34.834,0</coordinates></Point></Placemark>
+      <Placemark><name>开普敦 · 南非</name><Point><coordinates>18.424,-33.925,0</coordinates></Point></Placemark>
+      <Placemark><name>马赛马拉 · 肯尼亚</name><Point><coordinates>35.150,-1.406,0</coordinates></Point></Placemark>
+      <Placemark><name>开罗 · 埃及</name><Point><coordinates>31.235,30.044,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>CS95 · 回国</name>
+      <Placemark><name>霍尔果斯 · 新疆</name><Point><coordinates>80.420,44.214,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>UNI-K · 南部专旅</name>
+      <Placemark><name>哈拉雷 · 津巴布韦</name><Point><coordinates>31.053,-17.829,0</coordinates></Point></Placemark>
+      <Placemark><name>乔贝 · 博茨瓦纳</name><Point><coordinates>25.150,-17.800,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

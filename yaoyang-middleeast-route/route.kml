@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>耀阳环游记 · 穿越中东240天（关键点）</name>
+    <description>粉丝整理 · 2026-08-12 · 非 GPS 轨迹</description>
+    <Folder><name>中亚入口</name>
+      <Placemark><name>杜尚别 · 塔吉克斯坦</name><Point><coordinates>68.774,38.559,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>南亚/半岛</name>
+      <Placemark><name>喀布尔 · 阿富汗</name><Point><coordinates>69.207,34.555,0</coordinates></Point></Placemark>
+      <Placemark><name>伊斯兰堡 · 巴基斯坦</name><Point><coordinates>73.048,33.684,0</coordinates></Point></Placemark>
+      <Placemark><name>萨那 · 也门</name><Point><coordinates>44.191,15.369,0</coordinates></Point></Placemark>
+      <Placemark><name>马斯喀特 · 阿曼</name><Point><coordinates>58.383,23.588,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>黎凡特/伊拉克/伊朗</name>
+      <Placemark><name>大马士革 · 叙利亚</name><Point><coordinates>36.276,33.513,0</coordinates></Point></Placemark>
+      <Placemark><name>摩苏尔 · 伊拉克</name><Point><coordinates>43.118,36.340,0</coordinates></Point></Placemark>
+      <Placemark><name>巴格达 · 伊拉克</name><Point><coordinates>44.366,33.315,0</coordinates></Point></Placemark>
+      <Placemark><name>霍尔木兹海峡 · 伊朗</name><Point><coordinates>56.255,26.532,0</coordinates></Point></Placemark>
+      <Placemark><name>德黑兰 · 伊朗</name><Point><coordinates>51.389,35.689,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>回国线</name>
+      <Placemark><name>阿什哈巴德 · 土库曼斯坦</name><Point><coordinates>58.326,37.960,0</coordinates></Point></Placemark>
+      <Placemark><name>阿拉木图 · 哈萨克斯坦</name><Point><coordinates>76.851,43.222,0</coordinates></Point></Placemark>
+      <Placemark><name>北京 · 中国</name><Point><coordinates>116.407,39.904,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

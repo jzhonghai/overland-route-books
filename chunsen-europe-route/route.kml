@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>春森同学 · 小米 SU7 亚欧欧洲段（关键点）</name>
+    <description>粉丝整理，非 GPS 精确轨迹。2026-08-12</description>
+    <Folder><name>入欧前 · 中亚俄</name>
+      <Placemark><name>重庆</name><Point><coordinates>106.551,29.563,0</coordinates></Point></Placemark>
+      <Placemark><name>霍尔果斯</name><Point><coordinates>80.420,44.214,0</coordinates></Point></Placemark>
+      <Placemark><name>阿拉木图</name><Point><coordinates>76.928,43.256,0</coordinates></Point></Placemark>
+      <Placemark><name>莫斯科</name><Point><coordinates>37.617,55.755,0</coordinates></Point></Placemark>
+      <Placemark><name>圣彼得堡</name><Point><coordinates>30.360,59.931,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>北欧·波罗的海</name>
+      <Placemark><name>里加 · 拉脱维亚</name><Point><coordinates>24.105,56.949,0</coordinates></Point></Placemark>
+      <Placemark><name>塔林 · 爱沙尼亚</name><Point><coordinates>24.753,59.437,0</coordinates></Point></Placemark>
+      <Placemark><name>赫尔辛基 · 芬兰</name><Point><coordinates>24.938,60.170,0</coordinates></Point></Placemark>
+      <Placemark><name>特罗姆瑟 · 挪威</name><Point><coordinates>18.955,69.649,0</coordinates></Point></Placemark>
+      <Placemark><name>罗弗敦 · 挪威</name><Point><coordinates>13.611,68.205,0</coordinates></Point></Placemark>
+      <Placemark><name>北角 · 挪威</name><Point><coordinates>25.784,71.170,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>西欧·中欧</name>
+      <Placemark><name>哥本哈根 · 丹麦</name><Point><coordinates>12.568,55.676,0</coordinates></Point></Placemark>
+      <Placemark><name>阿姆斯特丹 · 荷兰</name><Point><coordinates>4.904,52.367,0</coordinates></Point></Placemark>
+      <Placemark><name>纽博格林 · 德国</name><Point><coordinates>6.947,50.335,0</coordinates></Point></Placemark>
+      <Placemark><name>伦敦 · 英国</name><Point><coordinates>-0.128,51.507,0</coordinates></Point></Placemark>
+      <Placemark><name>利物浦 · 英国</name><Point><coordinates>-2.978,53.408,0</coordinates></Point></Placemark>
+      <Placemark><name>巴黎 · 法国</name><Point><coordinates>2.352,48.857,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>南欧·阿尔卑斯</name>
+      <Placemark><name>巴塞罗那 · 西班牙</name><Point><coordinates>2.168,41.387,0</coordinates></Point></Placemark>
+      <Placemark><name>尼斯 · 法国</name><Point><coordinates>7.262,43.711,0</coordinates></Point></Placemark>
+      <Placemark><name>摩纳哥</name><Point><coordinates>7.424,43.738,0</coordinates></Point></Placemark>
+      <Placemark><name>米兰 · 意大利</name><Point><coordinates>9.190,45.464,0</coordinates></Point></Placemark>
+      <Placemark><name>因特拉肯 · 瑞士</name><Point><coordinates>7.863,46.686,0</coordinates></Point></Placemark>
+      <Placemark><name>因斯布鲁克 · 奥地利</name><Point><coordinates>11.392,47.269,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

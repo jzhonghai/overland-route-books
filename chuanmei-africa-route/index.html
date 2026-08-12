@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>川妹 · 川A 宋Plus 欧亚非自驾路书</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #4ade80;
+      --accent-2: #38bdf8;
+      --warn: #fb7185;
+      --prep: #8b9cb3;
+      --asia: #38bdf8;
+      --europe: #a78bfa;
+      --border: #f472b6;
+      --north: #4ade80;
+      --west: #fbbf24;
+      --south: #34d399;
+      --ongoing: #fb923c;
+      --line: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #bbf7d0;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.asia { background: var(--asia); }
+    .dot.europe { background: var(--europe); }
+    .dot.border { background: var(--border); }
+    .dot.north { background: var(--north); }
+    .dot.west { background: var(--west); }
+    .dot.south { background: var(--south); }
+    .dot.ongoing { background: var(--ongoing); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1150px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(74, 222, 128, 0.06); }
+    .phase, .region {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.asia { background: rgba(56, 189, 248, 0.15); color: #bae6fd; }
+    .phase.europe { background: rgba(167, 139, 250, 0.15); color: #ddd6fe; }
+    .phase.border { background: rgba(244, 114, 182, 0.15); color: #fbcfe8; }
+    .phase.north { background: rgba(74, 222, 128, 0.15); color: #bbf7d0; }
+    .phase.west { background: rgba(251, 191, 36, 0.15); color: #fde68a; }
+    .phase.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .phase.ongoing { background: rgba(251, 146, 60, 0.15); color: #fed7aa; }
+    .region.pre { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
+    .region.africa { background: rgba(74, 222, 128, 0.12); color: #86efac; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(74, 222, 128, 0.15); color: #bbf7d0; }
+    .conf.low { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .visit-range { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .time-conf {
+      display: inline-block; margin-top: 4px;
+      font-size: 0.72rem; padding: 1px 7px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .time-conf.anchor { background: rgba(126, 231, 135, 0.12); color: #9cf0a4; }
+    .time-conf.phase { background: rgba(74, 222, 128, 0.12); color: #bbf7d0; }
+    .time-conf.backlog { background: rgba(147, 164, 189, 0.15); color: #b8c5d9; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    td a:hover { color: #86efac; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(74, 222, 128, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--line);
+    }
+    .guide-intro { margin: 14px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .guide-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      background: rgba(74, 222, 128, 0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .guide-days { margin: 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; font-weight: 600; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); font-weight: 600; }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .guide-tips ul li { margin-bottom: 6px; }
+    .country-no {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(74, 222, 128, 0.18);
+      color: #4ade80;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: var(--accent); color: #bbf7d0;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>川妹 · 川A 宋Plus 欧亚非自驾路书</h1>
+      <p class="subtitle">
+        博主：<strong>川妹</strong>（90 后成都女生 · 独驾 · 无团队 ·
+        <a href="https://space.bilibili.com/1333961176" target="_blank" rel="noopener">B 站主页</a>）·
+        座驾：<strong>比亚迪宋 Plus DM-i</strong>（川 A 蓝牌 · 床车改装）·
+        系列合集《<a href="https://space.bilibili.com/1333961176/channel/collectiondetail?sid=2869000" target="_blank" rel="noopener">自驾欧亚非大陆 2023–2024</a>》·
+        自述已走 <strong>48 国</strong>，<strong>非洲段正在长视频更新中</strong>（多国积压未发）。
+        本页以非洲为主，亚洲/欧洲/俄境为入非前序。相关：
+        <a href="../yaoyang-africa-route/index.html">耀阳非洲</a> ·
+        <a href="../wushan-africa-route/index.html">吴珊非洲</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">车辆</div><div class="value">宋 Plus DM-i · 川A</div></div>
+      <div class="card"><div class="label">已走国家（自述）</div><div class="value">48 国</div></div>
+      <div class="card"><div class="label">非洲状态</div><div class="value">连载更新中</div></div>
+      <div class="card"><div class="label">风格</div><div class="value">独驾 · 长视频</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      路线整理自 B 站《自驾欧亚非大陆》系列及视频简介/标题，<strong>非官方逐日行程表</strong>。
+      博主自述「很多国家未更新，目前开始更新非洲」——西非至南部非洲多国仅为<strong>推断或待补</strong>，置信度标低/中。
+      插混 DM-i 在海外<strong>无品牌售后</strong>，哈萨克斯坦汽修、半夜刹车失灵等均为系列重点。
+      <strong>造访时间</strong>为月份区间估算；欧亚段相对清晰，非洲段随更新调整。
+    </div>
+
+    <h2 class="phase-title">阶段概览（造访估算）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2023 离疆</span>
+      <span>2023–24 欧洲</span>
+      <span>2024 俄白边境</span>
+      <span>2024–25 摩洛哥</span>
+      <span>2025+ 非洲连载</span>
+    </div>
+
+    <section class="map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · 入非前序 + 非洲已更新/推断点 · <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="pre">入非前</button>
+          <button type="button" class="map-filter" data-filter="africa">非洲</button>
+          <button type="button" class="map-filter" data-filter="north">北非</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#38bdf8"></i>亚洲</span>
+        <span><i style="background:#a78bfa"></i>欧洲</span>
+        <span><i style="background:#f472b6"></i>俄白边境</span>
+        <span><i style="background:#4ade80"></i>非洲</span>
+        <span id="map-legend-hint">📍 点击标记查看地点</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="trip-overview-guide">
+      <details open>
+        <summary>欧亚非环球 · 行程总览（据 B 站系列）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">川妹单人驾驶川 A 牌宋 Plus DM-i，从成都出发经陆路穿越中亚、欧洲，再向南进入非洲。与耀阳（Tank 300 海运巴塞罗那）、吴珊（CS95 2017 环非）相比，她是<strong>插混国产 SUV + 单人床车 + 无后勤团队</strong>的代表案例。</p>
+          <p class="guide-note"><strong>入非前 · 亚洲—欧洲—俄境（视频已发较多）</strong></p>
+          <ul class="guide-days">
+            <li><strong>新疆</strong> — 出境前最后一次 4S 检查保养（系列称「最后一次在国内 4S」）</li>
+            <li><strong>哈萨克斯坦</strong> — 被当地怀疑「间谍」；汽修厂维修国产插混（无官方售后）</li>
+            <li><strong>俄罗斯</strong> — 陆路入境；露宿富人区遭驱赶等市井经历</li>
+            <li><strong>欧洲</strong> — 正式「离开亚洲行程」；丹麦进警察牢房；遭遇「环球最大事故」与国籍歧视</li>
+            <li><strong>波兰 → 白俄罗斯</strong> — 自述「走过最难海关」；30+ 小时未睡</li>
+            <li><strong>俄乌战区口岸</strong> — 独驾穿越战区边境，白俄罗斯段继续更新</li>
+          </ul>
+          <p class="guide-note"><strong>非洲段（连载中 · 摩洛哥已有专集）</strong></p>
+          <ul class="guide-days">
+            <li><strong>摩洛哥</strong> — 「才知道摩洛哥物价多么白菜价」；银联 ATM 取现攻略等</li>
+            <li><strong>直布罗陀海峡</strong> — 典型欧亚非陆路入非通道（推断节点）</li>
+            <li><strong>西非—南部非洲</strong> — 博主称 48 国且非洲刚开始更新；塞内加尔、纳米比亚等为<strong>待视频确认</strong>的推断/转载节点</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.bilibili.com/video/BV14Z421n7qz/" target="_blank" rel="noopener">国籍歧视 · 环球最大事故</a>
+            ·
+            <a href="https://www.bilibili.com/video/BV11SZBYKEq3/" target="_blank" rel="noopener">摩洛哥物价</a>
+            ·
+            <a href="https://space.bilibili.com/1333961176/channel/collectiondetail?sid=2869000" target="_blank" rel="noopener">合集 · 自驾欧亚非大陆</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="region-filter">范围</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="pre">入非前（亚欧）</option>
+        <option value="africa">非洲</option>
+      </select>
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备</option>
+        <option value="asia">中亚·俄境</option>
+        <option value="europe">欧洲</option>
+        <option value="border">俄白·战区口岸</option>
+        <option value="north">北非</option>
+        <option value="west">西非</option>
+        <option value="south">南部非洲</option>
+        <option value="ongoing">连载·待更</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、注意事项、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot asia"></span>中亚</span>
+      <span><span class="dot europe"></span>欧洲</span>
+      <span><span class="dot border"></span>俄白边境</span>
+      <span><span class="dot north"></span>北非</span>
+      <span><span class="dot west"></span>西非</span>
+      <span><span class="dot south"></span>南部非洲</span>
+      <span><span class="dot ongoing"></span>连载</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>国序</th>
+            <th>范围</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 难忘瞬间</th>
+            <th>造访时间（估）</th>
+            <th>视频笔记</th>
+            <th>置信度</th>
+            <th>参考</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="dmi-overseas-guide">
+      <details>
+        <summary>宋 Plus DM-i 海外自驾 · 车辆与后勤要点</summary>
+        <div class="guide-body">
+          <ul class="guide-tips">
+            <li>
+              <h3>🔧 无海外售后</h3>
+              <ul>
+                <li>系列多次强调所在国「全国都没有这个品牌」；哈萨克斯坦当地汽修厂拆修插混。</li>
+                <li>半夜刹车失灵等突发状况需自备方案，不能指望 4S 救援。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🛏️ 床车 · 独驾</h3>
+              <ul>
+                <li>国内曾环中国边境 G219/G331/G228（139 天 · 另系列）；环球段以车内过夜为主，偶住酒店洗衣。</li>
+                <li>「筷子悬架」能否经受环球烂路是系列自带悬念。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🛃 海关 · 治安</h3>
+              <ul>
+                <li>波兰—白俄罗斯口岸：30+ 小时未睡，自述最难海关之一。</li>
+                <li>丹麦：进警察牢房；欧洲段「国籍歧视」为自述最大事故。</li>
+                <li>哈萨克斯坦：被怀疑间谍 — 独驾女性 + 中国车牌 + 摄像设备的复合风险。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇲🇦 摩洛哥 · 实用</h3>
+              <ul>
+                <li>物价相对欧洲「白菜价」；中国银联卡 ATM 取现（手续费）有专集攻略。</li>
+                <li>国产 DM-i 在摩洛哥街头关注度随比亚迪当地上市而上升（与博主抵达时间可能重叠）。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-12 · 来源：B 站 @川妹（space 1333961176）· 《自驾欧亚非大陆 2023–2024》合集 · 路线为粉丝整理，非官方路书。</p>
+      <p>相关路书：<a href="../yaoyang-africa-route/index.html">耀阳 · 穿越非洲</a> · <a href="../wushan-africa-route/index.html">吴珊 · 非洲自驾</a></p>
+      <p><strong>待补</strong>：非洲西非至南部各国视频直链与精确过境顺序；随博主「开始更新非洲」持续增补。</p>
+      <p>地图：<a href="route.kml" download>route.kml</a></p>
+    </footer>
+  </div>
+
+  <script>
+    var BILI_HOME = "https://space.bilibili.com/1333961176";
+    var BILI_COLLECTION = "https://space.bilibili.com/1333961176/channel/collectiondetail?sid=2869000";
+    function biliUrl(bvid) {
+      return bvid ? "https://www.bilibili.com/video/" + bvid + "/" : BILI_HOME;
+    }
+
+    var phaseLabel = {
+      prep: "筹备", asia: "中亚·俄境", europe: "欧洲", border: "俄白·战区",
+      north: "北非", west: "西非", south: "南部非洲", ongoing: "连载·待更"
+    };
+    var regionLabel = { pre: "入非前", africa: "非洲" };
+
+    var countryNoMap = {
+      "哈萨克斯坦": "—", "俄罗斯": "—", "丹麦": "—", "波兰": "—", "白俄罗斯": "—",
+      "摩洛哥": 1, "西撒哈拉": 2, "毛里塔尼亚": 3, "塞内加尔": 4,
+      "尼日利亚": 5, "纳米比亚": 6
+    };
+
+    function getCountryNo(country) {
+      if (!country || country === "综述" || country === "中国" || country === "欧洲") return "";
+      var n = countryNoMap[country];
+      return n != null && n !== "—" ? n : "";
+    }
+
+    function formatVisit(row) {
+      var range = "—";
+      if (row.visitFrom && row.visitTo) {
+        range = row.visitFrom === row.visitTo
+          ? "≈" + row.visitFrom
+          : "≈" + row.visitFrom + " — " + row.visitTo;
+      } else if (row.visitFrom) {
+        range = "≈" + row.visitFrom + " 起";
+      }
+      var html = "<span class=\"visit-range\">" + range + "</span>";
+      if (row.videoPub) {
+        html += "<br><span class=\"cell-muted\">📺 " + row.videoPub + "</span>";
+      }
+      var timeLabels = { anchor: "时间·锚定", phase: "时间·推断", backlog: "时间·积压" };
+      if (row.timeConf && timeLabels[row.timeConf]) {
+        html += "<br><span class=\"time-conf " + row.timeConf + "\">" + timeLabels[row.timeConf] + "</span>";
+      }
+      return html;
+    }
+
+    var rows = [
+      { region:"pre", phase:"prep", country:"中国", place:"成都 · 出发", notes:"90 后成都女生；川 A 比亚迪宋 Plus DM-i；床车改装；单人无团队", moment:"「只记录真实旅行，喜欢长视频」", visitFrom:"2023-03", visitTo:"2023-06", timeConf:"phase", bvid:"", videoTitle:"环球筹备 · 离蓉", conf:"mid" },
+      { region:"pre", phase:"prep", country:"中国", place:"新疆 · 4S 最后一次保养", notes:"出境前在新疆 4S 做检查保养；系列称「最后一次在国内 4S」", moment:"插混出关前的最后一检", visitFrom:"2023-06", visitTo:"2023-08", timeConf:"anchor", bvid:"", videoTitle:"新疆赛迪 4S 保养", conf:"high" },
+      { region:"pre", phase:"asia", country:"哈萨克斯坦", place:"阿拉木图 / 汽修厂", notes:"入境后被怀疑「间谍」；当地汽修厂维修宋 Plus DM-i（无官方售后）", moment:"「修得怎么样？需要多少钱？」", visitFrom:"2023-08", visitTo:"2023-10", timeConf:"anchor", bvid:"", videoTitle:"哈萨克斯坦被认为是间谍", conf:"high" },
+      { region:"pre", phase:"asia", country:"俄罗斯", place:"陆路入境", notes:"自哈入境俄罗斯；油耗、露宿、市井经历", moment:"「今天要入境俄罗斯」", visitFrom:"2023-09", visitTo:"2023-11", timeConf:"phase", bvid:"", videoTitle:"入境俄罗斯", conf:"mid" },
+      { region:"pre", phase:"asia", country:"俄罗斯", place:"富人区 · 露宿", notes:"川 A 车露宿富人区门口被敲窗驱赶", moment:"土地与阶层差的侧面", visitFrom:"2023-10", visitTo:"2023-12", timeConf:"backlog", bvid:"", videoTitle:"俄罗斯露宿被驱赶", conf:"mid" },
+      { region:"pre", phase:"asia", country:"综述", place:"半夜 · 刹车失灵", notes:"国外半夜刹车失灵；全国无比亚迪品牌；独驾女生应急", moment:"「人在囧途，我应该怎么处理？」", visitFrom:"2023-10", visitTo:"2024-01", timeConf:"anchor", bvid:"", videoTitle:"半夜刹车失灵", conf:"high" },
+      { region:"pre", phase:"europe", country:"欧洲", place:"正式进入欧洲", notes:"系列节点：「离开亚洲行程 · 正式进入欧洲」；筷子悬架经受考验", moment:"国产插混开进欧洲", visitFrom:"2023-11", visitTo:"2024-02", timeConf:"phase", bvid:"", videoTitle:"正式进入欧洲", conf:"high" },
+      { region:"pre", phase:"europe", country:"丹麦", place:"警察牢房", notes:"停更原因：进丹麦警察牢房；并遭遇自述「环球最大事故」· 国籍歧视", moment:"欧洲段最戏剧性冲突", visitFrom:"2024-01", visitTo:"2024-03", timeConf:"anchor", bvid:"BV14Z421n7qz", videoTitle:"丹麦牢房 · 国籍歧视", conf:"high" },
+      { region:"pre", phase:"border", country:"波兰", place:"→ 白俄罗斯边境", notes:"从波兰入境白俄罗斯；自述「走过最难海关」；30+ 小时未睡", moment:"「困难才是开始」", visitFrom:"2024-02", visitTo:"2024-04", timeConf:"anchor", bvid:"", videoTitle:"波兰入境白俄罗斯", conf:"high" },
+      { region:"pre", phase:"border", country:"白俄罗斯", place:"明斯克 / 边境", notes:"入境首日被刁难；吃到的猪蹄；是否「友好国家」的观感反转", moment:"30 小时没睡后的第一餐", visitFrom:"2024-03", visitTo:"2024-05", timeConf:"phase", bvid:"", videoTitle:"白俄罗斯入境", conf:"mid" },
+      { region:"pre", phase:"border", country:"综述", place:"俄乌战区口岸", notes:"川 A 独旅穿越俄乌战区口岸；30+ 小时未睡；抵达白俄罗斯边境", moment:"战区边境的心理与手续压力", visitFrom:"2024-03", visitTo:"2024-05", timeConf:"anchor", bvid:"", videoTitle:"穿越俄乌战区口岸", conf:"high" },
+      { region:"africa", phase:"north", country:"摩洛哥", place:"全国 · 物价", notes:"「自驾亚洲欧洲非洲，才知道摩洛哥物价多么白菜价」", moment:"北非第一站的经济冲击", visitFrom:"2024-06", visitTo:"2024-08", timeConf:"anchor", bvid:"BV11SZBYKEq3", videoTitle:"摩洛哥物价多么白菜价", conf:"high" },
+      { region:"africa", phase:"north", country:"摩洛哥", place:"ATM · 银联取现", notes:"摩洛哥旅行攻略：中国银联卡当地 ATM 取现与手续费", moment:"", visitFrom:"2024-06", visitTo:"2024-08", timeConf:"phase", bvid:"", videoTitle:"摩洛哥银联 ATM 攻略", conf:"mid" },
+      { region:"africa", phase:"north", country:"摩洛哥", place:"直布罗陀海峡 · 卡萨布兰卡", notes:"欧亚非陆路典型入非通道；具体入境日期待视频补锚", moment:"地理课本里的直布罗陀", visitFrom:"2024-05", visitTo:"2024-07", timeConf:"phase", bvid:"", videoTitle:"入非 · 摩洛哥", conf:"mid" },
+      { region:"africa", phase:"north", country:"摩洛哥", place:"菲斯 / 市井", notes:"北非古城、早市、美食等（同类博主常见节点；待川妹专集确认）", moment:"", visitFrom:"2024-07", visitTo:"2024-09", timeConf:"backlog", bvid:"", videoTitle:"菲斯古城（待补链）", conf:"low" },
+      { region:"africa", phase:"west", country:"西撒哈拉", place:"途经", notes:"自摩洛哥南下；博主非洲段连载中，节点推断", moment:"", visitFrom:"2024-08", visitTo:"2024-10", timeConf:"phase", bvid:"", videoTitle:"", conf:"low" },
+      { region:"africa", phase:"west", country:"毛里塔尼亚", place:"途经", notes:"撒哈拉—西非过渡；待视频确认", moment:"", visitFrom:"2024-09", visitTo:"2024-11", timeConf:"phase", bvid:"", videoTitle:"", conf:"low" },
+      { region:"africa", phase:"west", country:"塞内加尔", place:"达喀尔", notes:"48 国环球推断可能经过西非枢纽；<strong>待博主更新确认</strong>", moment:"", visitFrom:"2024-10", visitTo:"2025-01", timeConf:"phase", bvid:"", videoTitle:"塞内加尔（待更）", conf:"low" },
+      { region:"africa", phase:"west", country:"尼日利亚", place:"拉各斯方向", notes:"西非人口大国；推断节点", moment:"", visitFrom:"2024-11", visitTo:"2025-02", timeConf:"phase", bvid:"", videoTitle:"", conf:"low" },
+      { region:"africa", phase:"south", country:"纳米比亚", place:"温得和克 / 荒原", notes:"二手转载称「川 A 宋 Plus 抵纳米比亚 · 车辆彻底出问题」；<strong>待原博主视频核实</strong>", moment:"抛车还是拖？五位数拖车？", visitFrom:"2025-01", visitTo:"2025-03", timeConf:"backlog", bvid:"", videoTitle:"纳米比亚 · 车辆故障（待核实）", conf:"low" },
+      { region:"africa", phase:"ongoing", country:"综述", place:"非洲 · 连载更新", notes:"博主简介：「目前走过 48 国 · 很多国家未更新 · 目前开始更新非洲」", moment:"路书随 B 站更新迭代", visitFrom:"2024-05", visitTo:"2026-12", timeConf:"anchor", bvid:"BV14Z421n7qz", videoTitle:"系列简介 · 48 国", conf:"high" },
+      { region:"pre", phase:"ongoing", country:"综述", place:"环中国（另系列）", notes:"2023 年 8 月成都出发 G219/G331/G228 环边境 139 天 / 1.1 万 km · 与欧亚非为<strong>不同行程</strong>", moment:"环中国总花费约 2.3 万", visitFrom:"2023-08", visitTo:"2023-12", timeConf:"anchor", bvid:"", videoTitle:"环中国 139 天", conf:"high" }
+    ];
+
+    function renderTable(filterRegion, filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.visitFrom, row.visitTo, row.videoTitle].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? (row.bvid
+            ? "<a href=\"" + biliUrl(row.bvid) + "\" target=\"_blank\" rel=\"noopener\">" + row.videoTitle + "</a>"
+            : row.videoTitle + "<br><span class=\"cell-muted\"><a href=\"" + BILI_COLLECTION + "\" target=\"_blank\" rel=\"noopener\">合集检索</a></span>")
+          : "—";
+        var linkCell = row.bvid
+          ? "<a href=\"" + biliUrl(row.bvid) + "\" target=\"_blank\" rel=\"noopener\">B 站</a>"
+          : "<a href=\"" + BILI_HOME + "\" target=\"_blank\" rel=\"noopener\">主页</a>";
+        var countryNo = getCountryNo(row.country);
+        var countryNoCell = countryNo ? "<span class=\"country-no\" title=\"非洲第 " + countryNo + " 国\">" + countryNo + "</span>" : "—";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + countryNoCell + "</td>" +
+          "<td><span class=\"region " + row.region + "\">" + regionLabel[row.region] + "</span></td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td>" + formatVisit(row) + "</td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "新疆出境", sub: "2023", start: "2023-06-01", end: "2023-09-30", color: "#38bdf8" },
+        { name: "哈·俄·欧洲", sub: "2023–24", start: "2023-08-01", end: "2024-03-31", color: "#a78bfa" },
+        { name: "丹麦·事故", sub: "2024", start: "2024-01-01", end: "2024-04-30", color: "#f472b6" },
+        { name: "俄白·战区", sub: "2024", start: "2024-02-01", end: "2024-06-30", color: "#fb7185" },
+        { name: "摩洛哥", sub: "2024–25", start: "2024-05-01", end: "2024-10-31", color: "#4ade80" },
+        { name: "非洲连载", sub: "2025+", start: "2024-09-01", end: "2026-06-01", color: "#fb923c" }
+      ];
+      var min = new Date("2023-06-01").getTime();
+      var max = new Date("2026-06-01").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    function refreshTable() {
+      renderTable(
+        document.getElementById("region-filter").value,
+        document.getElementById("phase-filter").value,
+        document.getElementById("search").value
+      );
+    }
+
+    document.getElementById("region-filter").addEventListener("change", refreshTable);
+    document.getElementById("phase-filter").addEventListener("change", refreshTable);
+    document.getElementById("search").addEventListener("input", refreshTable);
+
+    renderBar();
+    refreshTable();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", asia: "#38bdf8", europe: "#a78bfa", border: "#f472b6",
+        north: "#4ade80", west: "#fbbf24", south: "#34d399", ongoing: "#fb923c"
+      };
+      var map, layerGroup;
+
+      var routeSegments = [
+        { filter: ["all", "pre"], phase: "prep", points: [
+          { lat: 30.572, lng: 104.066, name: "成都", country: "中国", visit: "2023 出发", note: "川A 宋Plus" },
+          { lat: 43.917, lng: 81.325, name: "新疆", country: "中国", visit: "2023-06—08", note: "最后 4S 保养" }
+        ]},
+        { filter: ["all", "pre"], phase: "asia", points: [
+          { lat: 43.256, lng: 76.928, name: "阿拉木图", country: "哈萨克斯坦", visit: "2023-08—10", note: "汽修 · 间谍误会" },
+          { lat: 55.755, lng: 37.617, name: "莫斯科方向", country: "俄罗斯", visit: "2023-09—12", note: "欧洲前奏" }
+        ]},
+        { filter: ["all", "pre"], phase: "europe", points: [
+          { lat: 55.676, lng: 12.568, name: "哥本哈根", country: "丹麦", visit: "2024-01—03", note: "警察牢房" }
+        ]},
+        { filter: ["all", "pre"], phase: "border", points: [
+          { lat: 53.133, lng: 23.825, name: "白波边境", country: "波兰", visit: "2024-02—04", note: "最难海关" },
+          { lat: 53.902, lng: 27.561, name: "明斯克", country: "白俄罗斯", visit: "2024-03—05", note: "30h 未睡" }
+        ]},
+        { filter: ["all", "africa", "north"], phase: "north", points: [
+          { lat: 36.141, lng: -5.353, name: "直布罗陀", country: "海峡", visit: "2024-05—07", note: "入非" },
+          { lat: 33.573, lng: -7.589, name: "卡萨布兰卡", country: "摩洛哥", visit: "2024-06—08", note: "物价白菜" },
+          { lat: 34.033, lng: -5.000, name: "菲斯", country: "摩洛哥", visit: "2024-07—09", note: "待更" }
+        ]},
+        { filter: ["all", "africa"], phase: "west", dashed: true, points: [
+          { lat: 14.717, lng: -17.468, name: "达喀尔", country: "塞内加尔", visit: "推断", note: "待视频确认" }
+        ]},
+        { filter: ["all", "africa"], phase: "south", dashed: true, points: [
+          { lat: -22.561, lng: 17.066, name: "温得和克", country: "纳米比亚", visit: "待核实", note: "车辆故障传闻" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? 3 : 5,
+              opacity: 0.9,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6,
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.9,
+              weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+        });
+        if (bounds.length) {
+          var maxZoom = filter === "north" ? 5 : filter === "pre" ? 4 : 3;
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: maxZoom });
+        }
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO',
+        subdomains: "abcd",
+        maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

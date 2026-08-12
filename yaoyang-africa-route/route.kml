@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>耀阳环游记 · 穿越非洲（关键点）</name>
+    <description>粉丝整理路线，非 GPS 精确轨迹。2026-08-12</description>
+    <Folder><name>筹备·海运</name>
+      <Placemark><name>北京</name><Point><coordinates>116.407,39.904,0</coordinates></Point></Placemark>
+      <Placemark><name>巴塞罗那</name><Point><coordinates>2.168,41.387,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>北非</name>
+      <Placemark><name>丹吉尔 · 摩洛哥</name><Point><coordinates>-5.834,35.759,0</coordinates></Point></Placemark>
+      <Placemark><name>菲斯 · 摩洛哥</name><Point><coordinates>-5.000,34.033,0</coordinates></Point></Placemark>
+      <Placemark><name>梅尔祖卡 · 撒哈拉</name><Point><coordinates>-4.012,31.099,0</coordinates></Point></Placemark>
+      <Placemark><name>里萨尼 · 柏柏尔人</name><Point><coordinates>-4.423,31.280,0</coordinates></Point></Placemark>
+      <Placemark><name>努瓦克肖特 · 毛里塔尼亚</name><Point><coordinates>-15.958,18.074,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>西非·萨赫勒</name>
+      <Placemark><name>达喀尔 · 塞内加尔</name><Point><coordinates>-17.468,14.717,0</coordinates></Point></Placemark>
+      <Placemark><name>班珠尔 · 冈比亚</name><Point><coordinates>-16.579,13.454,0</coordinates></Point></Placemark>
+      <Placemark><name>巴马科 · 马里</name><Point><coordinates>-8.003,12.639,0</coordinates></Point></Placemark>
+      <Placemark><name>尼亚美 · 尼日尔</name><Point><coordinates>2.110,13.513,0</coordinates></Point></Placemark>
+      <Placemark><name>恩贾梅纳 · 乍得</name><Point><coordinates>15.055,12.135,0</coordinates></Point></Placemark>
+      <Placemark><name>拉各斯 · 尼日利亚</name><Point><coordinates>3.379,6.524,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>中非</name>
+      <Placemark><name>金沙萨 · 刚果(金)</name><Point><coordinates>15.243,-4.263,0</coordinates></Point></Placemark>
+      <Placemark><name>罗安达 · 安哥拉</name><Point><coordinates>13.289,-8.839,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>南部非洲</name>
+      <Placemark><name>温德霍克 · 纳米比亚</name><Point><coordinates>17.066,-22.561,0</coordinates></Point></Placemark>
+      <Placemark><name>开普敦 · 南非</name><Point><coordinates>18.424,-33.925,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>东非</name>
+      <Placemark><name>阿鲁沙 · 坦桑尼亚</name><Point><coordinates>36.683,-3.387,0</coordinates></Point></Placemark>
+      <Placemark><name>内罗毕 · 肯尼亚</name><Point><coordinates>36.822,-1.292,0</coordinates></Point></Placemark>
+      <Placemark><name>亚的斯亚贝巴 · 埃塞俄比亚</name><Point><coordinates>38.747,9.032,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>收官</name>
+      <Placemark><name>哈尔滨 · 捐车博物馆</name><Point><coordinates>126.643,45.757,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>春森同学在路上 · 小米 SU7 欧洲自驾路书</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #ff6900;
+      --accent-2: #38bdf8;
+      --prep: #8b9cb3;
+      --asia: #38bdf8;
+      --baltic: #60a5fa;
+      --nordic: #22d3ee;
+      --west: #a78bfa;
+      --central: #f472b6;
+      --south: #fbbf24;
+      --alpine: #34d399;
+      --return: #fb923c;
+      --line: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.06em; }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(255, 105, 0, 0.08);
+      border: 1px solid rgba(255, 105, 0, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #ffd4b8;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.asia { background: var(--asia); }
+    .dot.baltic { background: var(--baltic); }
+    .dot.nordic { background: var(--nordic); }
+    .dot.west { background: var(--west); }
+    .dot.central { background: var(--central); }
+    .dot.south { background: var(--south); }
+    .dot.alpine { background: var(--alpine); }
+    .dot.return { background: var(--return); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1180px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(255, 105, 0, 0.06); }
+    .phase, .region {
+      display: inline-flex; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139,156,179,0.15); color: #c5d0de; }
+    .phase.asia { background: rgba(56,189,248,0.15); color: #bae6fd; }
+    .phase.baltic { background: rgba(96,165,250,0.15); color: #bfdbfe; }
+    .phase.nordic { background: rgba(34,211,238,0.15); color: #a5f3fc; }
+    .phase.west { background: rgba(167,139,250,0.15); color: #ddd6fe; }
+    .phase.central { background: rgba(244,114,182,0.15); color: #fbcfe8; }
+    .phase.south { background: rgba(251,191,36,0.15); color: #fde68a; }
+    .phase.alpine { background: rgba(52,211,153,0.15); color: #6ee7b7; }
+    .phase.return { background: rgba(251,146,60,0.15); color: #fed7aa; }
+    .region.pre { background: rgba(56,189,248,0.12); color: #7dd3fc; }
+    .region.europe { background: rgba(255,105,0,0.12); color: #fdba74; }
+    .station-no {
+      display: inline-block; min-width: 2em; padding: 1px 6px;
+      border-radius: 4px; background: rgba(255,105,0,0.18);
+      color: #ff9a4d; font-size: 0.82rem; font-weight: 600; text-align: center;
+    }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126,231,135,0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(255,105,0,0.15); color: #ffd4b8; }
+    .visit-range { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px; cursor: pointer; font-weight: 600;
+      font-size: 1.05rem; color: var(--accent); list-style: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before { content: "▸ "; color: var(--muted); }
+    .guide-section details[open] summary::before { display: inline-block; transform: rotate(90deg); }
+    .guide-body { padding: 0 20px 18px; border-top: 1px solid var(--line); }
+    .guide-intro { margin: 14px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .guide-note {
+      margin: 0 0 14px; padding: 10px 12px;
+      background: rgba(255,105,0,0.08); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; font-size: 0.88rem;
+    }
+    .guide-days { margin: 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .map-section {
+      margin: 28px 0 32px; background: var(--panel);
+      border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button.active {
+      background: rgba(255,105,0,0.2); border-color: var(--accent); color: #ffd4b8;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    .map-legend i { display: inline-block; width: 22px; height: 4px; border-radius: 2px; }
+    .leaflet-popup-content-wrapper { background: var(--panel-2); color: var(--text); border-radius: 8px; }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>春森同学在路上 · 小米 SU7 欧洲自驾路书</h1>
+      <p class="subtitle">
+        博主：<strong>刘春森</strong>（<strong>春森同学在路上</strong> ·
+        <a href="https://space.bilibili.com/400877725" target="_blank" rel="noopener">B 站</a> /
+        <a href="https://m.ixigua.com/user/3008716223827038" target="_blank" rel="noopener">西瓜视频</a>）·
+        前重庆桥梁工程师（菜园坝大桥等）· 2023 年底辞职全职自驾博主 ·
+        座驾 <strong>小米 SU7 Max 创始版</strong>纯电 ·
+        合集《<a href="https://space.bilibili.com/400877725" target="_blank" rel="noopener">小米 SU7 纯电自驾亚欧大陆</a>》按<strong>第 N 站</strong>连载。
+        2024-09-01 重庆出发 · 霍尔果斯出境 · 经俄入欧 · 北欧极圈至南欧 · 终点<strong>英国利物浦</strong>（留学故地）·
+        全程约 <strong>3 万+ km · 38 国 · 165 天</strong>。
+        相关：<a href="../chuanmei-africa-route/index.html">川妹欧亚非</a> ·
+        <a href="../yaoyang-africa-route/index.html">耀阳非洲</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">启程</div><div class="value">2024-09-01 · 重庆</div></div>
+      <div class="card"><div class="label">车辆</div><div class="value">小米 SU7 Max</div></div>
+      <div class="card"><div class="label">欧洲终点</div><div class="value">利物浦 · 伦敦</div></div>
+      <div class="card"><div class="label">里程 / 国家</div><div class="value">3 万+ km · 38 国</div></div>
+      <div class="card"><div class="label">人均花费（报道）</div><div class="value">≈5 万（去程段）</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      本页以<strong>欧洲线</strong>为主（第 9–36 站及南欧回程段），入欧前的中亚/俄罗斯为前序。
+      站点名称与顺序来自 B 站视频标题「第 N 站」及海报新闻/小米车主故事，<strong>非官方 GPS 轨迹</strong>。
+      造访时间为根据报道与站序推断的月份区间；两人同行（含同伴），费用为 2024 年 11 月媒体报道口径。
+    </div>
+
+    <h2 class="phase-title">阶段概览</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2024-09 出境</span>
+      <span>2024-09–10 入欧·北欧</span>
+      <span>2024-10–11 西欧</span>
+      <span>2024-11 南欧</span>
+      <span>2024-12+ 回程</span>
+    </div>
+
+    <section class="map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 欧洲行进路线</h2>
+          <p>Leaflet 暗色底图 · 按「第 N 站」关键点 · <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="europe">仅欧洲</button>
+          <button type="button" class="map-filter" data-filter="nordic">北欧</button>
+          <button type="button" class="map-filter" data-filter="west">西欧</button>
+          <button type="button" class="map-filter" data-filter="south">南欧·阿尔卑斯</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#38bdf8"></i>入欧前</span>
+        <span><i style="background:#60a5fa"></i>波罗的海</span>
+        <span><i style="background:#22d3ee"></i>北欧</span>
+        <span><i style="background:#a78bfa"></i>西欧</span>
+        <span><i style="background:#fbbf24"></i>南欧</span>
+        <span><i style="background:#34d399"></i>阿尔卑斯</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="trip-overview">
+      <details open>
+        <summary>欧洲线 · 行程总览（据「第 N 站」系列）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">春森的欧洲段走法：<strong>先北后南</strong>——从拉脱维亚入欧盟，经波罗的海进芬兰，一路北上北极圈、北角、罗弗敦与特罗姆瑟看极光；再南下丹麦、荷兰、德国纽博格林、横渡英吉利海峡抵伦敦/利物浦；「返回欧洲」后走法国、摩纳哥、西班牙、意大利、瑞士、奥地利等南欧与阿尔卑斯，最后经巴尔干、高加索、俄哈回国。</p>
+          <p class="guide-note"><strong>欧洲 · 按站序（高置信 · 有专集标题）</strong></p>
+          <ul class="guide-days">
+            <li><strong>第 9 站</strong> — 🇱🇻 拉脱维亚 · 顺利进入欧盟</li>
+            <li><strong>第 10 站</strong> — 🇪🇪 爱沙尼亚</li>
+            <li><strong>第 11 站</strong> — 横渡芬兰湾（渡轮入芬兰）</li>
+            <li><strong>第 12 站</strong> — 🇫🇮 芬兰森林露营</li>
+            <li><strong>第 13–14 站</strong> — 跨越北极圈 · 欧洲大陆最北端</li>
+            <li><strong>第 16–18 站</strong> — 🇳🇴 特罗姆瑟 · 罗弗敦 · 挪威峡湾</li>
+            <li><strong>第 20–22 站</strong> — 🇩🇰 哥本哈根 · 🇳🇱 阿姆斯特丹 · 🇩🇪 纽博格林赛道</li>
+            <li><strong>第 23–25 站</strong> — 横渡英吉利海峡 · 🇬🇧 伦敦</li>
+            <li><strong>终点</strong> — 🇬🇧 利物浦（留学故地 · 小米车主故事）</li>
+            <li><strong>第 27–36 站</strong> — 🇫🇷 巴黎/尼斯 · 🇲🇨 摩纳哥 · 🇪🇸 巴塞罗那 · 🇮🇹 米兰 · 🇨🇭 因特拉肯 · 🇦🇹 因斯布鲁克</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://space.bilibili.com/400877725" target="_blank" rel="noopener">B 站 · 春森同学在路上</a>
+            ·
+            <a href="https://news.qq.com/rain/a/20241228A068XU00" target="_blank" rel="noopener">小米车主故事 · 38 国</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="region-filter">范围</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="pre">入欧前</option>
+        <option value="europe">欧洲</option>
+      </select>
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备</option>
+        <option value="asia">中亚·俄罗斯</option>
+        <option value="baltic">波罗的海</option>
+        <option value="nordic">北欧</option>
+        <option value="west">西欧</option>
+        <option value="central">中欧·德国</option>
+        <option value="south">南欧</option>
+        <option value="alpine">阿尔卑斯</option>
+        <option value="return">回程·欧亚</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、第 N 站、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot asia"></span>中亚俄</span>
+      <span><span class="dot baltic"></span>波罗的海</span>
+      <span><span class="dot nordic"></span>北欧</span>
+      <span><span class="dot west"></span>西欧</span>
+      <span><span class="dot central"></span>中欧</span>
+      <span><span class="dot south"></span>南欧</span>
+      <span><span class="dot alpine"></span>阿尔卑斯</span>
+      <span><span class="dot return"></span>回程</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>站序</th>
+            <th>范围</th>
+            <th>阶段</th>
+            <th>国家</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 亮点</th>
+            <th>造访（估）</th>
+            <th>视频</th>
+            <th>置信度</th>
+            <th>链接</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="ev-guide">
+      <details>
+        <summary>纯电 SU7 欧洲长途 · 经验要点</summary>
+        <div class="guide-body">
+          <ul class="guide-tips">
+            <li>
+              <h3>⚡ 充电与续航</h3>
+              <ul>
+                <li>欧盟段充电网络相对完善；回程第 55 站专门测试<strong>零下 20°C</strong>续航。</li>
+                <li>北欧冬季「雪的教训」（第 19 集）——极寒与路况对纯电是核心考题。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🚗 车辆关注度</h3>
+              <ul>
+                <li>圣彼得堡「这车快开社恐了」——国产 SU7 高回头率；西班牙曾有人想直接买车。</li>
+                <li>选择小米而非熟悉的特斯拉，意在「真正意义上的国产车代表中国」。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>💰 花费（2024 报道）</h3>
+              <ul>
+                <li>两人去欧洲段总花费约 10 万 · 人均约 5 万；含回程预估人均约 8 万。</li>
+                <li>专集「开电车自驾去欧洲要花多少钱」可对照详细账本。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🛳️ 特殊路段</h3>
+              <ul>
+                <li>第 11 站横渡芬兰湾（车+人渡轮）；第 23 站横渡英吉利海峡。</li>
+                <li>德国不限速高速 + 纽博格林赛道（第 22 站）为欧洲驾驶高光。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-12 · 来源：B 站《小米 SU7 纯电自驾亚欧大陆》各站标题、海报新闻 2024-11、小米车主故事 2024-12 · 粉丝整理路书。</p>
+      <p>相关：<a href="../chuanmei-africa-route/index.html">川妹 · 宋 Plus 欧亚非</a> · <a href="../wushan-africa-route/index.html">吴珊 · 非洲</a> · <a href="../yaoyang-africa-route/index.html">耀阳 · 非洲</a></p>
+      <p>地图：<a href="route.kml" download>route.kml</a></p>
+    </footer>
+  </div>
+
+  <script>
+    var BILI_HOME = "https://space.bilibili.com/400877725";
+    function biliUrl(bvid) {
+      return bvid ? "https://www.bilibili.com/video/" + bvid + "/" : BILI_HOME;
+    }
+
+    var phaseLabel = {
+      prep: "筹备", asia: "中亚·俄", baltic: "波罗的海", nordic: "北欧",
+      west: "西欧", central: "中欧", south: "南欧", alpine: "阿尔卑斯", return: "回程"
+    };
+    var regionLabel = { pre: "入欧前", europe: "欧洲" };
+
+    var rows = [
+      { region:"pre", phase:"prep", station:"序", country:"中国", place:"重庆 · 出发", notes:"2024-09-01 自重庆出发；SU7 Max 创始版；与前桥梁工程师身份告别全职旅行", moment:"「纯电环球自驾，希望一切顺利」", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"序章 · 出发第一天", conf:"high" },
+      { region:"pre", phase:"asia", station:"1", country:"中国", place:"霍尔果斯国门", notes:"新疆出境；第 1 站专集", moment:"亚欧陆路起点", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"第1站 · 霍尔果斯国门", conf:"high" },
+      { region:"pre", phase:"asia", station:"2", country:"哈萨克斯坦", place:"阿拉木图", notes:"入境哈萨克斯坦；另有「哈国自驾攻略」番外", moment:"", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"第2站 · 打卡阿拉木图", conf:"high" },
+      { region:"pre", phase:"asia", station:"3", country:"哈萨克斯坦", place:"巴尔喀什湖", notes:"中亚标志性节点；回程第 58 站同湖「冰上漂移」", moment:"", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"第3站 · 巴尔喀什湖", conf:"high" },
+      { region:"pre", phase:"asia", station:"4", country:"哈萨克斯坦", place:"阿斯塔纳", notes:"", moment:"", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"第4站 · 阿斯塔纳", conf:"high" },
+      { region:"pre", phase:"asia", station:"5", country:"俄罗斯", place:"西伯利亚/俄境", notes:"「原来俄罗斯是这个样子！」", moment:"", visitFrom:"2024-09", visitTo:"2024-09", bvid:"", videoTitle:"第5站 · 俄罗斯初印象", conf:"high" },
+      { region:"pre", phase:"asia", station:"6", country:"俄罗斯", place:"伏尔加河 → 莫斯科", notes:"沿伏尔加河驶向莫斯科", moment:"", visitFrom:"2024-09", visitTo:"2024-10", bvid:"", videoTitle:"第6站 · 沿伏尔加河去莫斯科", conf:"high" },
+      { region:"pre", phase:"asia", station:"7", country:"俄罗斯", place:"莫斯科", notes:"首次进入莫斯科；回程第 49 站二刷修整", moment:"", visitFrom:"2024-09", visitTo:"2024-10", bvid:"", videoTitle:"第7站 · 莫斯科我们来了", conf:"high" },
+      { region:"pre", phase:"asia", station:"8", country:"俄罗斯", place:"圣彼得堡", notes:"「这车快开社恐了」· 不限速高速第一视角", moment:"SU7 高回头率", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第8站 · 圣彼得堡", conf:"high" },
+      { region:"europe", phase:"baltic", station:"9", country:"拉脱维亚", place:"里加", notes:"顺利进入欧盟；欧洲线正式起点", moment:"「进入欧盟啦！」", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第9站 · 拉脱维亚 · 进入欧盟", conf:"high" },
+      { region:"europe", phase:"baltic", station:"10", country:"爱沙尼亚", place:"塔林", notes:"", moment:"", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第10站 · 爱沙尼亚", conf:"high" },
+      { region:"europe", phase:"baltic", station:"11", country:"芬兰", place:"横渡芬兰湾", notes:"车+人渡轮；从波罗的海三国进入芬兰", moment:"", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第11站 · 横渡芬兰湾", conf:"high" },
+      { region:"europe", phase:"nordic", station:"12", country:"芬兰", place:"森林露营", notes:"秋色芬兰森林露营（上/下）；报道提及「秋色浓郁」", moment:"北欧露营", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第12站 · 芬兰森林露营", conf:"high" },
+      { region:"europe", phase:"nordic", station:"13", country:"挪威/芬兰", place:"北极圈", notes:"跨越北极圈", moment:"", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第13站 · 跨越北极圈", conf:"high" },
+      { region:"europe", phase:"nordic", station:"14", country:"挪威", place:"欧洲大陆最北端（北角）", notes:"报道：走到欧洲大陆最北端看极光", moment:"地理极点", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第14站 · 欧洲大陆最北端", conf:"high" },
+      { region:"europe", phase:"nordic", station:"15", country:"挪威", place:"一路向北", notes:"「一路向北（下）」", moment:"", visitFrom:"2024-10", visitTo:"2024-10", bvid:"", videoTitle:"第15站 · 一路向北", conf:"high" },
+      { region:"europe", phase:"nordic", station:"16", country:"挪威", place:"特罗姆瑟", notes:"「蓝调国度」；极光城市", moment:"", visitFrom:"2024-10", visitTo:"2024-11", bvid:"", videoTitle:"第16站 · 特罗姆瑟", conf:"high" },
+      { region:"europe", phase:"nordic", station:"17", country:"挪威", place:"罗弗敦群岛", notes:"", moment:"「保持热爱，奔赴山海」", visitFrom:"2024-10", visitTo:"2024-11", bvid:"", videoTitle:"第17站 · 罗弗敦群岛", conf:"high" },
+      { region:"europe", phase:"nordic", station:"18", country:"挪威", place:"峡湾", notes:"挪威峡湾", moment:"", visitFrom:"2024-10", visitTo:"2024-11", bvid:"", videoTitle:"第18站 · 挪威峡湾", conf:"high" },
+      { region:"europe", phase:"nordic", station:"19", country:"挪威", place:"冬季路段", notes:"「雪」的教训 — 极寒与纯电", moment:"冬季续航/驾驶教训", visitFrom:"2024-10", visitTo:"2024-11", bvid:"", videoTitle:"第19集 · 雪的教训", conf:"high" },
+      { region:"europe", phase:"west", station:"20", country:"丹麦", place:"哥本哈根", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"BV1qUCDYsEnQ", videoTitle:"第20站 · 哥本哈根", conf:"high" },
+      { region:"europe", phase:"west", station:"21", country:"荷兰", place:"阿姆斯特丹", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第21站 · 阿姆斯特丹", conf:"high" },
+      { region:"europe", phase:"central", station:"22", country:"德国", place:"纽博格林赛道", notes:"报道：体验不限速高速 + 纽博格林跑赛道", moment:"德国驾驶高光", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第22站 · 纽博格林赛道", conf:"high" },
+      { region:"europe", phase:"west", station:"23", country:"英法", place:"横渡英吉利海峡", notes:"车渡英吉利海峡", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第23站 · 横渡英吉利海峡", conf:"high" },
+      { region:"europe", phase:"west", station:"24", country:"英国", place:"伦敦", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第24站 · 伦敦", conf:"high" },
+      { region:"europe", phase:"west", station:"25", country:"英国", place:"伦敦", notes:"第 25 站标题亦为伦敦（系列分集）", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第25站 · 伦敦", conf:"mid" },
+      { region:"europe", phase:"west", station:"—", country:"英国", place:"利物浦", notes:"小米车主故事：<strong>最终目的地</strong> · 曾留学之地", moment:"「此生无憾」情绪终点", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"利物浦 · 终点", conf:"high" },
+      { region:"europe", phase:"south", station:"26", country:"欧洲", place:"返回欧洲", notes:"伦敦之后再次进入欧洲大陆南线", moment:"南欧段开始", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第26站 · 返回欧洲", conf:"high" },
+      { region:"europe", phase:"south", station:"27", country:"法国", place:"巴黎", notes:"11 月报道：计划「欧洲小国首都踩点」", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第27站 · 巴黎", conf:"high" },
+      { region:"europe", phase:"south", station:"28", country:"安道尔", place:"安道尔", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-11", bvid:"", videoTitle:"第28站 · 安道尔", conf:"high" },
+      { region:"europe", phase:"south", station:"29", country:"西班牙", place:"巴塞罗那", notes:"报道称当地人想买 SU7", moment:"「有人直接想买下这辆车」", visitFrom:"2024-11", visitTo:"2024-12", bvid:"BV1ReUtYPEv7", videoTitle:"第29站 · 巴塞罗那", conf:"high" },
+      { region:"europe", phase:"south", station:"30", country:"法国", place:"尼斯", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-12", bvid:"", videoTitle:"第30站 · 尼斯", conf:"high" },
+      { region:"europe", phase:"south", station:"31", country:"摩纳哥", place:"摩纳哥", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-12", bvid:"", videoTitle:"第31站 · 摩纳哥", conf:"high" },
+      { region:"europe", phase:"south", station:"32", country:"意大利", place:"入境意大利", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-12", bvid:"", videoTitle:"第32站 · 入境意大利", conf:"high" },
+      { region:"europe", phase:"south", station:"33", country:"意大利", place:"米兰", notes:"", moment:"", visitFrom:"2024-11", visitTo:"2024-12", bvid:"", videoTitle:"第33站 · 米兰", conf:"high" },
+      { region:"europe", phase:"alpine", station:"34", country:"瑞士", place:"瑞士", notes:"", moment:"", visitFrom:"2024-12", visitTo:"2024-12", bvid:"", videoTitle:"第34站 · 瑞士", conf:"high" },
+      { region:"europe", phase:"alpine", station:"35", country:"瑞士", place:"因特拉肯", notes:"", moment:"", visitFrom:"2024-12", visitTo:"2024-12", bvid:"", videoTitle:"第35站 · 因特拉肯", conf:"high" },
+      { region:"europe", phase:"alpine", station:"36", country:"奥地利", place:"因斯布鲁克", notes:"欧洲南线最后一站（去程/南欧段收官）", moment:"", visitFrom:"2024-12", visitTo:"2024-12", bvid:"", videoTitle:"第36站 · 因斯布鲁克", conf:"high" },
+      { region:"pre", phase:"return", station:"40", country:"保加利亚", place:"穿越保加利亚", notes:"回程欧亚段", moment:"", visitFrom:"2024-12", visitTo:"2025-01", bvid:"", videoTitle:"第40站 · 保加利亚", conf:"high" },
+      { region:"pre", phase:"return", station:"45", country:"高加索", place:"翻越高加索", notes:"「为中国基建点赞」", moment:"", visitFrom:"2025-01", visitTo:"2025-01", bvid:"", videoTitle:"第45站 · 高加索", conf:"high" },
+      { region:"pre", phase:"return", station:"49", country:"俄罗斯", place:"莫斯科 · 二刷", notes:"修整再出发", moment:"", visitFrom:"2025-01", visitTo:"2025-01", bvid:"", videoTitle:"第49站 · 二刷莫斯科", conf:"high" },
+      { region:"pre", phase:"return", station:"54", country:"俄罗斯→哈萨克斯坦", place:"俄哈边境", notes:"", moment:"", visitFrom:"2025-01", visitTo:"2025-02", bvid:"BV1H7PeePE5q", videoTitle:"第54站 · 俄罗斯到哈萨克", conf:"high" },
+      { region:"pre", phase:"return", station:"55", country:"哈萨克斯坦", place:"极寒测试", notes:"零下 20°C · SU7 续航测试", moment:"", visitFrom:"2025-01", visitTo:"2025-02", bvid:"", videoTitle:"第55站 · 零下20度续航", conf:"high" },
+      { region:"pre", phase:"return", station:"58", country:"哈萨克斯坦", place:"巴尔喀什湖", notes:"SU7 第一次冰上漂移 · 「巴尔喀什湖上的芭蕾舞」", moment:"收官彩蛋", visitFrom:"2025-02", visitTo:"2025-02", bvid:"", videoTitle:"第58站 · 冰上漂移", conf:"high" },
+      { region:"pre", phase:"return", station:"—", country:"中国", place:"回国", notes:"全程约 165 天 · 3 万+ km · 38 国", moment:"亚欧闭环", visitFrom:"2025-02", visitTo:"2025-03", bvid:"", videoTitle:"165 天圆满结束", conf:"mid" }
+    ];
+
+    function renderTable(filterRegion, filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.station, row.videoTitle, row.visitFrom].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? (row.bvid
+            ? "<a href=\"" + biliUrl(row.bvid) + "\" target=\"_blank\" rel=\"noopener\">" + row.videoTitle + "</a>"
+            : row.videoTitle + "<br><span class=\"cell-muted\"><a href=\"" + BILI_HOME + "\" target=\"_blank\" rel=\"noopener\">合集</a></span>")
+          : "—";
+        var linkCell = row.bvid
+          ? "<a href=\"" + biliUrl(row.bvid) + "\" target=\"_blank\" rel=\"noopener\">B 站</a>"
+          : "<a href=\"" + BILI_HOME + "\" target=\"_blank\" rel=\"noopener\">主页</a>";
+        var stationCell = row.station === "—" ? "—" : "<span class=\"station-no\">" + row.station + "</span>";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + stationCell + "</td>" +
+          "<td><span class=\"region " + row.region + "\">" + regionLabel[row.region] + "</span></td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td><span class=\"visit-range\">≈" + (row.visitFrom === row.visitTo ? row.visitFrom : row.visitFrom + " — " + row.visitTo) + "</span></td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : "中") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "中亚·俄罗斯", sub: "9月", start: "2024-09-01", end: "2024-10-15", color: "#38bdf8" },
+        { name: "波罗的海·入欧", sub: "10月", start: "2024-10-01", end: "2024-10-31", color: "#60a5fa" },
+        { name: "北欧·北极", sub: "10–11月", start: "2024-10-15", end: "2024-11-15", color: "#22d3ee" },
+        { name: "西欧·英国", sub: "11月", start: "2024-11-01", end: "2024-11-30", color: "#a78bfa" },
+        { name: "南欧·阿尔卑斯", sub: "11–12月", start: "2024-11-15", end: "2024-12-31", color: "#fbbf24" },
+        { name: "回程·回国", sub: "2025", start: "2024-12-15", end: "2025-03-01", color: "#fb923c" }
+      ];
+      var min = new Date("2024-09-01").getTime();
+      var max = new Date("2025-03-15").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    function refreshTable() {
+      renderTable(
+        document.getElementById("region-filter").value,
+        document.getElementById("phase-filter").value,
+        document.getElementById("search").value
+      );
+    }
+
+    document.getElementById("region-filter").addEventListener("change", refreshTable);
+    document.getElementById("phase-filter").addEventListener("change", refreshTable);
+    document.getElementById("search").addEventListener("input", refreshTable);
+
+    renderBar();
+    refreshTable();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", asia: "#38bdf8", baltic: "#60a5fa", nordic: "#22d3ee",
+        west: "#a78bfa", central: "#f472b6", south: "#fbbf24", alpine: "#34d399", return: "#fb923c"
+      };
+      var map, layerGroup;
+
+      var routeSegments = [
+        { filter: ["all"], phase: "asia", points: [
+          { lat: 29.563, lng: 106.551, name: "重庆", country: "中国", visit: "2024-09-01", note: "出发" },
+          { lat: 44.214, lng: 80.420, name: "霍尔果斯", country: "中国", visit: "第1站", note: "出境" },
+          { lat: 43.256, lng: 76.928, name: "阿拉木图", country: "哈萨克斯坦", visit: "第2站", note: "" },
+          { lat: 55.755, lng: 37.617, name: "莫斯科", country: "俄罗斯", visit: "第7站", note: "" },
+          { lat: 59.931, lng: 30.360, name: "圣彼得堡", country: "俄罗斯", visit: "第8站", note: "社恐回头率" }
+        ]},
+        { filter: ["all", "europe", "nordic"], phase: "baltic", points: [
+          { lat: 56.949, lng: 24.105, name: "里加", country: "拉脱维亚", visit: "第9站", note: "入欧盟" },
+          { lat: 59.437, lng: 24.753, name: "塔林", country: "爱沙尼亚", visit: "第10站", note: "" },
+          { lat: 60.170, lng: 24.938, name: "赫尔辛基", country: "芬兰", visit: "第11–12站", note: "渡轮+露营" }
+        ]},
+        { filter: ["all", "europe", "nordic"], phase: "nordic", points: [
+          { lat: 71.170, lng: 25.784, name: "北角", country: "挪威", visit: "第14站", note: "欧洲最北" },
+          { lat: 69.649, lng: 18.955, name: "特罗姆瑟", country: "挪威", visit: "第16站", note: "极光" },
+          { lat: 68.205, lng: 13.611, name: "罗弗敦", country: "挪威", visit: "第17站", note: "" }
+        ]},
+        { filter: ["all", "europe", "west"], phase: "west", points: [
+          { lat: 55.676, lng: 12.568, name: "哥本哈根", country: "丹麦", visit: "第20站", note: "" },
+          { lat: 52.367, lng: 4.904, name: "阿姆斯特丹", country: "荷兰", visit: "第21站", note: "" },
+          { lat: 50.335, lng: 6.947, name: "纽博格林", country: "德国", visit: "第22站", note: "赛道" },
+          { lat: 51.507, lng: -0.128, name: "伦敦", country: "英国", visit: "第24–25站", note: "" },
+          { lat: 53.408, lng: -2.978, name: "利物浦", country: "英国", visit: "终点", note: "留学故地" }
+        ]},
+        { filter: ["all", "europe", "south"], phase: "south", points: [
+          { lat: 48.857, lng: 2.352, name: "巴黎", country: "法国", visit: "第27站", note: "" },
+          { lat: 41.387, lng: 2.168, name: "巴塞罗那", country: "西班牙", visit: "第29站", note: "" },
+          { lat: 43.711, lng: 7.262, name: "尼斯", country: "法国", visit: "第30站", note: "" },
+          { lat: 43.738, lng: 7.424, name: "摩纳哥", country: "摩纳哥", visit: "第31站", note: "" },
+          { lat: 45.464, lng: 9.190, name: "米兰", country: "意大利", visit: "第33站", note: "" }
+        ]},
+        { filter: ["all", "europe", "south"], phase: "alpine", points: [
+          { lat: 46.686, lng: 7.863, name: "因特拉肯", country: "瑞士", visit: "第35站", note: "" },
+          { lat: 47.269, lng: 11.392, name: "因斯布鲁克", country: "奥地利", visit: "第36站", note: "" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        routeSegments.forEach(function (seg) {
+          if (seg.filter.indexOf(filter) === -1) return;
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, { color: color, weight: 5, opacity: 0.9 }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6, color: color, fillColor: color, fillOpacity: 0.9, weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+        });
+        if (bounds.length) {
+          var maxZoom = filter === "nordic" || filter === "west" || filter === "south" ? 5 : 4;
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: maxZoom });
+        }
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO', subdomains: "abcd", maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>陆路环球路书 · Overland Route Books</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #79c0ff;
+      --border: #334155;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 50%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 64px; }
+    h1 { margin: 0 0 8px; font-size: 1.85rem; }
+    .subtitle { color: var(--muted); margin-bottom: 32px; font-size: 0.95rem; }
+    .grid { display: grid; gap: 14px; }
+    a.card {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    a.card:hover {
+      border-color: var(--accent);
+      background: rgba(121, 192, 255, 0.06);
+    }
+    .card h2 { margin: 0 0 6px; font-size: 1.1rem; color: var(--accent); }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(121, 192, 255, 0.12);
+      color: #b6dcff;
+    }
+    footer { margin-top: 36px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>陆路环球路书</h1>
+    <p class="subtitle">中国博主自驾/摩旅路线整理 · 粉丝路书非官方 · 地图 + 时间轴 + 可筛选表格</p>
+
+    <div class="grid">
+      <a class="card" href="yaoyang-africa-route/index.html">
+        <h2>耀阳环游记 · 穿越非洲</h2>
+        <p>Tank 300 · 摩洛哥纵穿至东非 · 2022–2024</p>
+        <span class="tag">非洲</span>
+      </a>
+      <a class="card" href="yaoyang-middleeast-route/index.html">
+        <h2>耀阳环游记 · 中东 240 天</h2>
+        <p>Tank 330 · 2025 中东段</p>
+        <span class="tag">中东</span>
+      </a>
+      <a class="card" href="wushan-africa-route/index.html">
+        <h2>吴珊 · 非洲自驾</h2>
+        <p>CS95 亚欧非环 + UNI-K 南部非洲专旅</p>
+        <span class="tag">非洲</span>
+      </a>
+      <a class="card" href="chuanmei-africa-route/index.html">
+        <h2>川妹 · 川A 宋 Plus 欧亚非</h2>
+        <p>比亚迪宋 Plus DM-i · 欧亚非环球 · 非洲连载</p>
+        <span class="tag">欧亚非</span>
+      </a>
+      <a class="card" href="chunsen-europe-route/index.html">
+        <h2>春森同学在路上 · 欧洲线</h2>
+        <p>小米 SU7 纯电 · 亚欧大陆 · 第 N 站系列</p>
+        <span class="tag">欧洲</span>
+      </a>
+    </div>
+
+    <footer>
+      <p>仓库：<a href="https://github.com/jzhonghai/overland-route-books" style="color:#79c0ff">github.com/jzhonghai/overland-route-books</a></p>
+      <p>数据整理自公开视频与报道 · 路线为估算，非 GPS 精确轨迹</p>
+    </footer>
+  </div>
+</body>
+</html>

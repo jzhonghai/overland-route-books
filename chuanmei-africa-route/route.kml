@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>川妹 · 川A 宋Plus 欧亚非（关键点）</name>
+    <description>粉丝整理路线，非 GPS 精确轨迹。2026-08-12</description>
+    <Folder><name>亚洲·入欧前</name>
+      <Placemark><name>成都</name><Point><coordinates>104.066,30.572,0</coordinates></Point></Placemark>
+      <Placemark><name>新疆 · 出境前保养</name><Point><coordinates>81.325,43.917,0</coordinates></Point></Placemark>
+      <Placemark><name>哈萨克斯坦 · 阿拉木图方向</name><Point><coordinates>76.928,43.256,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>欧洲·俄境</name>
+      <Placemark><name>丹麦</name><Point><coordinates>12.568,55.676,0</coordinates></Point></Placemark>
+      <Placemark><name>波兰 · 白俄罗斯边境</name><Point><coordinates>23.825,53.133,0</coordinates></Point></Placemark>
+      <Placemark><name>明斯克 · 白俄罗斯</name><Point><coordinates>27.561,53.902,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>非洲 · 已更新/推断</name>
+      <Placemark><name>直布罗陀海峡</name><Point><coordinates>-5.353,36.141,0</coordinates></Point></Placemark>
+      <Placemark><name>卡萨布兰卡 · 摩洛哥</name><Point><coordinates>-7.589,33.573,0</coordinates></Point></Placemark>
+      <Placemark><name>菲斯 · 摩洛哥</name><Point><coordinates>-5.000,34.033,0</coordinates></Point></Placemark>
+      <Placemark><name>达喀尔 · 塞内加尔</name><Point><coordinates>-17.468,14.717,0</coordinates></Point></Placemark>
+      <Placemark><name>温得和克 · 纳米比亚</name><Point><coordinates>17.066,-22.561,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

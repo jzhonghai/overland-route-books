@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>耀阳环游记 · 穿越非洲自驾行程</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #f4a261;
+      --accent-2: #2a9d8f;
+      --warn: #e76f51;
+      --prep: #8b9cb3;
+      --north: #f4a261;
+      --west: #e76f51;
+      --sahel: #e9c46a;
+      --central: #bc6c25;
+      --south: #34d399;
+      --east: #2a9d8f;
+      --return: #8b9cb3;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(244, 162, 97, 0.08);
+      border: 1px solid rgba(244, 162, 97, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6d5b8;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.north { background: var(--north); }
+    .dot.west { background: var(--west); }
+    .dot.sahel { background: var(--sahel); }
+    .dot.central { background: var(--central); }
+    .dot.south { background: var(--south); }
+    .dot.east { background: var(--east); }
+    .dot.return { background: var(--return); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1100px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(244, 162, 97, 0.06); }
+    .phase {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.north { background: rgba(244, 162, 97, 0.15); color: #f6d5b8; }
+    .phase.west { background: rgba(231, 111, 81, 0.15); color: #ffb4a0; }
+    .phase.sahel { background: rgba(233, 196, 106, 0.15); color: #f5e6b8; }
+    .phase.central { background: rgba(188, 108, 37, 0.15); color: #e8c4a0; }
+    .phase.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .phase.east { background: rgba(42, 157, 143, 0.15); color: #9ee4d4; }
+    .phase.return { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(244, 162, 97, 0.15); color: #f6d5b8; }
+    .conf.low { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .visit-range { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .time-conf {
+      display: inline-block; margin-top: 4px;
+      font-size: 0.72rem; padding: 1px 7px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .time-conf.anchor { background: rgba(126, 231, 135, 0.12); color: #9cf0a4; }
+    .time-conf.phase { background: rgba(244, 162, 97, 0.12); color: #f6d5b8; }
+    .time-conf.backlog { background: rgba(147, 164, 189, 0.15); color: #b8c5d9; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    td a:hover { color: #ffd4a8; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(244, 162, 97, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-intro {
+      margin: 14px 0 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .guide-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      background: rgba(244, 162, 97, 0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .guide-days {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; font-weight: 600; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); font-weight: 600; }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .guide-tips ul li { margin-bottom: 6px; color: var(--text); }
+    .country-no {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(42, 157, 143, 0.18);
+      color: #7dd3c0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(42, 157, 143, 0.2);
+      border-color: var(--accent-2); color: #9ee4d4;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>耀阳环游记 · 穿越非洲自驾行程</h1>
+      <p class="subtitle">
+        博主：<strong>耀阳环游记</strong>（张耀阳 / 张啸 &amp; 妻子纳兰 ·
+        <a href="https://www.toutiao.com/search?keyword=%E8%80%80%E9%98%B3%E7%8E%AF%E6%B8%B8%E8%AE%B0" target="_blank" rel="noopener">今日头条</a> /
+        <a href="https://m.ixigua.com/user/1789618390838696" target="_blank" rel="noopener">西瓜视频</a>）·
+        驾驶国产 <strong>Tank 300</strong> 蓝牌改装车（防弹），历时约 <strong>9 个月海运至巴塞罗那</strong> 后自 <strong>摩洛哥</strong> 起自北向南纵穿非洲，
+        行程 <strong>2 万+ 公里 · 约 2 年（2022–2024）</strong>，收官后将车辆捐予哈尔滨世纪汽车历史博物馆。
+        完整路线见 <a href="#trip-overview-guide">↓ 行程总览</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">陆路启程</div><div class="value">≈2022-10</div></div>
+      <div class="card"><div class="label">车辆</div><div class="value">Tank 300</div></div>
+      <div class="card"><div class="label">里程</div><div class="value">2 万+ km</div></div>
+      <div class="card"><div class="label">非洲收官</div><div class="value">≈2024-05~07</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      路线整理自头条/西瓜《硬核探索之旅 × 穿越非洲》系列及公开采访，<strong>非官方逐日行程表</strong>。
+      国家顺序按「北非 → 西非 → 萨赫勒 → 中非 → 南部非洲 → 东非」纵穿方向推断；有专集视频的城市置信度高，仅国家层标注为中等或低。
+      视频链接以今日头条为主；同一 ID 通常可在西瓜视频打开。
+      <strong>国序</strong>按推断的非洲段经过顺序编号；西班牙为车辆登陆点，不计入非洲国序。
+      <strong>造访时间</strong>为<strong>月份区间估算</strong>（见表头「时间·锚定/推断/积压」）；博主未公布逐日行程，且视频常滞后拍摄数周至数月（北非/毛塔等「未更新」积压更明显）。
+    </div>
+
+    <h2 class="phase-title">阶段概览（造访估算）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2022 海运</span>
+      <span>2022–23 北非</span>
+      <span>2023 西非·萨赫勒</span>
+      <span>2024 南·东非</span>
+      <span>2024 捐车回国</span>
+    </div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · 关键点连线 · 可下载 <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="north">北非</button>
+          <button type="button" class="map-filter" data-filter="west">西非·萨赫勒</button>
+          <button type="button" class="map-filter" data-filter="south">南部非洲</button>
+          <button type="button" class="map-filter" data-filter="east">东非</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#8b9cb3"></i>筹备·海运</span>
+        <span><i style="background:#f4a261"></i>北非</span>
+        <span><i style="background:#e76f51"></i>西非</span>
+        <span><i style="background:#e9c46a"></i>萨赫勒</span>
+        <span><i style="background:#bc6c25"></i>中非</span>
+        <span><i style="background:#34d399"></i>南部非洲</span>
+        <span><i style="background:#2a9d8f"></i>东非</span>
+        <span id="map-legend-hint">📍 点击标记查看地点</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="trip-overview-guide">
+      <details open>
+        <summary>穿越非洲 · 行程总览（据系列视频 &amp; 采访）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">头条旅游曾联合推出《硬核探索之旅 × 穿越非洲》专题；耀阳与纳兰驾驶中国产 Tank 300，从摩洛哥向南，穿越撒哈拉、沼泽与无人区，探访部落、援非医疗队与沿途人文。整体约 <strong>520 天 / 2 年（2022 秋 — 2024 夏）</strong>。</p>
+          <p class="guide-note"><strong>时间轴（月份估算 · 非精确到日）</strong></p>
+          <ul class="guide-days">
+            <li><strong>2022-01 — 2022-09</strong> — 中国筹备 · 海运 9 个月至巴塞罗那</li>
+            <li><strong>2022-10 — 2023-03</strong> — 摩洛哥陆路入境；菲斯、撒哈拉、北非篇（系列 2022-10 起上线）</li>
+            <li><strong>2023-03 — 2023-08</strong> — 毛里塔尼亚 · 塞内加尔 · 冈比亚 · 马里（自述「已抵达毛塔」· 西非篇 2023-05 起）</li>
+            <li><strong>2023-08 — 2024-03</strong> — 萨赫勒 · 几内亚湾 · 中非（具体国别顺序见下表 · 多为推断）</li>
+            <li><strong>2024-04 — 2024-05</strong> — 南部非洲 · 开普敦「世界尽头」（视频 2024-05-20）</li>
+            <li><strong>2024-05 — 2024-07</strong> — 东非段 · 捐车哈尔滨 · 大结局（视频 2024-05~07）</li>
+          </ul>
+          <p class="guide-note"><strong>筹备 · 中国 → 西班牙</strong></p>
+          <ul class="guide-days">
+            <li><strong>🇨🇳 北京</strong> — 探险家张耀阳（旅游公司创业背景）与妻子纳兰筹备；车辆改装、海运手续</li>
+            <li><strong>🇪🇸 巴塞罗那</strong> — 历时约 9 个月将国产车从中国运抵；非洲陆路段起点前的「登路」准备</li>
+          </ul>
+          <p class="guide-note"><strong>非洲纵穿 · 北 → 南 → 东（推断顺序）</strong></p>
+          <ul class="guide-days">
+            <li><strong>🇲🇦 北非</strong> — 摩洛哥（菲斯、撒哈拉、里萨尼/柏柏尔人、援非医疗队、羊上树等）</li>
+            <li><strong>🇲🇷 🇸🇳 🇬🇲</strong> — 毛里塔尼亚（极封闭）、塞内加尔、冈比亚</li>
+            <li><strong>🇲🇱 🇧🇫 🇳🇪 🇹🇩</strong> — 马里、布基纳法索、尼日尔、乍得（萨赫勒段）</li>
+            <li><strong>🇳🇬 🇨🇲 🇬🇭 🇨🇮 🇬🇳</strong> — 尼日利亚、喀麦隆及几内亚湾沿岸国</li>
+            <li><strong>🇨🇬 🇨🇩 🇦🇴</strong> — 刚果（布/金）、安哥拉</li>
+            <li><strong>🇳🇦 🇿🇦 🇧🇼 🇿🇼 🇿🇲</strong> — 纳米比亚、南非、博茨瓦纳等南部非洲</li>
+            <li><strong>🇹🇿 🇰🇪 🇪🇹 🇺🇬</strong> — 坦桑尼亚、肯尼亚、埃塞俄比亚、乌干达等东非段</li>
+          </ul>
+          <p class="guide-note"><strong>收官</strong></p>
+          <ul class="guide-days">
+            <li>系列大结局：《开中国车抵达世界尽头》《穿越非洲 2 年终于大结局了，送我的「兄弟」回家》</li>
+            <li>回国后 Tank 300 捐予 <strong>哈尔滨世纪汽车历史博物馆</strong>；此后另启中东 240 天等环球行程</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.toutiao.com/video/7158343783321436705/" target="_blank" rel="noopener">硬核探索之旅 × 穿越非洲 · 第一集</a>
+            ·
+            <a href="https://m.ixigua.com/user/1789618390838696" target="_blank" rel="noopener">西瓜视频 · 耀阳环游记主页</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备·海运</option>
+        <option value="north">北非</option>
+        <option value="west">西非</option>
+        <option value="sahel">萨赫勒</option>
+        <option value="central">中非</option>
+        <option value="south">南部非洲</option>
+        <option value="east">东非</option>
+        <option value="return">收官·回国</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、注意事项、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot north"></span>北非</span>
+      <span><span class="dot west"></span>西非</span>
+      <span><span class="dot sahel"></span>萨赫勒</span>
+      <span><span class="dot central"></span>中非</span>
+      <span><span class="dot south"></span>南部非洲</span>
+      <span><span class="dot east"></span>东非</span>
+      <span><span class="dot return"></span>收官</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>国序</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 难忘瞬间</th>
+            <th>造访时间（估）</th>
+            <th>视频笔记</th>
+            <th>置信度</th>
+            <th>参考链接</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="vehicle-shipping-guide">
+      <details>
+        <summary>中国车「登路」非洲 · 海运与清关要点</summary>
+        <div class="guide-body">
+          <p class="guide-intro">整理自《硬核探索之旅》第一集及系列中车辆清关/等待片段（如「消失 74 天的中国车终于拿到了」）。</p>
+          <ul class="guide-tips">
+            <li>
+              <h3>🚢 海运至欧洲</h3>
+              <ul>
+                <li>国产车从中国港口海运至西班牙巴塞罗那，历时约 <strong>9 个月</strong>，含订舱、出口报关、目的港清关。</li>
+                <li>系列专集记录「中国汽车登路非洲会遇到哪些困难」——文件、保险、临时进口（Carnet / 各国政策）需提前规划。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇲🇦 摩洛哥入境</h3>
+              <ul>
+                <li>北非篇多集记录入境受阻后获当地众人相助；菲斯、撒哈拉、沿海城市有大量城市级内容。</li>
+                <li>沙漠段：轮胎放气过沙、陷车脱困；Tank 300 动力与通过性为系列卖点之一。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇲🇷 毛里塔尼亚</h3>
+              <ul>
+                <li>专集称「世界上最神秘最封闭的国家」；签证、路条、检查站密集，是非洲段难度陡增的起点之一。</li>
+                <li>「牛爸爸」等人物故事显示与中国援非/劳务人员的深度交集。</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.toutiao.com/video/7158343783321436705/" target="_blank" rel="noopener">第一集：让中国汽车登路非洲会遇到哪些困难？</a>
+            ·
+            <a href="https://www.toutiao.com/video/7257732899598942735/" target="_blank" rel="noopener">消失 74 天的中国车终于拿到了</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="morocco-guide">
+      <details>
+        <summary>摩洛哥段 · 北非篇精选（有专集）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">《穿越非洲 · 北非篇》在头条/西瓜有连续多集，以下为视频标题中明确出现的地点/主题。</p>
+          <ol class="guide-days">
+            <li><strong>入境</strong> — 受阻后获摩洛哥众人鼎力相助</li>
+            <li><strong>菲斯古城</strong> — 千年面包店；偶遇叶问徒弟</li>
+            <li><strong>撒哈拉</strong> — 中国汽车穿越撒哈拉；沙漠中的神秘部落</li>
+            <li><strong>里萨尼 / 柏柏尔人</strong> — 无人村寻踪；黑沙漠火山岩与珊瑚化石</li>
+            <li><strong>援非医疗队</strong> — 扎根撒哈拉的中国医疗队（硬核探索之旅专题）</li>
+            <li><strong>市井</strong> — 羊上树真伪、摩洛哥理发/洗脸、海边生计、巨人「战衣」等</li>
+          </ol>
+          <p class="guide-link">
+            <a href="https://www.toutiao.com/video/7162374359544726030/" target="_blank" rel="noopener">摩洛哥众人鼎力相助</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-12 · 来源：今日头条/西瓜视频《硬核探索之旅 × 穿越非洲》· 大众网/九派新闻等对张耀阳的采访 · 路线为粉丝整理，非官方路书。</p>
+      <p><strong>待补</strong>：西非至东非各国城市级专集链接、精确过境日期；欢迎按「耀阳环游记 + 国家名」检索后补链。</p>
+      <p>地图数据：<a href="route.kml" download>route.kml</a>（关键点连线，非 GPS 精确轨迹）</p>
+    </footer>
+  </div>
+
+  <script>
+    var TT_HOME = "https://m.ixigua.com/user/1789618390838696";
+    function videoUrl(id) {
+      if (!id) return "";
+      return "https://www.toutiao.com/video/" + id + "/";
+    }
+    function xiguaUrl(id) {
+      if (!id) return TT_HOME;
+      return "https://m.ixigua.com/video/" + id;
+    }
+
+    var phaseLabel = {
+      prep: "筹备", north: "北非", west: "西非", sahel: "萨赫勒",
+      central: "中非", south: "南部非洲", east: "东非", return: "收官"
+    };
+
+    var countryNoMap = {
+      "摩洛哥": 1, "西撒哈拉": 2, "毛里塔尼亚": 3, "塞内加尔": 4, "冈比亚": 5,
+      "马里": 6, "布基纳法索": 7, "尼日尔": 8, "乍得": 9,
+      "尼日利亚": 10, "喀麦隆": 11, "加纳": 12, "科特迪瓦": 13, "几内亚": 14,
+      "中非": 15, "刚果(布)": 16, "刚果(金)": 17, "安哥拉": 18,
+      "纳米比亚": 19, "南非": 20, "博茨瓦纳": 21, "津巴布韦": 22, "赞比亚": 23,
+      "坦桑尼亚": 24, "肯尼亚": 25, "埃塞俄比亚": 26, "乌干达": 27
+    };
+
+    function getCountryNo(country) {
+      if (!country || country === "—" || country === "综述" || country === "西班牙") return "";
+      var n = countryNoMap[country];
+      return n != null ? n : "";
+    }
+
+    function formatVisit(row) {
+      var range = "—";
+      if (row.visitFrom && row.visitTo) {
+        range = row.visitFrom === row.visitTo
+          ? "≈" + row.visitFrom
+          : "≈" + row.visitFrom + " — " + row.visitTo;
+      } else if (row.visitFrom) {
+        range = "≈" + row.visitFrom + " 起";
+      }
+      var html = "<span class=\"visit-range\">" + range + "</span>";
+      if (row.videoPub) {
+        html += "<br><span class=\"cell-muted\">📺 " + row.videoPub + "</span>";
+      }
+      var timeLabels = { anchor: "时间·锚定", phase: "时间·推断", backlog: "时间·积压" };
+      if (row.timeConf && timeLabels[row.timeConf]) {
+        html += "<br><span class=\"time-conf " + row.timeConf + "\">" + timeLabels[row.timeConf] + "</span>";
+      }
+      return html;
+    }
+
+    var rows = [
+      { phase:"prep", country:"中国", place:"北京", notes:"探险家张耀阳（本名张啸）与妻子纳兰；旅游/探险公司背景；筹备改装 Tank 300 与环球计划", moment:"「我更愿意被叫做探险家」", visitFrom:"2021-06", visitTo:"2022-03", videoPub:"2022-10-25", timeConf:"anchor", videoId:"7158343783321436705", videoTitle:"硬核探索之旅 × 穿越非洲 · 第一集（筹备）", conf:"high" },
+      { phase:"prep", country:"西班牙", place:"巴塞罗那", notes:"历时约 9 个月海运；国产车从中国运抵欧洲港口，非洲陆路出发前基地", moment:"中国汽车「登路」非洲前的最后一站", visitFrom:"2022-04", visitTo:"2022-09", videoPub:"2022-10-25", timeConf:"anchor", videoId:"7158343783321436705", videoTitle:"历时 9 个月将车运至巴塞罗那", conf:"high" },
+      { phase:"prep", country:"综述", place:"车辆清关 · 等待", notes:"系列记录清关受阻、车辆「消失 74 天」等；详见 <a href=\"#vehicle-shipping-guide\" class=\"guide-jump\">↓ 海运攻略</a>", moment:"「穿越非洲到底有多难」", visitFrom:"2022-09", visitTo:"2022-11", videoPub:"2023-07-20", timeConf:"backlog", videoId:"7257732899598942735", videoTitle:"消失 74 天的中国车终于拿到了", conf:"high" },
+      { phase:"north", country:"摩洛哥", place:"入境 · 丹吉尔/卡萨布兰卡", notes:"非洲陆路起点「北非雄狮」；入境曾受阻，获当地人鼎力相助", moment:"「Made in China」第一次驶上非洲公路", visitFrom:"2022-10", visitTo:"2022-11", videoPub:"2022-11-05", timeConf:"anchor", videoId:"7162374359544726030", videoTitle:"穿越非洲受阻 · 摩洛哥众人鼎力相助", conf:"high" },
+      { phase:"north", country:"摩洛哥", place:"菲斯（Fès）古城", notes:"探秘菲斯古城；无意间发现「千年」面包店；偶遇叶问徒弟", moment:"北非人文与中式武术的意外交汇", visitFrom:"2022-11", visitTo:"2023-01", timeConf:"phase", videoId:"", videoTitle:"探摩洛哥菲斯古城（北非篇）", conf:"high" },
+      { phase:"north", country:"摩洛哥", place:"撒哈拉 · 梅尔祖卡/里萨尼", notes:"蓝牌 Tank 穿越撒哈拉；里萨尼寻柏柏尔人；黑沙漠火山岩、珊瑚化石；陷沙放气脱困", moment:"「兄弟」陪他们走过最难的路", visitFrom:"2022-11", visitTo:"2023-01", videoPub:"2022-11-15", timeConf:"anchor", videoId:"", videoTitle:"中国汽车穿越撒哈拉 · 寻找柏柏尔人", conf:"high" },
+      { phase:"north", country:"摩洛哥", place:"撒哈拉 · 中国援非医疗队", notes:"《硬核探索之旅》专题；10 人医疗队年手术 2000+ 台，沙漠中的「铁人」", moment:"守护非洲沙漠的竟是中国人", visitFrom:"2022-12", visitTo:"2023-02", timeConf:"phase", videoId:"", videoTitle:"撒哈拉的「铁人」· 援非医疗队", conf:"high" },
+      { phase:"north", country:"摩洛哥", place:"沿海/市井", notes:"羊上树真伪、摩洛哥理发洗脸、海边生计、沙漠人家、巨人「战衣」等北非篇", moment:"危机四伏时「中国科技救了命」", visitFrom:"2022-11", visitTo:"2023-03", videoPub:"2023-04-20", timeConf:"backlog", videoId:"7223712443057799714", videoTitle:"穿越非洲 · 北非篇（系列）", conf:"mid" },
+      { phase:"north", country:"西撒哈拉", place:"途经", notes:"自摩洛哥南下进入西撒哈拉 disputed 区；具体城市待专集补全", moment:"", visitFrom:"2023-02", visitTo:"2023-03", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"north", country:"毛里塔尼亚", place:"努瓦克肖特 / 内陆", notes:"专集：「世界上最神秘最封闭的国家」；签证与检查站；「牛爸爸」与中国援非故事；耀阳自述「已抵达毛塔」时视频滞后剪辑", moment:"封闭国度里的真实中国温度", visitFrom:"2023-03", visitTo:"2023-05", videoPub:"2024-06-17", timeConf:"backlog", videoId:"7381341578113057291", videoTitle:"非洲毛塔的牛爸爸 · 原来是中国的牛儿子", conf:"high" },
+      { phase:"west", country:"塞内加尔", place:"达喀尔", notes:"系列明确提及；西非大西洋沿岸；达喀尔–巴马科通道方向", moment:"", visitFrom:"2023-04", visitTo:"2023-06", timeConf:"phase", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"west", country:"冈比亚", place:"班珠尔", notes:"公开资料提及经过冈比亚；狭长的西非沿岸国", moment:"", visitFrom:"2023-05", visitTo:"2023-06", timeConf:"phase", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"west", country:"马里", place:"巴马科 / 廷巴克图方向", notes:"萨赫勒–西非枢纽；沙漠公路与安保风险区", moment:"", visitFrom:"2023-06", visitTo:"2023-08", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"west", country:"综述", place:"西非 · 车辆扣留", notes:"西非篇专集：汽车再次被扣、高额费用取车；与马里—几内亚湾段同期", moment:"「穿越非洲还是西天取经」", visitFrom:"2023-04", visitTo:"2023-05", videoPub:"2023-05-09", timeConf:"anchor", videoId:"7230832461478330940", videoTitle:"汽车又被扣了 · 要回来花了 37 万", conf:"high" },
+      { phase:"sahel", country:"布基纳法索", place:"瓦加杜古", notes:"萨赫勒纵穿推断节点", moment:"", visitFrom:"2023-08", visitTo:"2023-10", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"sahel", country:"尼日尔", place:"尼亚美", notes:"萨赫勒中段；公开采访提及尼日尔", moment:"", visitFrom:"2023-09", visitTo:"2023-11", timeConf:"phase", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"sahel", country:"乍得", place:"恩贾梅纳", notes:"萨赫勒东端；公开资料提及乍得", moment:"", visitFrom:"2023-11", visitTo:"2024-01", timeConf:"phase", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"west", country:"尼日利亚", place:"拉各斯", notes:"西非人口与经济大国；几内亚湾沿岸推断", moment:"", visitFrom:"2023-12", visitTo:"2024-02", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"west", country:"喀麦隆", place:"杜阿拉 / 雅温得", notes:"中西非过渡", moment:"", visitFrom:"2024-01", visitTo:"2024-03", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"west", country:"加纳", place:"阿克拉", notes:"西非沿岸；相对稳定路段", moment:"", visitFrom:"2024-02", visitTo:"2024-03", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"west", country:"科特迪瓦", place:"阿比让", notes:"西非沿岸推断", moment:"", visitFrom:"2024-02", visitTo:"2024-04", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"west", country:"几内亚", place:"科纳克里", notes:"西非沿岸推断", moment:"", visitFrom:"2024-03", visitTo:"2024-04", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"central", country:"中非", place:"班吉", notes:"中非段推断", moment:"", visitFrom:"2024-03", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"central", country:"刚果(布)", place:"布拉柴维尔", notes:"刚果河下游；进入中部非洲", moment:"", visitFrom:"2024-04", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"central", country:"刚果(金)", place:"金沙萨", notes:"中部非洲大段推断", moment:"", visitFrom:"2024-04", visitTo:"2024-06", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"central", country:"安哥拉", place:"罗安达", notes:"南下进入南部非洲前的最后一大段", moment:"", visitFrom:"2024-05", visitTo:"2024-06", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"south", country:"纳米比亚", place:"温德霍克", notes:"南部非洲入口；沙漠与海岸公路", moment:"", visitFrom:"2024-04", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"south", country:"南非", place:"开普敦 / 好望角", notes:"非洲大陆南端；系列后期接近收官", moment:"「世界尽头」", visitFrom:"2024-04", visitTo:"2024-05", videoPub:"2024-05-20", timeConf:"anchor", videoId:"7371032848905863707", videoTitle:"开中国车抵达世界尽头！穿越非洲我们成功啦", conf:"mid" },
+      { phase:"south", country:"博茨瓦纳", place:"途经", notes:"南部非洲内陆推断", moment:"", visitFrom:"2024-04", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"south", country:"津巴布韦", place:"途经", notes:"南部非洲推断", moment:"", visitFrom:"2024-04", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"south", country:"赞比亚", place:"途经", notes:"南部非洲推断", moment:"", visitFrom:"2024-04", visitTo:"2024-05", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"east", country:"坦桑尼亚", place:"阿鲁沙 / 塞伦盖蒂方向", notes:"东非段；原始部落探索系列（含「巨人族」等）", moment:"深入原始森林与部落", visitFrom:"2024-05", visitTo:"2024-06", timeConf:"phase", videoId:"", videoTitle:"探秘非洲原始部落（系列）", conf:"mid" },
+      { phase:"east", country:"肯尼亚", place:"内罗毕", notes:"东非枢纽；系列后期", moment:"", visitFrom:"2024-06", visitTo:"2024-07", videoPub:"2024-07-08", timeConf:"anchor", videoId:"7388732291951886911", videoTitle:"一个来自非洲的中国梦 · 留学生真实生活", conf:"mid" },
+      { phase:"east", country:"埃塞俄比亚", place:"亚的斯亚贝巴", notes:"公开资料提及埃塞俄比亚", moment:"", visitFrom:"2024-06", visitTo:"2024-07", timeConf:"phase", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"east", country:"乌干达", place:"坎帕拉", notes:"东非推断", moment:"", visitFrom:"2024-06", visitTo:"2024-07", timeConf:"phase", videoId:"", videoTitle:"", conf:"low" },
+      { phase:"east", country:"综述", place:"街头美食 · 人文", notes:"未更新系列/番外：摩洛哥美食、非洲街头小吃等（多为积压补发）", moment:"", visitFrom:"2024-06", visitTo:"2024-07", videoPub:"2024-06-07", timeConf:"backlog", videoId:"7377613404866871817", videoTitle:"非洲街头美女小吃", conf:"mid" },
+      { phase:"return", country:"中国", place:"哈尔滨 · 世纪汽车历史博物馆", notes:"非洲大结局后将 Tank 300 捐博物馆；与「兄弟」告别", moment:"「送我的兄弟回家」", visitFrom:"2024-05", visitTo:"2024-06", videoPub:"2024-05-28", timeConf:"anchor", videoId:"7373988232343585280", videoTitle:"穿越非洲 2 年大结局 · 送兄弟回家", conf:"high" },
+      { phase:"return", country:"综述", place:"非洲大结局", notes:"《中国夫妇穿越非洲大结局》；回国后的反思与后续环球（含中东 240 天）", moment:"「再见了我们的好兄弟」", visitFrom:"2024-06", visitTo:"2024-07", videoPub:"2024-07-12", timeConf:"anchor", videoId:"7390577373311140389", videoTitle:"中国夫妇「穿越非洲」大结局", conf:"high" },
+      { phase:"return", country:"综述", place:"非洲段复盘", notes:"英雄回国、重生与毁灭等话题讨论帖", moment:"", visitFrom:"2024-06", visitTo:"2024-07", videoPub:"2024-06-05", timeConf:"backlog", videoId:"7376613478343115318", videoTitle:"非洲结束「英雄」回国，是重生还是毁灭？", conf:"mid" }
+    ];
+
+    function openGuideSection(id, scroll) {
+      var section = document.getElementById(id);
+      if (!section) return;
+      var details = section.querySelector("details");
+      if (details) details.open = true;
+      if (scroll !== false) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderTable(filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.visitFrom, row.visitTo, row.videoPub, row.videoTitle].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? (row.videoId
+            ? "<a href=\"" + videoUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">" + row.videoTitle + "</a>"
+            : row.videoTitle + "<br><span class=\"cell-muted\">ID 待补 · 见主页合集</span>")
+          : "—";
+        var linkCell = row.videoId
+          ? "<a href=\"" + videoUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">头条</a> · <a href=\"" + xiguaUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">西瓜</a>"
+          : "<a href=\"" + TT_HOME + "\" target=\"_blank\" rel=\"noopener\">主页</a>";
+        var countryNo = getCountryNo(row.country);
+        var countryNoCell = countryNo ? "<span class=\"country-no\" title=\"第 " + countryNo + " 国\">" + countryNo + "</span>" : "—";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + countryNoCell + "</td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td>" + formatVisit(row) + "</td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "海运·巴塞罗那", sub: "2022", start: "2022-01-01", end: "2022-09-30", color: "#8b9cb3" },
+        { name: "摩洛哥·毛塔", sub: "2022–23", start: "2022-10-01", end: "2023-06-30", color: "#f4a261" },
+        { name: "西非·几内亚湾", sub: "2023", start: "2023-07-01", end: "2023-12-31", color: "#e76f51" },
+        { name: "萨赫勒·中非", sub: "2023–24", start: "2023-10-01", end: "2024-03-31", color: "#e9c46a" },
+        { name: "南部非洲", sub: "2024", start: "2024-01-01", end: "2024-06-30", color: "#34d399" },
+        { name: "东非·收官", sub: "2024", start: "2024-04-01", end: "2024-09-30", color: "#2a9d8f" },
+        { name: "捐车·回国", sub: "2024", start: "2024-08-01", end: "2024-12-31", color: "#8b9cb3" }
+      ];
+      var min = new Date("2022-01-01").getTime();
+      var max = new Date("2025-01-01").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("phase-filter").addEventListener("change", function (e) {
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", function (e) {
+      renderTable(document.getElementById("phase-filter").value, e.target.value);
+    });
+    document.getElementById("tbody").addEventListener("click", function (e) {
+      var link = e.target.closest('a.guide-jump[href^="#"]');
+      if (!link) return;
+      var id = link.getAttribute("href").slice(1);
+      if (!id) return;
+      e.preventDefault();
+      openGuideSection(id, true);
+      history.replaceState(null, "", "#" + id);
+    });
+
+    renderBar();
+    renderTable("all", "");
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", north: "#f4a261", west: "#e76f51", sahel: "#e9c46a",
+        central: "#bc6c25", south: "#34d399", east: "#2a9d8f", return: "#8b9cb3"
+      };
+      var map, layerGroup;
+
+      var routeSegments = [
+        { filter: ["all"], phase: "prep", points: [
+          { lat: 39.904, lng: 116.407, name: "北京", country: "中国", visit: "≈2021-06—2022-03", note: "筹备 · Tank 300" },
+          { lat: 41.387, lng: 2.168, name: "巴塞罗那", country: "西班牙", visit: "≈2022-04—09", note: "海运抵达" }
+        ]},
+        { filter: ["all", "north"], phase: "north", points: [
+          { lat: 35.759, lng: -5.834, name: "丹吉尔", country: "摩洛哥", visit: "≈2022-10—11", note: "非洲登路" },
+          { lat: 34.033, lng: -5.000, name: "菲斯", country: "摩洛哥", visit: "≈2022-11—2023-01", note: "千年面包店" },
+          { lat: 31.099, lng: -4.012, name: "梅尔祖卡", country: "摩洛哥", visit: "≈2022-11—2023-01", note: "撒哈拉" },
+          { lat: 31.280, lng: -4.423, name: "里萨尼", country: "摩洛哥", visit: "≈2022-11—2023-01", note: "柏柏尔人" },
+          { lat: 18.074, lng: -15.958, name: "努瓦克肖特", country: "毛里塔尼亚", visit: "≈2023-03—05", note: "最封闭国家" }
+        ]},
+        { filter: ["all", "west"], phase: "west", points: [
+          { lat: 14.717, lng: -17.468, name: "达喀尔", country: "塞内加尔", visit: "≈2023-04—06", note: "西非起点" },
+          { lat: 13.454, lng: -16.579, name: "班珠尔", country: "冈比亚", visit: "≈2023-05—06", note: "沿岸" },
+          { lat: 12.639, lng: -8.003, name: "巴马科", country: "马里", visit: "≈2023-06—08", note: "萨赫勒" },
+          { lat: 6.524, lng: 3.379, name: "拉各斯", country: "尼日利亚", visit: "≈2023-12—2024-02", note: "几内亚湾" },
+          { lat: 5.360, lng: -4.008, name: "阿比让", country: "科特迪瓦", visit: "≈2024-02—04", note: "西非" }
+        ]},
+        { filter: ["all", "west"], phase: "sahel", points: [
+          { lat: 13.513, lng: 2.110, name: "尼亚美", country: "尼日尔", visit: "≈2023-09—11", note: "萨赫勒" },
+          { lat: 12.135, lng: 15.055, name: "恩贾梅纳", country: "乍得", visit: "≈2023-11—2024-01", note: "萨赫勒东端" }
+        ]},
+        { filter: ["all", "west"], phase: "central", points: [
+          { lat: -4.263, lng: 15.243, name: "金沙萨", country: "刚果(金)", visit: "≈2024-04—06", note: "中非" },
+          { lat: -8.839, lng: 13.289, name: "罗安达", country: "安哥拉", visit: "≈2024-05—06", note: "南下" }
+        ]},
+        { filter: ["all", "south"], phase: "south", points: [
+          { lat: -22.561, lng: 17.066, name: "温德霍克", country: "纳米比亚", visit: "≈2024-04—05", note: "南部非洲" },
+          { lat: -33.925, lng: 18.424, name: "开普敦", country: "南非", visit: "≈2024-04—05", note: "世界尽头" }
+        ]},
+        { filter: ["all", "east"], phase: "east", points: [
+          { lat: -3.387, lng: 36.683, name: "阿鲁沙", country: "坦桑尼亚", visit: "≈2024-05—06", note: "东非" },
+          { lat: -1.292, lng: 36.822, name: "内罗毕", country: "肯尼亚", visit: "≈2024-06—07", note: "东非枢纽" },
+          { lat: 9.032, lng: 38.747, name: "亚的斯亚贝巴", country: "埃塞俄比亚", visit: "≈2024-06—07", note: "东非" }
+        ]},
+        { filter: ["all"], phase: "return", dashed: true, points: [
+          { lat: 45.757, lng: 126.643, name: "哈尔滨", country: "中国", visit: "≈2024-05—06", note: "Tank 300 捐博物馆" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? 3 : 5,
+              opacity: 0.9,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6,
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.9,
+              weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+        });
+        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 4 });
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; OSM &copy; CARTO',
+        subdomains: "abcd",
+        maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>
