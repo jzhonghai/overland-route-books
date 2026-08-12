@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>克洛伊和老邓 · 570天55国自驾路线</name>
+  <description>据总结帖与专帖标注的关键点连线（非精确 GPS 轨迹）</description>
+  <Folder>
+    <name>亚洲出境</name>
+    <Placemark><name>亚洲出境 路线</name><Style><LineStyle><color>ff51f1e7</color><width>4</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>113.264,23.129,0 80.421,44.213,0 76.851,43.222,0 71.449,51.169,0 60.606,56.839,0 37.617,55.756,0 33.083,68.959,0</coordinates></LineString></Placemark>
+    <Placemark><name>广州 · 中国</name><Point><coordinates>113.264,23.129,0</coordinates></Point></Placemark>
+    <Placemark><name>霍尔果斯 · 中国</name><Point><coordinates>80.421,44.213,0</coordinates></Point></Placemark>
+    <Placemark><name>阿拉木图 · 哈萨克斯坦</name><Point><coordinates>76.851,43.222,0</coordinates></Point></Placemark>
+    <Placemark><name>阿斯塔纳 · 哈萨克斯坦</name><Point><coordinates>71.449,51.169,0</coordinates></Point></Placemark>
+    <Placemark><name>叶卡捷琳堡 · 俄罗斯</name><Point><coordinates>60.606,56.839,0</coordinates></Point></Placemark>
+    <Placemark><name>莫斯科 · 俄罗斯</name><Point><coordinates>37.617,55.756,0</coordinates></Point></Placemark>
+    <Placemark><name>摩尔曼斯克 · 俄罗斯</name><Point><coordinates>33.083,68.959,0</coordinates></Point></Placemark>
+  </Folder>
+  <Folder>
+    <name>北欧·冰岛·荷兰</name>
+    <Placemark><name>北欧段 路线</name><Style><LineStyle><color>ffffb35e</color><width>4</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>25.784,71.170,0 15.627,78.223,0 18.955,69.649,0 5.324,60.391,0 18.069,59.329,0 12.568,55.676,0 -6.791,62.008,0 -21.943,64.147,0 6.078,52.741,0</coordinates></LineString></Placemark>
+    <Placemark><name>北角 · 挪威</name><Point><coordinates>25.784,71.170,0</coordinates></Point></Placemark>
+    <Placemark><name>朗伊尔城 · 斯瓦尔巴</name><Point><coordinates>15.627,78.223,0</coordinates></Point></Placemark>
+    <Placemark><name>特罗姆瑟 · 挪威</name><Point><coordinates>18.955,69.649,0</coordinates></Point></Placemark>
+    <Placemark><name>卑尔根 · 挪威</name><Point><coordinates>5.324,60.391,0</coordinates></Point></Placemark>
+    <Placemark><name>斯德哥尔摩 · 瑞典</name><Point><coordinates>18.069,59.329,0</coordinates></Point></Placemark>
+    <Placemark><name>哥本哈根 · 丹麦</name><Point><coordinates>12.568,55.676,0</coordinates></Point></Placemark>
+    <Placemark><name>托尔斯港 · 法罗群岛</name><Point><coordinates>-6.791,62.008,0</coordinates></Point></Placemark>
+    <Placemark><name>雷克雅未克 · 冰岛</name><Point><coordinates>-21.943,64.147,0</coordinates></Point></Placemark>
+    <Placemark><name>羊角村 · 荷兰</name><Point><coordinates>6.078,52.741,0</coordinates></Point></Placemark>
+  </Folder>
+  <Folder>
+    <name>英伦·中欧·南欧</name>
+    <Placemark><name>欧洲南段 路线</name><Style><LineStyle><color>ffffb35e</color><width>4</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>-0.128,51.507,0 -5.052,50.266,0 -3.188,55.953,0 -5.930,54.597,0 -6.261,53.350,0 2.352,48.857,0 8.041,46.624,0 13.649,47.562,0 14.438,50.076,0 19.040,47.498,0 20.449,44.787,0 20.624,37.860,0 23.728,37.984,0 18.413,43.856,0 18.094,42.651,0 12.496,41.903,0 7.749,46.021,0 -5.984,37.389,0 -9.139,38.722,0</coordinates></LineString></Placemark>
+    <Placemark><name>伦敦 · 英国</name><Point><coordinates>-0.128,51.507,0</coordinates></Point></Placemark>
+    <Placemark><name>兰兹角 · 英国</name><Point><coordinates>-5.052,50.266,0</coordinates></Point></Placemark>
+    <Placemark><name>爱丁堡 · 苏格兰</name><Point><coordinates>-3.188,55.953,0</coordinates></Point></Placemark>
+    <Placemark><name>贝尔法斯特 · 北爱尔兰</name><Point><coordinates>-5.930,54.597,0</coordinates></Point></Placemark>
+    <Placemark><name>都柏林 · 爱尔兰</name><Point><coordinates>-6.261,53.350,0</coordinates></Point></Placemark>
+    <Placemark><name>巴黎 · 法国</name><Point><coordinates>2.352,48.857,0</coordinates></Point></Placemark>
+    <Placemark><name>格林德瓦 · 瑞士</name><Point><coordinates>8.041,46.624,0</coordinates></Point></Placemark>
+    <Placemark><name>哈尔施塔特 · 奥地利</name><Point><coordinates>13.649,47.562,0</coordinates></Point></Placemark>
+    <Placemark><name>布拉格 · 捷克</name><Point><coordinates>14.438,50.076,0</coordinates></Point></Placemark>
+    <Placemark><name>布达佩斯 · 匈牙利</name><Point><coordinates>19.040,47.498,0</coordinates></Point></Placemark>
+    <Placemark><name>贝尔格莱德 · 塞尔维亚</name><Point><coordinates>20.449,44.787,0</coordinates></Point></Placemark>
+    <Placemark><name>沉船湾 · 扎金索斯 · 希腊</name><Point><coordinates>20.624,37.860,0</coordinates></Point></Placemark>
+    <Placemark><name>雅典 · 希腊</name><Point><coordinates>23.728,37.984,0</coordinates></Point></Placemark>
+    <Placemark><name>萨拉热窝 · 波黑</name><Point><coordinates>18.413,43.856,0</coordinates></Point></Placemark>
+    <Placemark><name>杜布罗夫尼克 · 克罗地亚</name><Point><coordinates>18.094,42.651,0</coordinates></Point></Placemark>
+    <Placemark><name>罗马/阿马尔菲 · 意大利</name><Point><coordinates>12.496,41.903,0</coordinates></Point></Placemark>
+    <Placemark><name>采尔马特 · 瑞士</name><Point><coordinates>7.749,46.021,0</coordinates></Point></Placemark>
+    <Placemark><name>塞维利亚 · 西班牙</name><Point><coordinates>-5.984,37.389,0</coordinates></Point></Placemark>
+    <Placemark><name>里斯本 · 葡萄牙</name><Point><coordinates>-9.139,38.722,0</coordinates></Point></Placemark>
+  </Folder>
+  <Folder>
+    <name>摩洛哥</name>
+    <Placemark><name>摩洛哥 路线</name><Style><LineStyle><color>ff99d334</color><width>6</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>-5.264,35.169,0 -4.012,31.099,0</coordinates></LineString></Placemark>
+    <Placemark><name>舍夫沙万 · 摩洛哥</name><Point><coordinates>-5.264,35.169,0</coordinates></Point></Placemark>
+    <Placemark><name>梅尔祖卡 · 摩洛哥</name><Point><coordinates>-4.012,31.099,0</coordinates></Point></Placemark>
+    <Placemark><name>摩洛哥→西非 连接</name><Style><LineStyle><color>ff87e77e</color><width>3</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>-4.012,31.099,0 -13.203,27.154,0</coordinates></LineString></Placemark>
+  </Folder>
+  <Folder>
+    <name>西非纵穿</name>
+    <Placemark><name>西非 路线</name><Style><LineStyle><color>ff99d334</color><width>6</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>-13.203,27.154,0 -15.958,18.074,0 -17.468,14.717,0 -13.578,9.641,0 -4.008,5.360,0 -0.187,5.604,0 3.379,6.524,0 9.768,4.051,0 15.243,-4.263,0 13.289,-8.839,0</coordinates></LineString></Placemark>
+    <Placemark><name>阿尤恩 · 西撒哈拉</name><Point><coordinates>-13.203,27.154,0</coordinates></Point></Placemark>
+    <Placemark><name>努瓦克肖特 · 毛里塔尼亚</name><Point><coordinates>-15.958,18.074,0</coordinates></Point></Placemark>
+    <Placemark><name>达喀尔 · 塞内加尔</name><Point><coordinates>-17.468,14.717,0</coordinates></Point></Placemark>
+    <Placemark><name>科纳克里 · 几内亚</name><Point><coordinates>-13.578,9.641,0</coordinates></Point></Placemark>
+    <Placemark><name>阿比让 · 科特迪瓦</name><Point><coordinates>-4.008,5.360,0</coordinates></Point></Placemark>
+    <Placemark><name>阿克拉 · 加纳</name><Point><coordinates>-0.187,5.604,0</coordinates></Point></Placemark>
+    <Placemark><name>拉各斯 · 尼日利亚</name><Point><coordinates>3.379,6.524,0</coordinates></Point></Placemark>
+    <Placemark><name>杜阿拉 · 喀麦隆</name><Point><coordinates>9.768,4.051,0</coordinates></Point></Placemark>
+    <Placemark><name>布拉柴维尔 · 刚果(布)</name><Point><coordinates>15.243,-4.263,0</coordinates></Point></Placemark>
+    <Placemark><name>罗安达 · 安哥拉</name><Point><coordinates>13.289,-8.839,0</coordinates></Point></Placemark>
+    <Placemark><name>西非→南部非洲 连接</name><Style><LineStyle><color>ff87e77e</color><width>3</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>13.289,-8.839,0 17.066,-22.561,0</coordinates></LineString></Placemark>
+  </Folder>
+  <Folder>
+    <name>南部非洲</name>
+    <Placemark><name>南部非洲 路线</name><Style><LineStyle><color>ff99d334</color><width>6</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>17.066,-22.561,0 18.424,-33.925,0 31.591,-24.995,0</coordinates></LineString></Placemark>
+    <Placemark><name>温德霍克 · 纳米比亚</name><Point><coordinates>17.066,-22.561,0</coordinates></Point></Placemark>
+    <Placemark><name>开普敦 · 南非</name><Point><coordinates>18.424,-33.925,0</coordinates></Point></Placemark>
+    <Placemark><name>克鲁格 · 南非</name><Point><coordinates>31.591,-24.995,0</coordinates></Point></Placemark>
+    <Placemark><name>南部→东非 连接</name><Style><LineStyle><color>ff87e77e</color><width>3</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>31.591,-24.995,0 31.033,-17.825,0</coordinates></LineString></Placemark>
+  </Folder>
+  <Folder>
+    <name>东非·马达加斯加</name>
+    <Placemark><name>东非 路线</name><Style><LineStyle><color>ff99d334</color><width>6</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>31.033,-17.825,0 23.417,-19.983,0 28.323,-15.388,0 36.683,-3.387,0 29.873,-1.940,0 32.583,0.348,0 36.822,-1.292,0 44.300,-20.291,0</coordinates></LineString></Placemark>
+    <Placemark><name>哈拉雷 · 津巴布韦</name><Point><coordinates>31.033,-17.825,0</coordinates></Point></Placemark>
+    <Placemark><name>马翁 · 博茨瓦纳</name><Point><coordinates>23.417,-19.983,0</coordinates></Point></Placemark>
+    <Placemark><name>卢萨卡 · 赞比亚</name><Point><coordinates>28.323,-15.388,0</coordinates></Point></Placemark>
+    <Placemark><name>阿鲁沙 · 坦桑尼亚</name><Point><coordinates>36.683,-3.387,0</coordinates></Point></Placemark>
+    <Placemark><name>基加利 · 卢旺达</name><Point><coordinates>29.873,-1.940,0</coordinates></Point></Placemark>
+    <Placemark><name>坎帕拉 · 乌干达</name><Point><coordinates>32.583,0.348,0</coordinates></Point></Placemark>
+    <Placemark><name>内罗毕 · 肯尼亚</name><Point><coordinates>36.822,-1.292,0</coordinates></Point></Placemark>
+    <Placemark><name>穆隆达瓦 · 马达加斯加</name><Point><coordinates>44.300,-20.291,0</coordinates></Point></Placemark>
+    <Placemark><name>马达加斯加→蒙巴萨 海路</name><Style><LineStyle><color>ffb39c8b</color><width>3</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>44.300,-20.291,0 39.668,-4.044,0</coordinates></LineString></Placemark>
+  </Folder>
+  <Folder>
+    <name>船运回国</name>
+    <Placemark><name>船运 路线</name><Style><LineStyle><color>ffb39c8b</color><width>3</width></LineStyle></Style><LineString><tessellate>1</tessellate><coordinates>39.668,-4.044,0 113.264,23.129,0</coordinates></LineString></Placemark>
+    <Placemark><name>蒙巴萨 · 肯尼亚</name><Point><coordinates>39.668,-4.044,0</coordinates></Point></Placemark>
+    <Placemark><name>广州 · 中国</name><Point><coordinates>113.264,23.129,0</coordinates></Point></Placemark>
+  </Folder>
+</Document>
+</kml>

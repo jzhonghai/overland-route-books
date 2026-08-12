@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>克洛伊和老邓 · 欧亚非570天自驾行程</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #f4a261;
+      --accent-2: #2a9d8f;
+      --warn: #e76f51;
+      --asia: #e76f51;
+      --europe: #5eb3ff;
+      --africa: #34d399;
+      --return: #8b9cb3;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(244, 162, 97, 0.08);
+      border: 1px solid rgba(244, 162, 97, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6d5b8;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .bar-axis {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 0.5rem; padding-left: 142px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.asia { background: var(--asia); }
+    .dot.europe { background: var(--europe); }
+    .dot.africa { background: var(--africa); }
+    .dot.return { background: var(--return); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1100px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(244, 162, 97, 0.06); }
+    .phase {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.asia { background: rgba(231, 111, 81, 0.15); color: #ffb4a0; }
+    .phase.europe { background: rgba(94, 179, 255, 0.15); color: #b6dcff; }
+    .phase.africa { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .phase.return { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(244, 162, 97, 0.15); color: #f6d5b8; }
+    .conf.low { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    td a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    td a:hover { color: #ffd4a8; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(244, 162, 97, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-intro {
+      margin: 14px 0 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .guide-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      background: rgba(244, 162, 97, 0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .guide-days {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-days li strong { color: #b6dcff; font-weight: 600; }
+    .guide-days .gap { color: var(--muted); font-style: italic; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .guide-tips { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; }
+    .guide-tips > li { margin-bottom: 16px; }
+    .guide-tips h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--accent); font-weight: 600; }
+    .guide-tips ul { margin: 0; padding-left: 1.15rem; }
+    .guide-tips ul li { margin-bottom: 6px; color: var(--text); }
+    .country-no {
+      display: inline-block;
+      min-width: 1.6em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(42, 157, 143, 0.18);
+      color: #7dd3c0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(42, 157, 143, 0.2);
+      border-color: var(--accent-2); color: #9ee4d4;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    #route-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .map-setup {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; height: 100%; padding: 28px 24px; text-align: center; color: var(--muted);
+    }
+    .map-setup h3 { margin: 0; color: var(--text); font-size: 1.05rem; }
+    .map-setup ol { margin: 0; padding-left: 1.2rem; text-align: left; max-width: 640px; font-size: 0.9rem; line-height: 1.7; }
+    .map-setup ul { margin: 0; padding-left: 1.2rem; text-align: left; max-width: 640px; font-size: 0.88rem; line-height: 1.65; }
+    .map-setup .map-setup-note { max-width: 640px; font-size: 0.88rem; color: var(--warn); margin: 0; }
+    .map-setup a { color: var(--accent-2); }
+    .map-setup code { background: var(--panel-2); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      #route-map { height: 380px; }
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .bar-axis { padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>克洛伊和老邓 · 欧亚非570天自驾行程</h1>
+      <p class="subtitle">
+        博主：<strong>克洛伊和老邓</strong>（小红书 ID: 652b541c000000002a034742）·
+        2024.3.1 广州出发，粤A 国产混动 SUV（Tank 500 Hi4-T · 阿坦），带两位母亲裸辞环球自驾。
+        <strong>570 天 · 9 万公里 · 55 国</strong>——2024 亚欧大陆 33 国 + 2025 非洲 22 国；
+        2025.9 马达加斯加自驾收官，苏丹未通行，肯尼亚船运回国，11 月底抵广州。
+        完整月份清单见 <a href="#trip-overview-guide">↓ 570 天行程总览</a>。
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">出发</div><div class="value">2024-03-01</div></div>
+      <div class="card"><div class="label">亚欧 33 国</div><div class="value">2024.3–12</div></div>
+      <div class="card"><div class="label">非洲 22 国</div><div class="value">2025.1–9</div></div>
+      <div class="card"><div class="label">车辆回国</div><div class="value">2025-11</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>时间说明：</strong>
+      「造访时间」以总结帖<strong>月份</strong>为主，有「第 N 天」笔记的按 2024-03-01 起算映射；并非官方逐日行程表。
+      表格默认按<strong>570 天总结帖国家顺序</strong>排列（同国多行专帖紧随其后）。
+      <strong>国序</strong>：1–55 国别序号（据总结帖顺序；英国/瑞士再访同号；斯瓦尔巴计挪威；法罗计丹麦；苏格兰/威尔士/北爱尔兰计英国）；综述/回国段无序号。
+      <strong>置信度：</strong>高 = 总结帖月份 + 笔记/采访地点；中 = 采访或单条笔记；低 = 仅国家层或路线推断。
+      视频链接从小红书博主主页同步（含 xsec_token）；需<strong>登录小红书</strong>后打开，token 过期时可到<a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742" target="_blank" rel="noopener">博主主页</a>查找。
+    </div>
+
+    <h2 class="phase-title">阶段概览（造访估算）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+    <div class="bar-axis">
+      <span>2024-03 出发</span>
+      <span>2024-12 进非</span>
+      <span>2025-09 第55国</span>
+      <span>2025-11 车回国</span>
+    </div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Google My Maps 嵌入 · <a id="mymaps-edit-link" href="https://www.google.com/maps/d/edit?mid=1nThsZ95mngfQtcxejdnH_J7UgHqG67w&usp=sharing" target="_blank" rel="noopener">在新标签打开编辑</a> · <a href="#google-maps-setup-guide" class="guide-jump">配置教程</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程 55 国</button>
+          <button type="button" class="map-filter" data-filter="eurasia">亚欧 33 国</button>
+          <button type="button" class="map-filter" data-filter="africa">非洲 22 国</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#e76f51"></i>亚洲出境</span>
+        <span><i style="background:#5eb3ff"></i>欧洲</span>
+        <span><i style="background:#34d399"></i>非洲</span>
+        <span><i style="background:#8b9cb3;border-top:2px dashed #8b9cb3;height:0"></i>船运回国</span>
+        <span id="map-legend-hint">📍 点击标记查看地点</span>
+      </div>
+    </section>
+
+    <section class="guide-section" id="google-maps-setup-guide">
+      <details open>
+        <summary>Google My Maps 导入 route.kml · 嵌入教程（详细版）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">把项目里的 <a href="route.kml" download>route.kml</a> 导入 Google My Maps，再把嵌入链接填进 <code>index.html</code> 的 <code>MAP_CONFIG.myMapsEmbedUrl</code>，页面就会显示 Google Maps 版路线。KML 里已按阶段分文件夹：亚洲出境、北欧·冰岛·荷兰、英伦·中欧·南欧、摩洛哥、西非、南部非洲、东非·马达加斯加、船运回国。</p>
+          <p class="guide-note"><strong>⚠️ 国内网络说明</strong>：<code>google.com/maps/d/</code> 在中国大陆通常<strong>无法直接打开</strong>，需要先开 VPN/代理，并确保浏览器能访问 Google 账号与地图服务。若始终打不开，可改用下方「方案 B：Maps JavaScript API」（同样需要能访问 Google）。</p>
+
+          <p class="guide-note"><strong>方案 A：My Maps 嵌入（免 API Key，推荐）</strong></p>
+          <ol class="guide-days">
+            <li><strong>准备文件</strong>：下载同目录下的 <a href="route.kml" download>route.kml</a>（约 50 个关键点 + 分段连线，非 GPS 级轨迹）。</li>
+            <li><strong>打开 My Maps</strong>：VPN 开启后，用 Chrome/Edge 访问 <a href="https://www.google.com/maps/d/" target="_blank" rel="noopener">google.com/maps/d/</a>，登录 Google 账号。若首页空白，可试 <a href="https://www.google.com/maps/d/u/0/" target="_blank" rel="noopener">google.com/maps/d/u/0/</a>。</li>
+            <li><strong>创建地图</strong>：点左上角 <strong>「+ 创建新地图」</strong>（Create a new map）。会出现「无标题地图」编辑页，左侧是图层列表。</li>
+            <li><strong>导入 KML</strong>：
+              <ul class="guide-tips" style="margin-top:8px">
+                <li>在「无标题图层」下方点 <strong>「导入」</strong>（Import）。</li>
+                <li>选择本机的 <code>route.kml</code>，或把文件拖进上传框。</li>
+                <li>若弹出「选择列」对话框，一般直接 <strong>继续</strong> 即可（点坐标已在 KML 里）。</li>
+                <li>导入成功后，左侧应出现多个文件夹（如「亚洲出境」「西非纵穿」等），地图上能看到彩色线与标记点。</li>
+              </ul>
+            </li>
+            <li><strong>整理（可选）</strong>：顶部把地图标题改为「克洛伊和老邓 · 570天55国」；可勾选/取消图层文件夹，隐藏不需要的段；点「预览」看最终效果。</li>
+            <li><strong>分享权限</strong>：点 <strong>「分享」</strong>（Share）→ 在「获取链接」里把权限改为 <strong>「知道链接的任何人」可查看</strong>（Anyone with the link · Viewer）。嵌入网页必须公开可读，否则 iframe 会空白。</li>
+            <li><strong>获取嵌入代码</strong>：
+              <ul class="guide-tips" style="margin-top:8px">
+                <li>仍在本地图页，点菜单 <strong>「在 My Maps 中打开」</strong> 旁的 <strong>三点 ⋮</strong> → 选 <strong>「嵌入地图」</strong>（Embed on my site）。</li>
+                <li>复制对话框里 <code>&lt;iframe src="..."&gt;</code> 中 <strong>src= 后面整段 URL</strong>（以 <code>https://www.google.com/maps/d/embed?mid=...</code> 开头）。</li>
+                <li>示例形态：<code>https://www.google.com/maps/d/embed?mid=1abc...xyz&amp;ehbc=2E312F</code></li>
+              </ul>
+            </li>
+            <li><strong>写入网页配置</strong>：打开 <code>index.html</code>，找到 <code>MAP_CONFIG</code>，填入：
+              <pre style="background:var(--panel-2);padding:12px;border-radius:8px;overflow:auto;font-size:0.85rem;margin:10px 0">var MAP_CONFIG = {
+  myMapsEmbedUrl: "这里粘贴上一步复制的 embed URL",
+  googleMapsApiKey: ""
+};</pre>
+              保存后刷新本页，地图区域会显示 Google Maps iframe。
+            </li>
+          </ol>
+
+          <p class="guide-note"><strong>方案 B：Maps JavaScript API（支持上方「全程/亚欧/非洲」筛选）</strong></p>
+          <ul class="guide-tips">
+            <li>在 <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener">Google Cloud Console</a> 创建项目 → 启用 <strong>Maps JavaScript API</strong> → 创建 API Key（建议限制 HTTP 引荐来源）。</li>
+            <li>把 Key 填入 <code>MAP_CONFIG.googleMapsApiKey</code>，<code>myMapsEmbedUrl</code> 留空即可。</li>
+            <li>同样需要能访问 Google；国内需 VPN。</li>
+          </ul>
+
+          <p class="guide-note"><strong>常见问题</strong></p>
+          <ul class="guide-tips">
+            <li><strong>maps/d 打不开</strong>：几乎一定是网络限制，换 VPN 节点或设备再试；不要指望直连。</li>
+            <li><strong>导入时报 Anonymous uploads are not allowed</strong>：页面看起来已登录，但<strong>上传组件读不到账号</strong>（Google 已知 bug，多账号/VPN/第三方 Cookie 拦截时常见）。按顺序试：
+              <ul class="guide-tips" style="margin-top:8px">
+                <li><strong>优先：走云端硬盘导入</strong>——不要点「上传」标签；先把 <code>route.kml</code> 传到 <a href="https://drive.google.com" target="_blank" rel="noopener">Google 云端硬盘</a>，回到 My Maps 导入对话框选 <strong>「Google 云端硬盘」</strong> 标签，从 Drive 里选文件。</li>
+                <li><strong>唤醒登录态</strong>：新开标签打开 <a href="https://sheets.google.com" target="_blank" rel="noopener">Google 表格</a> 或 Drive，确认能正常打开后再切回 My Maps 重试导入。</li>
+                <li><strong>确认账号</strong>：点右上角头像，看当前是不是你要用的那个 Gmail；多账号时切到正确账号后刷新 My Maps。</li>
+                <li><strong>浏览器</strong>：换 Edge/Chrome 无痕窗口；暂时关闭广告拦截/隐私插件；允许 <code>google.com</code> 的第三方 Cookie。</li>
+                <li><strong>仍不行</strong>：清除 <code>google.com</code> 站点 Cookie 后重新登录，或改用下方方案 B（Maps JavaScript API）。</li>
+              </ul>
+            </li>
+            <li><strong>导入后没有线</strong>：展开左侧各文件夹，勾选名为「×× 路线」的图层（眼睛图标）；若仍无线，属 My Maps 对 KML 连线的已知限制——<strong>本页已改用代码绘制连线</strong>，My Maps 仅作备份/编辑。</li>
+            <li><strong>网页 iframe 只有点没有线</strong>：My Maps 嵌入不支持可靠显示导入的 KML 折线。请留空 <code>myMapsEmbedUrl</code>，页面默认用 Leaflet 画线；填 <code>googleMapsApiKey</code> 可换 Google 底图 + 连线。</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="trip-overview-guide">
+      <details open>
+        <summary>570 天 · 55 国行程总览（据总结帖）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">整理自 <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69a2c764000000001b01cbc6?xsec_token=AB_fsDQXchQqzH1glCbCDoN3u0tKbre-U78gbd2M6zJ0Q%3D&xsec_source=pc_user" target="_blank" rel="noopener">570 天总结帖</a>：2 年前裸辞从广州出发，一家人看遍亚欧非三大洲 55 国；表格内「第 N 天」笔记按 2024-03-01 起算，月份以总结帖为准。</p>
+          <p class="guide-note"><strong>2024 年 · 自驾亚欧大陆 · 穿越 33 国</strong></p>
+          <ul class="guide-days">
+            <li><strong>🇨🇳 3 月</strong>：中国 · 哈萨克斯坦 · 俄罗斯</li>
+            <li><strong>🇳🇴 4 月</strong>：挪威 · 斯瓦尔巴 · 瑞典 · 丹麦 · 法罗群岛</li>
+            <li><strong>🇮🇸 5 月</strong>：冰岛 · 荷兰 · 德国 · 比利时</li>
+            <li><strong>🇬🇧 6 月</strong>：英国 · 苏格兰 · 北爱尔兰</li>
+            <li><strong>🇮🇪 7 月</strong>：爱尔兰 · 威尔士 · 英国</li>
+            <li><strong>🇫🇷 8 月</strong>：法国 · 摩纳哥 · 瑞士 · 列支敦士登 · 奥地利 · 捷克 · 斯洛伐克 · 匈牙利</li>
+            <li><strong>🇷🇸 9 月</strong>：塞尔维亚 · 北马其顿 · 科索沃地区 · 希腊 · 阿尔巴尼亚 · 黑山 · 波黑</li>
+            <li><strong>🇮🇹 10 月</strong>：克罗地亚 · 斯洛文尼亚 · 意大利 · 圣马力诺</li>
+            <li><strong>🇨🇭 11 月</strong>：瑞士 · 安道尔 · 西班牙 · 葡萄牙</li>
+            <li><strong>🇲🇦 12 月</strong>：摩洛哥</li>
+          </ul>
+          <p class="guide-note"><strong>2025 年 · 穿越非洲 22 国</strong>（西非 → 南非 → 东非）</p>
+          <ul class="guide-days">
+            <li><strong>🇸🇳 1 月</strong>：西撒哈拉地区 · 毛里塔尼亚 · 塞内加尔 · 几内亚</li>
+            <li><strong>🇨🇮 2 月</strong>：科特迪瓦 · 加纳 · 尼日利亚 · 喀麦隆</li>
+            <li><strong>🇨🇬 3 月</strong>：刚果（布） · 安哥拉</li>
+            <li><strong>🇳🇦 4 月</strong>：纳米比亚</li>
+            <li><strong>🇿🇦 5–6 月</strong>：南非</li>
+            <li><strong>🇧🇼 7 月</strong>：津巴布韦 · 博茨瓦纳 · 赞比亚</li>
+            <li><strong>🇹🇿 8 月</strong>：坦桑尼亚 · 卢旺达 · 乌干达</li>
+            <li><strong>🇲🇬 9 月</strong>：肯尼亚 · 马达加斯加（苏丹未通行 · 肯尼亚船运回国）</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69a2c764000000001b01cbc6?xsec_token=AB_fsDQXchQqzH1glCbCDoN3u0tKbre-U78gbd2M6zJ0Q%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：自驾环游世界，和妈妈们570天的冒险终于结束</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="asia">亚洲出境</option>
+        <option value="europe">欧洲</option>
+        <option value="africa">非洲</option>
+        <option value="return">回国/船运</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、注意事项、视频标题…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot asia"></span>亚洲出境</span>
+      <span><span class="dot europe"></span>欧洲</span>
+      <span><span class="dot africa"></span>非洲</span>
+      <span><span class="dot return"></span>回国</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>国序</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>注意事项 · 难忘瞬间</th>
+            <th>造访时间</th>
+            <th>视频笔记</th>
+            <th>置信度</th>
+            <th>参考链接</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section" id="iceland-14d-guide">
+      <details>
+        <summary>冰岛 14 天攻略详情</summary>
+        <div class="guide-body">
+          <p class="guide-intro">14 天环冰岛自驾攻略，与小红书 AI 点点合作的旅行指南。视频标题为「14 天完成冰岛环岛」，但逐日拆解只覆盖 Day 1–9——这是 <strong>9 天核心行程框架</strong>；博主实际用 <strong>14 天</strong> 走完全程，多出的天数用于转场缓冲、天气改期、或在喜欢的地方多停留。</p>
+          <p class="guide-intro">Day 10–14 视频未逐日列出，属刻意留白而非遗漏。规划参考：<strong>12–14 天</strong> 适合慢节奏舒适环岛；<strong>9–10 天</strong> 可赶南岸 + 斯奈山半岛精华。</p>
+          <ol class="guide-days">
+            <li><strong>Day 1</strong> — 抵达雷克雅未克，逛市区、哈尔格林姆斯大教堂、彩虹街</li>
+            <li><strong>Day 2</strong> — 黄金圈：盖歇尔间歇泉 → 黄金瀑布 → 赫瓦姆斯维克泡温泉</li>
+            <li><strong>Day 3</strong> — 沿 1 号公路南下，塞里雅兰瀑布（可走到瀑布背后）、斯科加瀑布</li>
+            <li><strong>Day 4</strong> — 黑沙滩 → 杰古沙龙冰河湖</li>
+            <li><strong>Day 5</strong> — 冰川徒步 + 蓝冰洞探险（建议提前在 Get Your Guide 订团）</li>
+            <li class="gap"><strong>Day 6</strong> — 缓冲 / 机动日（天气改期、休整或转场，灵活安排）</li>
+            <li><strong>Day 7–8</strong> — 北上至阿克雷里休整</li>
+            <li><strong>Day 9</strong> — 返程经斯奈山半岛</li>
+          </ol>
+          <p class="guide-intro">↑ 以上为视频逐日列出的 Day 1–9 核心框架；Day 10–14 为实际环岛中的弹性天数，可按需分配。</p>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69804d2c00000000220300c5?xsec_token=AB1XM9YRo8HmdmV1q6Doirs3Q_Q62SFuqvqn0DKFF2TiA%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：终有一天你也会去到冰岛（附详细攻略）</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="murmansk-aurora-guide">
+      <details>
+        <summary>摩尔曼斯克 · 普通人追极光攻略</summary>
+        <div class="guide-body">
+          <p class="guide-intro">第 23 天 · 不需「极光猎人」几千块套餐；帖内照片均为 iPhone 14 Pro 原相机无滤镜。3 月 24 日晚首夜即追到极光（3 月底概率本不高，属幸运）。</p>
+          <ul class="guide-tips">
+            <li>
+              <h3>基础</h3>
+              <ul>
+                <li>看到极光概率 = <strong>极光强度（KP 值）</strong> + <strong>云层厚度</strong>；KP 越高、云越少越好。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>App（两个就够）</h3>
+              <ul>
+                <li><strong>极光</strong>：看 KP 值，按定位推荐观测点（看不清云层）。</li>
+                <li><strong>Windy</strong>：看云层分布 ☁️；低云基本无望，高云仍有机会；选未来几小时云最少处。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>拍摄 & 选址</h3>
+              <ul>
+                <li>极光在<strong>北面</strong>；观测点要开阔，北/西北无云无遮挡。</li>
+                <li>尽量避光污染：月光、车灯都会影响；满月不宜追极光。</li>
+                <li>iPhone 可拍：帖内有详细参数与步骤（原帖图 4）。</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/660148f50000000012032a56?xsec_token=ABSZ7dOjUy4ABG0QCVEqXfVxdSxICG6d0uvWRfYvxFaC8%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：第23天| 🇷🇺摩尔曼斯克 普通人追极光攻略</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="senja-day33-guide">
+      <details>
+        <summary>第 33 天 · 塞尼亚 / 索马洛伊 · 视频卡点与取景地</summary>
+        <div class="guide-body">
+          <p class="guide-intro">专帖《第33天| 开着粤A车经过唯一没有时间的小岛》— 索马洛伊（Sommarøy，取消时间的小岛）与塞尼亚岛（Senja）一日自驾；下列顺序对应原帖图 2–10 与视频卡点。</p>
+          <ol class="guide-days">
+            <li><strong>卡点 · 进入索马洛伊岛的桥</strong>（原帖图 2）— 视频转场；粤 A 驶过连岛桥</li>
+            <li><strong>Husøy Lighthouse</strong>（图 3）— 胡索伊灯塔</li>
+            <li><strong>Bergsbotn utsiktsplattform</strong>（图 4）— 伯格斯博恩观景台</li>
+            <li><strong>Bøvær 沙滩</strong>（图 5；帖内写 Bovaer）</li>
+            <li><strong>Fjordgård</strong>（图 6；帖内写 Fjordguard）</li>
+            <li><strong>Tungeneset</strong>（图 7）— 恶魔之齿</li>
+            <li><strong>Skrolsvik Fort</strong>（图 8–10）— 斯克罗斯维克堡垒</li>
+          </ol>
+          <p class="guide-intro">帖内形容「一天四季」；塞尼亚段后劲大，与索马洛伊「无时间岛」连拍成第 33 天 Vlog。</p>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/discovery/item/662055e6000000001c0043bb?source=webshare&xhsshare=pc_web&xsec_token=AB4GritPtnOG1bgaoUhxMPOdLunOrLQvPPclHLFRDCjLw=&xsec_source=pc_share" target="_blank" rel="noopener">查看原帖：第33天| 开着粤A车经过唯一没有时间的小岛</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="croatia-guide">
+      <details>
+        <summary>克罗地亚 7 日自驾攻略详情</summary>
+        <div class="guide-body">
+          <p class="guide-intro">第 27 国 · 杜布罗夫尼克即《权游》君临城 · 《花儿与少年》取景地。自驾只需中国驾照 + 英文翻译件，<strong>不需要国际驾照</strong>；申根签入境。</p>
+          <ol class="guide-days">
+            <li><strong>Day 1</strong> — 杜布罗夫尼克：罗维里耶纳克要塞 → West Harbour（权游取景）→ Dubrovnik Observation Point</li>
+            <li><strong>Day 2</strong> — 杜城：古城 → 城墙 → Banje Beach</li>
+            <li><strong>Day 3</strong> — 杜城 → 斯普利特（Pelješac Bridge）</li>
+            <li><strong>Day 4</strong> — 斯普利特：古城 → Parkiralište uz Tvrđavu</li>
+            <li><strong>Day 5</strong> — 斯普利特跳岛游 · 蓝洞</li>
+            <li><strong>Day 6</strong> — 斯普利特 → 扎达尔（海上风琴）</li>
+            <li><strong>Day 7</strong> — 扎达尔 → 萨格勒布（圣马可马赛克教堂）；有余力可去普拉-罗维尼</li>
+          </ol>
+          <p class="guide-intro">亮点：杜城城墙（西门进、顺时针、日落绝美）、Banje Beach、West Harbour、山顶观景点（上午去）、扎达尔海上风琴、萨格勒布马赛克屋顶。</p>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68056402000000000f039f5e?xsec_token=ABfWvZNfagvPx13dUPlbScz9aHH0EDPoziPbl5Yxp6e5Q%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：🇭🇷克罗地亚|人生就是一场场回旋镖！附攻略</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="uk-village-guide">
+      <details>
+        <summary>英国乡村推荐 · 旅居 2 个月合集</summary>
+        <div class="guide-body">
+          <p class="guide-intro">在英国旅居约 2 个月后的推荐——「英国的灵魂不在伦敦，而在乡村里」。</p>
+          <ol class="guide-days">
+            <li><strong>拜博里 Bibury</strong> — 英格兰最美乡村；护照上的村子；17 世纪石头排屋</li>
+            <li><strong>惠韦尔 Wherwell</strong> — 距伦敦 1h+；经典齐刘海茅草屋；少游客</li>
+            <li><strong>百老汇 Broadway</strong> — 艺术家云端小镇；蜂蜜色石头屋；百老汇塔</li>
+            <li><strong>坎特伯雷 Canterbury</strong> — 开满鲜花的河畔；「油画里的世界」</li>
+            <li><strong>水上伯顿 Bourton-on-the-Water</strong> — 英国「水上威尼斯」；矮石桥与清澈河水</li>
+          </ol>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/687e66e90000000012023462?xsec_token=ABfcUkn_xys_hzMhpAvPzOJsa0sBhjQ5zWy7xqnKEDNKk%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：旅居2个月 才敢给你推荐的神级英国乡村🇬🇧</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="safari-top5-guide">
+      <details>
+        <summary>非洲 Safari Top5 攻略详情</summary>
+        <div class="guide-body">
+          <p class="guide-intro">穿越非洲 21 国、经历十几场 Safari 后的对比推荐——<strong>天花板并不只在肯尼亚和坦桑尼亚</strong>。</p>
+          <ol class="guide-days">
+            <li><strong>🥇 博茨瓦纳</strong> — 奥卡万戈三角洲 & Savuti</li>
+            <li><strong>🥈 坦桑尼亚</strong> — 塞伦盖蒂</li>
+            <li><strong>🥉 南非</strong> — 克鲁格</li>
+            <li><strong>4️⃣ 肯尼亚</strong> — 马塞马拉</li>
+            <li><strong>5️⃣ 纳米比亚</strong> — 埃托沙公园</li>
+          </ol>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68ae9d2c000000001d03844c?xsec_token=ABOeR6o_Mf5to3D2bn57CFb8UBterDO0VSwmxMJGSPxCg%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：穿越非洲21国，才敢给你推荐的Safari天花板</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="lifetime-top3-guide">
+      <details>
+        <summary>走遍 45 国 · 此生必去 Top3 攻略详情</summary>
+        <div class="guide-body">
+          <p class="guide-intro">2025 年 4 月发布（彼时约 45 国）：开着中国车环球自驾一整年，走过亚欧非三大洲后，博主心中<strong>此生必去前三名</strong>——附出行攻略，可码进旅行清单。</p>
+          <ol class="guide-days">
+            <li><strong>🥇 挪威 · 罗弗敦</strong> — 《孤独星球》封面上的罗弗敦；Senja 岛遗世独立；彩色 rorbuer 水上小屋、每一眼都像油画；<em>评论区共识：冬天的挪威才是天花板</em></li>
+            <li><strong>🥈 意大利 · 多洛米蒂</strong> — 富内斯山谷（Val di Funes）如梦如幻；Seceda「魔戒之路」；悬崖边坐看云海</li>
+            <li><strong>🥉 冰岛</strong> — 蓝冰洞 · 活火山 · 雷尼斯黑沙滩 · 测视力红房子（Ingjaldshólskirkja）；「都能在冰岛找到自己灵魂中的某一部分影子」</li>
+          </ol>
+          <p class="guide-note"><strong>出行四件套（帖内附攻略）</strong></p>
+          <ul class="guide-tips">
+            <li><strong>自驾</strong>：不需要国际驾照——国内驾照 + 翻译件即可（自己开过去或当地租车均可）</li>
+            <li><strong>钱</strong>：不需要带太多现金</li>
+            <li><strong>语言</strong>：不会英语别担心——带翻译机可以走遍全世界</li>
+            <li><strong>网络</strong>：漫游超人随身 Wi-Fi（帖内合作提及；出境网络很重要）</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/67f7f039000000000e006cd9?xsec_token=ABpsz6wq4afkW_NeiPw8xiGbbZKybG_WFsPVOPxT7tNqM=&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：走遍45国后，才敢给你推荐的此生必去Top3‼️</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="vehicle-border-guide">
+      <details>
+        <summary>环球自驾 · 车辆出入境攻略（中→哈→俄→申根）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">3.1 从广州出发约一个月后抵挪威；涵盖陆路出境至首次进入申根国的车辆与口岸要求（签证攻略另帖）。</p>
+          <ul class="guide-tips">
+            <li>
+              <h3>🚗 中国车怎么出境</h3>
+              <ul>
+                <li>ATA 已停办 → 改办<strong>暂时进出境</strong>；找报关公司申报，有押金和手续费（仅担保进出中国，境外仍看各国政策）。</li>
+                <li><strong>随车证件</strong>：驾照+行驶证原件 · 英文/俄文公证翻译件 · 多语言驾照翻译小白本（支付宝，博主暂未用到）。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇰🇿 哈萨克斯坦入境</h3>
+              <ul>
+                <li>海关系统与中国打通，凭中国出入境报关清单可查。</li>
+                <li>填表按步查验盖章 → 获俄语通行证（哈俄条约，博主为 1 年有效期）。</li>
+                <li>车辆检查较严：大件取下，引擎盖/底盘会查；保险可提前买或出境后小镇买（约 15 天一两百元）。</li>
+                <li>前窗贴膜：透视度 ≥70% 即可（非完全禁止）。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇷🇺 俄罗斯入境</h3>
+              <ul>
+                <li>博主经<strong>彼得罗巴甫尔</strong>关口；须<strong>贴纸签证</strong>（电子签不行）。</li>
+                <li>一般顺利，但博主曾被 security 盘查约 3 小时（多国环游+法英签证记录+局势因素）。</li>
+                <li>车辆保险：出发前或刚出境买均可。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🇳🇴 申根国入境（挪威）</h3>
+              <ul>
+                <li>芬兰关口已关闭，<strong>挪威仍可通行</strong>；政策常变，出发前可邮件咨询口岸。</li>
+                <li>须申根签 + 驾照行驶证原件 + 英文公证件（证明车归属，无需报海关）。</li>
+                <li>检查很严：所有行李下车过机；关口可买保险（约 2 个月 2500 元）。</li>
+                <li>申根对长期自驾较严：会详问路线、资产、出入境时间。</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/660eaef8000000001b0110f3?xsec_token=AB8qwwwVJcxRHi4jrjNPFClqjir_tBcBKblTb38wMGy78%3D&xsec_source=pc_user" target="_blank" rel="noopener">查看原帖：环球自驾车辆出入境攻略看这一篇就够了🌍</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="guide-section" id="budget-tips-guide">
+      <details>
+        <summary>570 天 · 省钱技巧详情</summary>
+        <div class="guide-body">
+          <p class="guide-intro">整理自总结帖「自驾环游世界，和妈妈们570天的冒险终于结束」及「55 国花费」系列分享。</p>
+          <p class="guide-note">省钱核心就两件事：<strong>自己做饭</strong> + <strong>不追求豪华住宿</strong>。4 人 570 天，人均每天吃+住不到 100 块，整体控得相当不错。</p>
+          <ul class="guide-tips">
+            <li>
+              <h3>🚗 行</h3>
+              <ul>
+                <li>自驾本身就是最大省钱方式：4 人开 9 万公里，自驾总花费人均不到 10 万，比每人单独买机票飞划算得多。</li>
+                <li>一路走、不来回折返，避免重复机票——自驾最大优势就是「顺路」。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🏠 住</h3>
+              <ul>
+                <li><strong>欧洲住民宿</strong>：4 人住酒店太贵，民宿首选；要有厨房、独立停车位，仔细翻差评看有没有臭虫（希腊吃过亏）。</li>
+                <li><strong>非洲车上露营</strong>：两人时直接在车上住，省住宿费。</li>
+                <li><strong>露营地替代酒店</strong>：博茨瓦纳奥卡万戈三角洲，旺季酒店 4000 美金/晚，同酒店露营地只要 10 美金，差价巨大。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>🍳 吃</h3>
+              <ul>
+                <li><strong>自带移动厨房</strong>：锅、电饭煲、火锅底料全带上；欧洲基本超市买菜+自己做，欧洲牛肉比国内还便宜。</li>
+                <li><strong>做饭变社交货币</strong>：英国用房东厨房炒个炒饭，直接免了房费。</li>
+                <li><strong>非洲靠自热锅</strong>：不是贵，是不敢在外面吃，怕卫生问题。</li>
+              </ul>
+            </li>
+            <li>
+              <h3>💡 其他</h3>
+              <ul>
+                <li>俄罗斯现已免签，比他们出发时能省好几千。</li>
+                <li>车辆出入境手续也变便宜了——2024 出发时花了不少，现在自己就能办。</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69a2c764000000001b01cbc6?xsec_token=AB_fsDQXchQqzH1glCbCDoN3u0tKbre-U78gbd2M6zJ0Q%3D&xsec_source=pc_user" target="_blank" rel="noopener">570 天总结帖：自驾环游世界，和妈妈们570天的冒险终于结束</a>
+            ·
+            <a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69cabef80000000021039266?xsec_token=ABPNjjPnkRu1vooDWCyNd_Nii_xxfcolm1lSk4V92PmP0%3D&xsec_source=pc_user" target="_blank" rel="noopener">一家四口55国要花多少钱</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-11 · 来源：小红书笔记（含用户短链批量解析）· 九派新闻/扬子晚报采访 · 570 天总结帖 · 主页「这世界大得让你很难不旅游」。</p>
+      <p><strong>待补链接</strong>：各国「途经」行多为总结帖月份清单（置信度中），待城市级专帖补全。</p>
+      <p><strong>570 天总结帖</strong>已入库：<a href="https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69a2c764000000001b01cbc6?xsec_token=AB_fsDQXchQqzH1glCbCDoN3u0tKbre-U78gbd2M6zJ0Q%3D&xsec_source=pc_user" target="_blank" rel="noopener">自驾环游世界，和妈妈们570天的冒险终于结束</a> — 2024 亚欧 33 国 + 2025 非洲 22 国完整月份清单见页内 <a href="#trip-overview-guide">行程总览</a>。</p>
+    </footer>
+  </div>
+
+  <script>
+    var XHS_USER = "652b541c000000002a034742";
+    var xhsUrlMap = {
+      "65eb519a000000000b00e23e": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65eb519a000000000b00e23e?xsec_token=AB3qywCMlFQLI5zIOYDfAyotqdaDGxQ4i0myvcMnnzeAQ%3D&xsec_source=pc_user",
+      "65f3032c0000000013026b26": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65f3032c0000000013026b26?xsec_token=AB8HO458vhAaNAHbB-OuDXVjDuYwZceZGtNXP8yDPMBVA%3D&xsec_source=pc_user",
+      "65f6f05400000000120315c6": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65f6f05400000000120315c6?xsec_token=ABLC4g2N0Xroopzhhz0UDeF9fu8SWNmfD9N5-xrRn1E1I%3D&xsec_source=pc_user",
+      "65faeb360000000012037b13": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65faeb360000000012037b13?xsec_token=ABaqFU3iqjHtdJHCoZau_lcHUGzrHX8QtWBFdCKpazhR4%3D&xsec_source=pc_user",
+      "65fc3f3b00000000120371a1": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65fc3f3b00000000120371a1?xsec_token=ABiUb6EKJdIUBiLVYNW1eFJ57XTBwNY_G2eOfOzg_AUR8%3D&xsec_source=pc_user",
+      "65fd981f0000000013026b75": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65fd981f0000000013026b75?xsec_token=ABMce_IqL-ObE8jAxfk73PsVj4oHs3m_34njQvkkRTbhE%3D&xsec_source=pc_user",
+      "65ff2f4600000000140051a4": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/65ff2f4600000000140051a4?xsec_token=ABvEvn2MVPT56LYwqli7MhJzl9tRkxdkUi3XXR6ygi2PI%3D&xsec_source=pc_user",
+      "66002bd80000000014005fc2": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66002bd80000000014005fc2?xsec_token=ABv5VzNVrdNeWGJgsphZKZ6Iem7ASkxEfJhO5Sx8DKbug%3D&xsec_source=pc_user",
+      "660148f50000000012032a56": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/660148f50000000012032a56?xsec_token=ABSZ7dOjUy4ABG0QCVEqXfVxdSxICG6d0uvWRfYvxFaC8%3D&xsec_source=pc_user",
+      "6603428400000000120376f1": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6603428400000000120376f1?xsec_token=ABNg0KbcEfzlYxFHxrHCm1UC_c1WnisiFiEqvIKwtlmiQ%3D&xsec_source=pc_user",
+      "66056bb90000000012030592": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66056bb90000000012030592?xsec_token=AB6WAKlZphF2u10DXGeq9Lkq2bwuUN8F6DifwfCPRbl2o%3D&xsec_source=pc_user",
+      "6609bf6d000000001b008dc2": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6609bf6d000000001b008dc2?xsec_token=ABK1aX8CD5wu5A-iuqlZYNCWRCkFSgOTkC58Mp0eKYAsg%3D&xsec_source=pc_user",
+      "660d7a84000000000401bb53": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/660d7a84000000000401bb53?xsec_token=ABynPfA9ZMegS9tUDcnPMGtUHPiPrYijoVjZjMRnt6nbg%3D&xsec_source=pc_user",
+      "660eaef8000000001b0110f3": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/660eaef8000000001b0110f3?xsec_token=AB8qwwwVJcxRHi4jrjNPFClqjir_tBcBKblTb38wMGy78%3D&xsec_source=pc_user",
+      "661513b70000000004019141": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/661513b70000000004019141?xsec_token=ABUNue2UzVea1zhPVhaARl45hh5DFqpsjqLypLur6C9ac%3D&xsec_source=pc_user",
+      "661d0acd000000001c004117": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/661d0acd000000001c004117?xsec_token=ABaXejTvU_LMtwcXh3dLVYBy77YVVg0bHyF2bPWNLyzy4%3D&xsec_source=pc_user",
+      "662055e6000000001c0043bb": "https://www.xiaohongshu.com/discovery/item/662055e6000000001c0043bb?source=webshare&xhsshare=pc_web&xsec_token=AB4GritPtnOG1bgaoUhxMPOdLunOrLQvPPclHLFRDCjLw=&xsec_source=pc_share",
+      "6627ad33000000001c009d9d": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6627ad33000000001c009d9d?xsec_token=ABGuj7pBDf7n223NjF--ROlQvg0m9XIefZe1SIXbeU4GQ%3D&xsec_source=pc_user",
+      "66319a7e000000001e01a808": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66319a7e000000001e01a808?xsec_token=ABixcPRMkQ9MGLFwvzfCuTw4CBD8q4ClsMDFqXydtgoCc%3D&xsec_source=pc_user",
+      "66342a67000000001e01cc04": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66342a67000000001e01cc04?xsec_token=ABTANA9CiXQ-0mskHcJOPAnR10hIA4haYYzkflsDk5De0%3D&xsec_source=pc_user",
+      "663ceb5b000000001e02d6ae": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/663ceb5b000000001e02d6ae?xsec_token=ABwUx4L60SNOiFyOc9QduemCc0NxsF0cdF9NdQzilQN0I%3D&xsec_source=pc_user",
+      "6640a02f000000001e01c253": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6640a02f000000001e01c253?xsec_token=ABBlc4JQ9C4053PNf7eKycaonAZEnAb8tueaTT1j7YXsU%3D&xsec_source=pc_user",
+      "664a7db50000000015008d75": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/664a7db50000000015008d75?xsec_token=ABYPtCa7CzsugPHwUP6yCspNdY3r7bdEYlekNWCgMhTE4%3D&xsec_source=pc_user",
+      "664de62d000000000c01aa30": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/664de62d000000000c01aa30?xsec_token=ABDaFGqTVgrTpljqYzr5f83y0voqXrrf0UOBMRLlO0Kzg%3D&xsec_source=pc_user",
+      "665515120000000015009ca3": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/665515120000000015009ca3?xsec_token=ABeUSKIfs6Re75UzbrxIkldI6PLYMa5mTaVddqcrlSB9o%3D&xsec_source=pc_user",
+      "66591a54000000001500a319": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66591a54000000001500a319?xsec_token=ABvxCj4xTIXGQCt_EB2hWNgwpVVARQfxMjRBKuLdARaSc%3D&xsec_source=pc_user",
+      "666250170000000015010109": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/666250170000000015010109?xsec_token=ABRdA65I4OZQr1KH507ztbzG7jD0XkvO3aeYM2bMXmO2s%3D&xsec_source=pc_user",
+      "666642d2000000001501133c": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/666642d2000000001501133c?xsec_token=ABEXi11UyiW33DI7vsPHpkqkbDxEsGWlE6s0YyyQlUA_4%3D&xsec_source=pc_user",
+      "667bf297000000001c029e1b": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/667bf297000000001c029e1b?xsec_token=ABkrd0xrTcfuUcsFgqA1zF7lR50v-h0EVp01Jjg9J8wag%3D&xsec_source=pc_user",
+      "668c7e2d000000000d00fa30": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/668c7e2d000000000d00fa30?xsec_token=ABt4cUUFDnWo8CF7YONGNaQrdaBTs3_fE_0RLItc4iwm4%3D&xsec_source=pc_user",
+      "66958bfe000000000a024f4c": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66958bfe000000000a024f4c?xsec_token=ABuViqLOzmLHjygcIlypoRU0kKtd5Q8q2dzJCRLUHp6OM%3D&xsec_source=pc_user",
+      "669e5871000000000a005a1a": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/669e5871000000000a005a1a?xsec_token=ABdQhNCiGC7z7pQoC8V3fMtoHmLF3jo2eJo6NfzLUfJBU%3D&xsec_source=pc_user",
+      "66ae1e46000000000503aef1": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66ae1e46000000000503aef1?xsec_token=ABBQqUwzAQKtX6qAswj7EQjsh1DBEpqjbVlm3ijXKqBYk%3D&xsec_source=pc_user",
+      "66b2aa440000000005022c47": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66b2aa440000000005022c47?xsec_token=ABJ9d3JUxkgQwtGkR9sOgjDms3Wl8EeCXNqvqgG2Z7ecc%3D&xsec_source=pc_user",
+      "66b958170000000009014121": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66b958170000000009014121?xsec_token=AB-11kLcFnkzQjLqh74loo-SLGJhuCm1wnQ4gA4Ys6_ZY%3D&xsec_source=pc_user",
+      "66d4e1ba000000001f03c40e": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66d4e1ba000000001f03c40e?xsec_token=ABvy6uTShRxiBezYV7AcHvo4kbm2V4J1_p1aBnnoqGo-s%3D&xsec_source=pc_user",
+      "66e42e550000000027007f09": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/66e42e550000000027007f09?xsec_token=AB-4-yER9aaY6c1OvtRJsOPeWpx5J69wXbAtgJVS5MBNs%3D&xsec_source=pc_user",
+      "6709bca7000000002a035aad": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6709bca7000000002a035aad?xsec_token=ABBCPAFsGScJn4m-bKYsg-zR3HMXOVeeVZzT_CcZgaspE%3D&xsec_source=pc_user",
+      "671a4d42000000001b02ce95": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/671a4d42000000001b02ce95?xsec_token=ABMbYEl0bKa5XBBlQrAE8TG4CLcuMxi7OFiD6XQYAo7zk%3D&xsec_source=pc_user",
+      "67289695000000003c014e19": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/67289695000000003c014e19?xsec_token=ABeyZkdkb7lxypoVCXNhpvws9Jqn-mA-Gncm7FN540A4M%3D&xsec_source=pc_user",
+      "67328daf000000001d03be58": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/67328daf000000001d03be58?xsec_token=ABx-07TyWUqImtrT-hLz1eW7Ppyn30I0vON7p0-bO028U%3D&xsec_source=pc_user",
+      "674b649d0000000002029aca": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/674b649d0000000002029aca?xsec_token=ABhwRlugr-84SM6lXTvUw9k6th328X0BS6aCmbs2J2vI8%3D&xsec_source=pc_user",
+      "674da19e000000000201b2ae": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/674da19e000000000201b2ae?xsec_token=AB7ZiQbGXuhQYS2_vAdgT-llitNvBL_H26buNk_y-JT3s%3D&xsec_source=pc_user",
+      "68056402000000000f039f5e": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68056402000000000f039f5e?xsec_token=ABfWvZNfagvPx13dUPlbScz9aHH0EDPoziPbl5Yxp6e5Q%3D&xsec_source=pc_user",
+      "681ca4fd000000000c03b8a3": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/681ca4fd000000000c03b8a3?xsec_token=ABmmmFhBIZJjg4mTt-W9urVce_I-v8JakmP8f49ncLj9Q%3D&xsec_source=pc_user",
+      "683f5dd7000000000f038adc": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/683f5dd7000000000f038adc?xsec_token=ABDLMJGhuCXunzbNZdhXtq2QIeXz_D1XBY4eGe4iT7ImY%3D&xsec_source=pc_user",
+      "68491a80000000001101c4d7": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68491a80000000001101c4d7?xsec_token=ABRwhhT8Ap6qsi5rxjzkiUOfMubrLAcQI3m-urNHvEpD4%3D&xsec_source=pc_user",
+      "686d0b3f00000000130119f4": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/686d0b3f00000000130119f4?xsec_token=ABqaVWXKT8JiBi8Ga6Y6Gutx70YUWyLLtL2CNUckcoCFg%3D&xsec_source=pc_user",
+      "686e712a0000000012023a33": "https://www.xiaohongshu.com/discovery/item/686e712a0000000012023a33?source=webshare&xhsshare=pc_web&xsec_token=ABdBhUSIJaN76vwSwxWLKRxVRkhgIM3asIwGT4W0NsotI=&xsec_source=pc_share",
+      "6875c8cd00000000150208e2": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6875c8cd00000000150208e2?xsec_token=ABxMUkhhSj6odXItHpsCmSIZEf7mUTA49pdM1I74B-hJE%3D&xsec_source=pc_user",
+      "687e66e90000000012023462": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/687e66e90000000012023462?xsec_token=ABfcUkn_xys_hzMhpAvPzOJsa0sBhjQ5zWy7xqnKEDNKk%3D&xsec_source=pc_user",
+      "68880be20000000012030363": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68880be20000000012030363?xsec_token=ABaem0pZtbRgR4GlouIVNUqgwY6o7767D-oQx5nxK9e-A%3D&xsec_source=pc_user",
+      "68a6490a000000001d01f406": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68a6490a000000001d01f406?xsec_token=ABkqZFfdVY-u75qHcJoq6cOTCqhQSNsbWH1OvsVBkcHJA%3D&xsec_source=pc_user",
+      "68ae9d2c000000001d03844c": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68ae9d2c000000001d03844c?xsec_token=ABOeR6o_Mf5to3D2bn57CFb8UBterDO0VSwmxMJGSPxCg%3D&xsec_source=pc_user",
+      "67f7f039000000000e006cd9": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/67f7f039000000000e006cd9?xsec_token=ABpsz6wq4afkW_NeiPw8xiGbbZKybG_WFsPVOPxT7tNqM=&xsec_source=pc_user",
+      "68fa4ab0000000000301cbac": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/68fa4ab0000000000301cbac?xsec_token=ABNmTMIyah6exTrXd_LlwPNJ11DUhp2Y8c5TV2BFUuo6Y%3D&xsec_source=pc_user",
+      "694bb75100000000190261c9": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/694bb75100000000190261c9?xsec_token=ABgtIAfNdQZh3X9cu2alAaah2zIC1IfEsvk_YMeouiRcI%3D&xsec_source=pc_user",
+      "69515adf00000000210313d4": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69515adf00000000210313d4?xsec_token=ABb4HYaD8MThEF5EvyFExtYvoaopiw8TvWqSE3wOrM9W8%3D&xsec_source=pc_user",
+      "695d4a920000000022033f02": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/695d4a920000000022033f02?xsec_token=ABpBgkz_9f6AAlJf_tHYYO68UVawJStjC-yzhr4yIOJmw%3D&xsec_source=pc_user",
+      "6971f63f000000002203a57b": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6971f63f000000002203a57b?xsec_token=ABeUazYDAxznTHnjYvJSlIBI51qV8EllllXdPTCadU1kc%3D&xsec_source=pc_user",
+      "69804d2c00000000220300c5": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69804d2c00000000220300c5?xsec_token=AB1XM9YRo8HmdmV1q6Doirs3Q_Q62SFuqvqn0DKFF2TiA%3D&xsec_source=pc_user",
+      "698afc1b000000001503b4e6": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/698afc1b000000001503b4e6?xsec_token=ABp0FrwQvuP6YS94mQQnzQLVekyPY9JCWEUmS4TEUK4Ac%3D&xsec_source=pc_user",
+      "699e9f3c000000001600a5f9": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/699e9f3c000000001600a5f9?xsec_token=ABS43KhYy6AS61jiB2EzaPKHLR7BhAgFLMsjUkm_4yIJU%3D&xsec_source=pc_user",
+      "69a2c764000000001b01cbc6": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69a2c764000000001b01cbc6?xsec_token=AB_fsDQXchQqzH1glCbCDoN3u0tKbre-U78gbd2M6zJ0Q%3D&xsec_source=pc_user",
+      "69cabef80000000021039266": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69cabef80000000021039266?xsec_token=ABPNjjPnkRu1vooDWCyNd_Nii_xxfcolm1lSk4V92PmP0%3D&xsec_source=pc_user",
+      "69d53841000000001a02a279": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69d53841000000001a02a279?xsec_token=ABDoN4OVK8oTHvA8K0n9orAY9maAckWE-dSgZxP4uhOQA%3D&xsec_source=pc_user",
+      "69fb081f000000003601f257": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/69fb081f000000003601f257?xsec_token=ABxKmjM5ZkY3vnGyFwMO-HD8eX67LriAH-1DIqQokj0j8%3D&xsec_source=pc_user",
+      "6a69b393000000000301f554": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6a69b393000000000301f554?xsec_token=ABjBLa9d10rJPw-ILRrActmPF1-KqzzXnh_8h-5y5n0r0%3D&xsec_source=pc_user",
+      "6a6baa0d00000000220333ed": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6a6baa0d00000000220333ed?xsec_token=ABb7gYrZPzkc-UjtZJKnXgsOlQnm-9Va2EPIUigyYcEME%3D&xsec_source=pc_user",
+      "6a736ba000000000250060b2": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6a736ba000000000250060b2?xsec_token=ABTDNB3pHnKbNqbT3aWlZoerMk9G9EOzWecOloCXWjdUM%3D&xsec_source=pc_user",
+      "6a797adb0000000006007775": "https://www.xiaohongshu.com/user/profile/652b541c000000002a034742/6a797adb0000000006007775?xsec_token=ABxQZuBKNBud8uOxtY5SrY6QPH5x32NeAZZJOKnqC046c%3D&xsec_source=pc_user",
+    };
+    function xhsUrl(id) {
+      if (!id) return "";
+      if (xhsUrlMap[id]) return xhsUrlMap[id];
+      return "https://www.xiaohongshu.com/user/profile/" + XHS_USER + "/" + id;
+    }
+
+    var phaseLabel = { asia: "亚洲", europe: "欧洲", africa: "非洲", return: "回国" };
+
+    // 55 国序号：总结帖月份顺序，同国再访不递增；帖内「第 N 国」标注国别用 overrides 优先
+    var countryNoMap = {
+      "中国": 1, "哈萨克斯坦": 2, "俄罗斯": 3,
+      "挪威": 4, "斯瓦尔巴": 4, "瑞典": 5,
+      "丹麦": 6, "丹麦 → 法罗群岛": 6, "法罗群岛": 7,
+      "冰岛": 8, "荷兰": 9, "德国": 10, "比利时": 11,
+      "英国": 12, "苏格兰": 12, "北爱尔兰": 12, "威尔士": 12, "爱尔兰": 13,
+      "法国": 14, "摩纳哥": 15, "瑞士": 16, "列支敦士登": 17, "奥地利": 18,
+      "捷克": 19, "斯洛伐克": 20, "匈牙利": 21,
+      "塞尔维亚": 22, "北马其顿": 23, "科索沃": 23, "希腊": 24, "阿尔巴尼亚": 25, "黑山": 26, "波黑": 27,
+      "克罗地亚": 28, "斯洛文尼亚": 29, "意大利": 30, "圣马力诺": 31, "安道尔": 32, "西班牙": 33, "葡萄牙": 34,
+      "摩洛哥": 35, "西撒哈拉": 36, "毛里塔尼亚": 37, "塞内加尔": 38, "几内亚": 39,
+      "科特迪瓦": 40, "加纳": 41, "尼日利亚": 42, "喀麦隆": 43, "刚果(布)": 44, "安哥拉": 45,
+      "纳米比亚": 46, "南非": 47, "津巴布韦": 48, "博茨瓦纳": 49, "赞比亚": 50,
+      "坦桑尼亚": 51, "卢旺达": 52, "乌干达": 53, "肯尼亚": 54, "马达加斯加": 55
+    };
+    var countryNoPostOverrides = {
+      "瑞典": 4, "荷兰": 8, "瑞士": 14, "奥地利": 18, "克罗地亚": 27, "西班牙": 32,
+      "摩洛哥": 34, "毛里塔尼亚": 35, "南非": 47, "赞比亚": 50, "卢旺达": 52, "肯尼亚": 54, "马达加斯加": 55
+    };
+
+    function getCountryNo(country) {
+      if (!country || country === "—" || country === "综述" || country === "非洲22国") return "";
+      if (Object.prototype.hasOwnProperty.call(countryNoPostOverrides, country)) {
+        return countryNoPostOverrides[country];
+      }
+      var n = countryNoMap[country];
+      return n != null ? n : "";
+    }
+
+    var rows = [
+      { phase:"asia", country:"中国", place:"广州", notes:"3.1 裸辞出发；出发前家庭会议+PPT；陆路经新疆；570 天·55 国起点；详见 <a href=\"#trip-overview-guide\" class=\"guide-jump\">↓ 570 天行程总览</a>", moment:"570 天起点 · 2 年后把「不可能」变成「我们做到了」", visit:"2024-03-01", videoId:"69a2c764000000001b01cbc6", videoTitle:"自驾环游世界，和妈妈们570天的冒险终于结束", conf:"high" },
+      { phase:"asia", country:"中国", place:"霍尔果斯口岸", notes:"陆路出境点；车辆出入境详见 <a href=\"#vehicle-border-guide\" class=\"guide-jump\">↓ 车辆出入境攻略</a>", moment:"", visit:"2024-03", videoId:"", videoTitle:"", conf:"high" },
+      { phase:"asia", country:"哈萨克斯坦", place:"巴尔喀什", notes:"与当地人在广场晒太阳", moment:"", visit:"2024-03", videoId:"", videoTitle:"", conf:"mid" },
+      { phase:"asia", country:"哈萨克斯坦", place:"阿拉木图 · 升天大教堂", notes:"第 8 天（≈3/8 · 38 女神节）；带妈妈环游第一站；满街鲜花、出境查车小哥用翻译机祝妇女节快乐；给婆婆化妆、请摄影师为妈妈们拍照；阿拉木图升天大教堂", moment:"「成年之后重新养自己一遍——也要带着妈妈们找到热烈的全新生活」· 妈妈们值得世界上所有最好的东西", visit:"2024-03-08 前后", videoId:"65eb519a000000000b00e23e", videoTitle:"第8天| 把妈妈们重新「养」一遍 女神节快乐！", conf:"high" },
+      { phase:"asia", country:"哈萨克斯坦", place:"阿斯塔纳", notes:"第 13 天（≈3/13）；全球第二冷的首都；三月仍白茫茫；中亚最大清真寺、阿斯塔纳歌剧院（全球四大之一）；哈国最后一站，即将入俄", moment:"「即将前往俄罗斯，希望顺利平安」", visit:"2024-03-13 前后", videoId:"65f3032c0000000013026b26", videoTitle:"第13天| 全球第二冷的首都 🇰🇿阿斯塔纳", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"叶卡捷琳堡 · 亚欧分界线", notes:"≈第 16 天（3/16）；出俄后有时单日开 16h", moment:"左脚亚洲、右脚欧洲", visit:"2024-03-16 前后", videoId:"65f6f05400000000120315c6", videoTitle:"🇷🇺裸辞16天后…第16天·亚欧分界线", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"喀山（Kazan）", notes:"第 17 天（≈3/17；帖内亦写第 20 天）；最被低估的童话城市；克里姆林宫、库尔沙里夫清真寺、农夫宫、鲍曼街；夜景无敌", moment:"「没有莫斯科圣彼得堡热闹，却成了最想二刷的城市」", visit:"2024-03-17 前后", videoId:"65faeb360000000012037b13", videoTitle:"第17天| 喀山——最被低估的俄罗斯童话城市", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"莫斯科 · Tom熊", notes:"莫斯科附近森林撸网红 Tom 熊/汤姆熊；带妈妈们完成最期待的事；Tom 和老邓在地上打闹", moment:"「和撸猫有什么区别！……把手吃进嘴里还是吓了一跳」", visit:"2024-03", videoId:"66002bd80000000014005fc2", videoTitle:"从广州开车到俄罗斯🇷🇺来战斗民族撸熊了🐻", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"莫斯科 · Tom熊（预约攻略）", notes:"5 岁小熊 Tom，从小与人接触无攻击性；需提前约 3 个月（临时空位看运气）；4 人/1 小时约 5400 元（最多 5 人）；牙齿指甲已处理；勿戏弄/勿重香水；@留俄生活 预约", moment:"「万万没想到这辈子也和熊十指相扣」· 两个妈妈又吓又开心", visit:"2024-03", videoId:"66056bb90000000012030592", videoTitle:"🇷🇺没想到这辈子会和熊十指紧扣🐻 附攻略", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"莫斯科 · 武装力量大教堂", notes:"2020 年落成，纪念苏德战争胜利 75 周年；俄式美学；圣母像掩面哭泣；愿世界和平", moment:"「莫斯科看到的最震撼的教堂，没有之一」· 站在神像前才感受神圣", visit:"2024-03", videoId:"65fd981f0000000013026b75", videoTitle:"🇷🇺武装力量教堂 | 莫斯科最美没有之一‼️", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"莫斯科 · 红场", notes:"没看成《天鹅湖》正式演出；老邓在家练完在红场「黑天鹅」即兴；轻松向", moment:"「在俄罗斯没看成天鹅湖，只能看老邓的黑天鹅演出了」", visit:"2024-03", videoId:"65fc3f3b00000000120371a1", videoTitle:"🇷🇺老公在家练习只为了在莫斯科红场绽放🦢", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"莫斯科及近郊", notes:"第 19 天；3/22 下午已驱车离莫斯科往摩尔曼斯克；两天前曾经过近郊（枪击事件后心有余悸）；红场、圣瓦西里、古姆、武装力量大教堂等", moment:"「真心希望世界和平」· R.I.P · 给大家报个平安", visit:"2024-03-19~22", videoId:"65ff2f4600000000140051a4", videoTitle:"第19天| 再见 莫斯科！希望世界和平🕊️🕊️", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"摩尔曼斯克 · 追极光", notes:"第 23 天（≈3/24）；普通人追极光攻略；KP 值+Windy 看云；iPhone 可拍；首夜即追到；详见 <a href=\"#murmansk-aurora-guide\" class=\"guide-jump\">↓ 追极光攻略</a>", moment:"「不需要几千块的极光猎人，看这一篇就够」", visit:"2024-03-24 前后", videoId:"660148f50000000012032a56", videoTitle:"第23天| 🇷🇺摩尔曼斯克 普通人追极光攻略", conf:"high" },
+      { phase:"asia", country:"俄罗斯", place:"摩尔曼斯克 · 北极圈", notes:"第 24 天（≈3/24）；俄罗斯最后一站；进入北极圈；不冻港与阿廖沙；曾是最北麦当劳", moment:"「你不必着急，最好的都在等你」· 路上不期而遇的风景最美", visit:"2024-03-24 前后", videoId:"6603428400000000120376f1", videoTitle:"第24天| 开着粤A车环球自驾 我们进北极圈啦", conf:"high" },
+      { phase:"europe", country:"挪威", place:"极光区 / 奥斯陆", notes:"约 -20°C 看极光；小城中餐厅（广东老板娘约 30 年）", moment:"两位妈妈在极光里蹦跳（总结帖）", visit:"2024-04", videoId:"69515adf00000000210313d4", videoTitle:"570天·舍不得删掉的瞬间", conf:"mid" },
+      { phase:"europe", country:"挪威", place:"北角（Nordkapp）", notes:"第 26 天（≈3/26）；带妈妈们到挪威；欧洲大陆最北端（北纬 71°）；连续 3 天极光大爆发；湖边小木屋、火锅、滑雪橇；房东还要送帝王蟹", moment:"「极光在天空里跳舞，所有别的事情都不重要了」· 没有和外界联系的日子，好好享受此时", visit:"2024-03-26 前后", videoId:"6609bf6d000000001b008dc2", videoTitle:"第26天| 我们把中国车开到了欧洲大陆最北端", conf:"high" },
+      { phase:"europe", country:"挪威", place:"特罗姆瑟（Tromsø）", notes:"第 28 天（≈3/28）；北纬 69° 北极圈白色角落；带妈妈们；北欧蓝调时光；很多人的精神故乡", moment:"「我们是天底下最自由的人」· 比梦境更深的蓝色", visit:"2024-03-28 前后", videoId:"660d7a84000000000401bb53", videoTitle:"第28天| 我终于来到了 北极圈里的白色角落", conf:"high" },
+      { phase:"europe", country:"挪威", place:"斯瓦尔巴 · 朗伊尔城", notes:"第 31 天（≈3/31）；人类最北定居点（朗伊尔城）；非申根特殊地位；首次 Vlog（做了五天）；斯瓦尔巴系列收官；<strong>坐船观北极熊</strong> · 参观博物馆 · <strong>狗拉雪橇</strong> · 出租车赴<strong>斯瓦尔巴全球种子库</strong>（末日种子库）", moment:"「做人嘛最重要的是开心咯！」· 一定一定要看到最后（有彩蛋）", visit:"2024-03-31 前后", videoId:"661d0acd000000001c004117", videoTitle:"环游世界第31天| 做人嘛最重要的是开心咯！", conf:"high" },
+      { phase:"europe", country:"挪威", place:"斯瓦尔巴 · 朗伊尔城（写给妈妈）", notes:"第 31 天（≈3/31）；裸辞环球自驾满一个月；北纬 78° 人类最北居住点；同段经历：坐船寻北极熊、博物馆、狗拉雪橇、出租车去末日种子库；帖内亦提破冰船、海狮麋鹿等", moment:"「可是妈妈，你的人生也是旷野啊！」· 炽热的 28 岁也是你们炽热的 50 多岁", visit:"2024-03-31 前后", videoId:"661513b70000000004019141", videoTitle:"「可是妈妈，你的人生也是旷野啊！」", conf:"high" },
+      { phase:"europe", country:"挪威", place:"塞尼亚岛 · 索马洛伊（Senja / Sommarøy）", notes:"第 33 天（≈4/2）；索马洛伊「唯一没有时间的小岛」；一天四季；<strong>视频卡点</strong>：进索马洛伊连岛桥 → Husøy 灯塔 → Bergsbotn 观景台 → Bøvær 沙滩 → Fjordgård → Tungeneset 恶魔之齿 → Skrolsvik Fort；详见 <a href=\"#senja-day33-guide\" class=\"guide-jump\">↓ 第33天取景地</a>", moment:"「塞尼亚岛震撼无与伦比，后劲太大」· 粤 A 过桥的转场卡点", visit:"2024-04-02 前后", videoId:"662055e6000000001c0043bb", videoTitle:"第33天| 开着粤A车经过唯一没有时间的小岛", conf:"high" },
+      { phase:"europe", country:"挪威", place:"卑尔根 · 罗弗敦—大西洋之路", notes:"第 38 天（≈4/7）；1500km 南行：罗弗敦→博德→大西洋之路→盖朗厄尔峡湾→卑尔根；彩色童话小镇；<strong>此生必去 Top3 第 1</strong>（详见 <a href=\"#lifetime-top3-guide\" class=\"guide-jump\">↓ Top3 攻略</a>）", moment:"「从蓝调到彩色卑尔根」· 「45 国里最美的地方」", visit:"2024-04-07 前后", videoId:"6627ad33000000001c009d9d", videoTitle:"第38天·从蓝调到彩色卑尔根的1500公里", conf:"high" },
+      { phase:"europe", country:"挪威", place:"挪威缩影 · 告别挪威", notes:"第 41 天（≈4/10）；走 Norway in a nutshell 经典路线（松恩峡湾/Voss 等）；挪威二十几天旅居收官；遇 30 年前来挪威的广东老太太、热情洋溢的退税姐姐", moment:"「这是挪威给我们的最后一份礼物吧」· 瑞典见！", visit:"2024-04-10 前后", videoId:"66319a7e000000001e01a808", videoTitle:"第41天| 30年前去挪威的中国人现在怎么样了", conf:"high" },
+      { phase:"europe", country:"瑞典", place:"斯德哥尔摩", notes:"第 45 天（≈4/14）；带妈妈环游第 4 国（贴图）；离开挪威后抵达；瓦斯沉船博物馆、Gamla Stan 老城、皇宫、Fotografiska 等", moment:"「可能是我最爱的北欧城市了吧」", visit:"2024-04-14 前后", videoId:"66342a67000000001e01cc04", videoTitle:"第45天｜可能是我最爱的北欧城市了吧", conf:"high" },
+      { phase:"europe", country:"丹麦", place:"哥本哈根（修车）", notes:"第 48 天（≈4/17）；欧洲首次车辆保养/修车；修车师傅的故事", moment:"「When you travel, then you live」· 一个修车师傅带来的丹麦童话", visit:"2024-04-17 前后", videoId:"663ceb5b000000001e02d6ae", videoTitle:"第48天| 一个修车师傅带给我们的丹麦童话", conf:"high" },
+      { phase:"europe", country:"丹麦 → 法罗群岛", place:"邮轮渡运（载粤A车）", notes:"第 51 天（≈4/20）；带妈妈们；约 2 万块邮轮载车赴法罗；断网 45 小时", moment:"「下一站见！」· 海上断联的 45 小时", visit:"2024-04-20 前后", videoId:"6640a02f000000001e01c253", videoTitle:"第51天| 在2万块的邮轮上断网45小时", conf:"high" },
+      { phase:"europe", country:"法罗群岛", place:"入境 · 世界尽头", notes:"第 53 天（≈4/22）；不在申根区，需法罗签；连雨天中遇 5 个晴天；6 天徒步另有专帖", moment:"「把中国车开到了真正的世界尽头」· 神秘羊羊之岛", visit:"2024-04-22 前后", videoId:"664a7db50000000015008d75", videoTitle:"第53天·把中国车开到了真正的世界尽头", conf:"high" },
+      { phase:"europe", country:"法罗群岛", place:"徒步 6 天 · 5 条路线", notes:"法罗 7 天徒步 6 天；带两个 50 多岁妈妈；Kallur 007 灯塔（4h·200元）· Drangarnir 海上拱门（6h·615元含向导）· Tjornuvik–Saksun（4h·免费）· Slave Cliff 海上悬湖（2h·200元）· Hvithamar 蛋糕山（2h·免费）", moment:"「精疲力尽之后看到异世界一样的风景」· 献给世界上最可爱的两个妈妈", visit:"2024-04", videoId:"664de62d000000000c01aa30", videoTitle:"法罗群岛| 带两个50多岁的妈妈徒步6天🚶", conf:"high" },
+      { phase:"europe", country:"冰岛", place:"黑沙滩 / 冰川 / 蓝冰洞 / 活火山", notes:"申根国；婆婆摔伤仍徒步；B站「车轮走过的世界」", moment:"目击活火山；成为博主后黑沙滩风中的抉择", visit:"2024-05", videoId:"6a6baa0d00000000220333ed", videoTitle:"环球自驾第一集 开车去冰岛", conf:"high" },
+      { phase:"europe", country:"冰岛", place:"入境 · 追鲸", notes:"第 61 天（≈4/30）；带妈妈们抵冰岛首日；第一天就惊心动魄，被罚 2 万冰岛克朗；追鲸", moment:"「相信人品守恒定律，人生小满胜万全」· 精神故乡的探险之旅开始", visit:"2024-04-30 前后", videoId:"665515120000000015009ca3", videoTitle:"第61天| 被罚2万冰岛克朗后的人品守恒定律", conf:"high" },
+      { phase:"europe", country:"冰岛", place:"南岸 · 《花少》同款行程", notes:"第 64 天（≈5/3）；带妈妈们；雷市（哈尔格林姆教堂/彩虹街/Valdis 冰淇淋）· Hammsvik 花少同款温泉 · 黄金圈（Gullfoss/Strokkur）· 塞里雅兰&斯科加瀑布 · 雷尼斯黑沙滩 · 杰古沙龙冰河湖", moment:"「属于我们四个的花儿与少年」· 冰岛南边探险继续", visit:"2024-05-03 前后", videoId:"66591a54000000001500a319", videoTitle:"第64天| 属于妈妈们和我们的《花少》冰岛篇", conf:"high" },
+      { phase:"europe", country:"冰岛", place:"冰川徒步 · 火山", notes:"第 67 天（≈5/6）；五月初观火山（当时未大喷发）；冰川+火山「冰与火之歌」", moment:"火苗一样的岩浆 · 把做过的梦都变为现实", visit:"2024-05-06 前后", videoId:"666250170000000015010109", videoTitle:"第67天·冰岛的冰与火之歌", conf:"high" },
+      { phase:"europe", country:"冰岛", place:"全岛 · 14 天攻略", notes:"9天核心框架·14天实际环岛（与小红书 AI 点点合作）；D1–D9 雷市→黄金圈→南岸→黑沙滩/冰河湖→冰川蓝冰洞→缓冲→阿克雷里→斯奈山；D10–14 弹性缓冲；<strong>此生必去 Top3 第 3</strong>；详见 <a href=\"#iceland-14d-guide\" class=\"guide-jump\">↓ 冰岛 14 天攻略</a> · <a href=\"#lifetime-top3-guide\" class=\"guide-jump\">↓ Top3 攻略</a>", moment:"「终有一天你也会去到冰岛」· 精神故乡 · 都能在冰岛找到自己灵魂中的某一部分影子", visit:"2024-05", videoId:"69804d2c00000000220300c5", videoTitle:"终有一天你也会去到冰岛（附详细攻略）", conf:"high" },
+      { phase:"europe", country:"荷兰", place:"羊角村（Giethoorn）", notes:"第 74 天（≈5/13）；带妈妈环游第 8 国；告别冰天雪地；只能划船的「世界最美村庄」之一——茅草屋、串门的可爱小动物", moment:"「在荷兰感受到了春暖花开」· 什么都不做就有最纯粹的松弛和自由", visit:"2024-05-13 前后", videoId:"668c7e2d000000000d00fa30", videoTitle:"第74天| 广州➡️荷兰 带妈妈环游世界第8国！", conf:"high" },
+      { phase:"europe", country:"荷兰", place:"海牙一带 · 风车村 · 乐高小镇", notes:"第 76 天（≈5/15）；荷兰；风车村诗意、乐高小镇如童话；粤菜馆/广东老乡见粤 A 牌盛情款待", moment:"「从没想过一个中国牌把在海外的国人紧紧联系在一起」· 我将用一生怀念这个春天", visit:"2024-05-15 前后", videoId:"66958bfe000000000a024f4c", videoTitle:"第76天| 荷兰的广东人看到粤A车有多热情！", conf:"high" },
+      { phase:"europe", country:"德国", place:"途经", notes:"2024.5 总结帖月份清单；5 月冰岛—荷兰段之间", moment:"", visit:"2024-05", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"比利时", place:"途经", notes:"2024.5 总结帖月份清单；入英前途经", moment:"", visit:"2024-05", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"英国", place:"入境 · 79天11国节点", notes:"第 79 天（≈5/18）；广州出发 79 天·2.8 万公里·11 国抵英；带妈妈；第一次记录走过的旅程；右舵驾驶起点；英伦旅居约 2 个月（乡村/白崖/兰兹角/湖区等另有专帖）", moment:"「到英国啦！」· 我们路上见", visit:"2024-05-18 前后", videoId:"667bf297000000001c029e1b", videoTitle:"广州➡️英国 带妈妈自驾环游世界的79天11国", conf:"high" },
+      { phase:"europe", country:"英国", place:"英格兰乡村", notes:"旅居 2 个月推荐；Bibury、Wherwell、Broadway、Canterbury、Bourton-on-the-Water；详见 <a href=\"#uk-village-guide\" class=\"guide-jump\">↓ 英国乡村推荐</a>", moment:"「英国的灵魂不在伦敦，而在乡村里」", visit:"2024-06~07", videoId:"687e66e90000000012023462", videoTitle:"旅居2个月 才敢给你推荐的神级英国乡村🇬🇧", conf:"high" },
+      { phase:"europe", country:"英国", place:"白崖（南部海岸）", notes:"第 81 天（≈5/20）；带妈妈们；白垩纪 1.3 亿年海洋微生物沉积形成的白色断崖", moment:"「在陆地尽头感受风和自由」· 岸边老人牵手慢走，这个明媚下午会永远怀念", visit:"2024-05-20 前后", videoId:"669e5871000000000a005a1a", videoTitle:"广州开到英国白崖 在陆地尽头感受风和自由", conf:"high" },
+      { phase:"europe", country:"英国", place:"康沃尔 · 兰兹角（Land's End）", notes:"第 86 天（≈5/25）；英国大陆最西端；米纳克剧场、廷塔哲城堡、圣迈克尔山、Wistman's Wood", moment:"「我们把中国车开到了英国的天涯海角」", visit:"2024-05-25 前后", videoId:"66ae1e46000000000503aef1", videoTitle:"第86天·我们把中国车开到了英国的天涯海角", conf:"high" },
+      { phase:"europe", country:"英国", place:"湖区 · 温德米尔（Windermere）", notes:"第 94 天（≈6 月）；辞职环游 3 个月节点；华兹华斯「全英国都比不上的地方」；霉霉歌词里的温德米尔、彼得兔故乡", moment:"「见天地 见众生 见自己」· 湖区午夜 12 点——放弃好工作环游世界，值得", visit:"2024-06", videoId:"66d4e1ba000000001f03c40e", videoTitle:"辞职环游世界3个月后 我的生活竟然是这样的", conf:"high" },
+      { phase:"europe", country:"英国", place:"剑桥 / 牛津", notes:"英伦旅居段；剑桥：康桥、国王学院、霍金圣体钟、牛顿苹果树、数学桥；途经比斯特购物村；牛津：叹息桥、霍格沃茨食堂", moment:"「我好像拍到了英国的梦核版」· 魔法世界照进现实", visit:"2024-06~07", videoId:"68491a80000000001101c4d7", videoTitle:"剑桥vs牛津！我好像拍到了英国的梦核版", conf:"high" },
+      { phase:"europe", country:"苏格兰", place:"爱丁堡 · 霉霉 Eras Tour", notes:"第 100 天（6/8）；订不到酒店偶遇霉霉演唱会；The Eras Tour 爱丁堡场；全城 Welcome 细节、风笛 Love Story 限定版", moment:"「今晚的烟花是最好的礼物」· 全场大合唱热泪盈眶——看过最震撼的演唱会", visit:"2024-06-08", videoId:"666642d2000000001501133c", videoTitle:"中国车从广州开到爱丁堡看霉霉演唱会🎵", conf:"high" },
+      { phase:"europe", country:"北爱尔兰", place:"英伦三岛", notes:"2024.6 总结帖月份清单；6 月英国段", moment:"", visit:"2024-06", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"爱尔兰", place:"全国", notes:"2024.7 总结帖月份清单；7 月非申根，不计入申根 90 天", moment:"", visit:"2024-07", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"威尔士", place:"全国", notes:"2024.7 总结帖月份清单；英伦三岛段", moment:"", visit:"2024-07", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"英国", place:"英伦三岛 · 7月续", notes:"2024.7 总结帖月份清单；7 月爱尔兰/威尔士后重返英国段", moment:"", visit:"2024-07", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"法国", place:"巴黎 · 2024 奥运", notes:"≈第 158 天（7–8 月）；粤 A 开进巴黎看奥运；羽毛球女单决赛（一年前购票赌中国队进决赛）；何冰娇领奖", moment:"「看到无数同胞甚至外国人为中国加油，热泪盈眶」· 中国！加油！", visit:"2024-07~08", videoId:"66b2aa440000000005022c47", videoTitle:"开着中国粤A车到巴黎看奥运！为中国加油！", conf:"high" },
+      { phase:"europe", country:"法国", place:"巴黎 · 夜游", notes:"≈第 158 天；同一巴黎段；夜游奇遇；粤 A 开到凯旋门；外国人见中国车反应（6.5 万赞爆款）", moment:"「中国坦克开到了法国凯旋门」· 外国人反应太意外", visit:"2024-07~08", videoId:"66b958170000000009014121", videoTitle:"中国粤A车从广州开到巴黎！夜游巴黎奇遇记", conf:"high" },
+      { phase:"europe", country:"法国", place:"南法 · 埃兹（Èze）", notes:"≈5–6 月；自驾 3 万公里后抵法；埃兹悬崖米其林法餐", moment:"「因为她们值得世界上所有最好的东西」", visit:"2024-05~06", videoId:"66e42e550000000027007f09", videoTitle:"开车直达法国🇫🇷打卡南法超美米其林法餐", conf:"high" },
+      { phase:"europe", country:"摩纳哥", place:"途经", notes:"2024.8 总结帖月份清单；8 月中欧段", moment:"", visit:"2024-08", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"瑞士", place:"龙疆 · 格林德瓦 · 少女峰", notes:"第 14 国（≈8 月）；8 月 re-enter 申根需管理 90/180；懒人私藏徒步：翁根 Wengen → 门兴利山 Mannlichen → 小夏戴克 Kleine Scheidegg（缆车+徒步约 1.5h，无需天价少女峰火车票）", moment:"艾格峰 · 僧侣峰 · 少女峰全貌 · 山里牛铃铛声", visit:"2024-08", videoId:"671a4d42000000001b02ce95", videoTitle:"粤A广州直达瑞士🇨🇭懒人少女峰私藏路线！", conf:"high" },
+      { phase:"europe", country:"列支敦士登", place:"途经", notes:"2024.8 总结帖月份清单；8 月中欧段", moment:"", visit:"2024-08", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"奥地利", place:"哈尔施塔特 · 维也纳", notes:"第 18 国（≈8 月）；原本路过成最大惊喜；哈尔施塔特如电脑壁纸；维也纳金色大厅、美泉宫（茜茜公主）、《爱在黎明破晓前》取景", moment:"「那些没抱期待的地方，往往藏着最好的风景」· Austria 不是 Australia", visit:"2024-08", videoId:"6a69b393000000000301f554", videoTitle:"环球自驾第18国，走进电脑壁纸里的梦幻小镇", conf:"high" },
+      { phase:"europe", country:"捷克", place:"布拉格", notes:"≈8 月中欧段；查理大桥、天文钟、布拉格广场（并无许愿池）；Pork's 猪肘；卡夫卡与米兰·昆德拉之城", moment:"「走在周董 MV 里的查理大桥上，我们好像并不陌生」", visit:"2024-08", videoId:"681ca4fd000000000c03b8a3", videoTitle:"布拉格没有许愿池 但藏着整个欧洲的浪漫✨", conf:"high" },
+      { phase:"europe", country:"斯洛伐克", place:"途经", notes:"2024.8 总结帖月份清单；8 月中欧段", moment:"", visit:"2024-08", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"匈牙利", place:"途经", notes:"2024.8 总结帖月份清单；8 月中欧段", moment:"", visit:"2024-08", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"塞尔维亚", place:"全国", notes:"2024.9 总结帖月份清单；小镇与老人聊天（博主反思帖）", moment:"", visit:"2024-09", videoId:"69fb081f000000003601f257", videoTitle:"成为博主之后（含塞尔维亚）", conf:"mid" },
+      { phase:"europe", country:"北马其顿", place:"途经", notes:"2024.9 总结帖月份清单", moment:"", visit:"2024-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"科索沃", place:"途经", notes:"2024.9 总结帖月份清单（科索沃地区）", moment:"", visit:"2024-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"希腊", place:"扎金索斯 · 沉船湾（Navagio）", notes:"第 24 国（≈9 月）；扎金索斯岛西北岸；Panagiotis 号搁浅遗迹；《太阳的后裔》取景地；需乘船或山顶观景台远观；视频画面见专帖「裸辞一年，穿越47国…」", moment:"克莱因蓝海水与白沙滩上的锈船", visit:"2024-09", videoId:"686e712a0000000012023a33", videoTitle:"裸辞一年，穿越47国，我们活成爽文主角了吗？", conf:"high" },
+      { phase:"europe", country:"希腊", place:"圣托里尼", notes:"2024.9 总结帖月份清单；早期检索关联，待专帖确认", moment:"", visit:"2024-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"阿尔巴尼亚", place:"途经", notes:"2024.9 总结帖月份清单", moment:"", visit:"2024-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"黑山", place:"途经", notes:"2024.9 总结帖月份清单", moment:"", visit:"2024-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"波黑", place:"萨拉热窝", notes:"≈第 208 天（9 月）；萨拉热窝玫瑰（弹孔填红）；黄堡「一半城池一半坟墓」；拉丁桥、永恒之火", moment:"「死亡不是终点，遗忘才是」· 最深的伤口也能开出花", visit:"2024-09", videoId:"6971f63f000000002203a57b", videoTitle:"一半城池 一半坟墓，这里的玫瑰不为谁绽放", conf:"high" },
+      { phase:"europe", country:"克罗地亚", place:"杜布罗夫尼克 · 斯普利特 · 扎达尔 · 萨格勒布", notes:"第 27 国（≈10 月）；权游君临城 · 花少取景；7 日自驾（中国驾照+翻译件即可）；详见 <a href=\"#croatia-guide\" class=\"guide-jump\">↓ 克罗地亚攻略</a>", moment:"「十年前看《权游》，十年后真的来到君临城」· 人生回旋镖", visit:"2024-10", videoId:"68056402000000000f039f5e", videoTitle:"🇭🇷克罗地亚|人生就是一场场回旋镖！附攻略", conf:"high" },
+      { phase:"europe", country:"斯洛文尼亚", place:"途经", notes:"2024.10 总结帖月份清单；与克罗地亚同段", moment:"", visit:"2024-10", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"意大利", place:"阿马尔菲海岸 · 波西塔诺", notes:"第 234 天（≈10/20）；234 天·30 国后抵达；悬崖彩色房、柠檬味夏天、地中海", moment:"Dolce Far Niente——「人类为何如此迷恋南意的海」", visit:"2024-10-20 前后", videoId:"699e9f3c000000001600a5f9", videoTitle:"阿马尔菲海岸|人类为何如此迷恋南意的海", conf:"high" },
+      { phase:"europe", country:"圣马力诺", place:"途经", notes:"2024.10 总结帖月份清单；10 月与意大利同段", moment:"", visit:"2024-10", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"瑞士", place:"厄希嫩湖（Oeschinen）", notes:"从意大利入境瑞士，自南向北；冰川高山湖、厄希嫩蓝；八月遇冰雹；粤 A 开上瑞士火车（汽车运输）", moment:"「我们把粤A车开上了瑞士火车！」", visit:"2024-10~11", videoId:"6709bca7000000002a035aad", videoTitle:"厄希嫩湖·我们把粤A车开上了瑞士火车", conf:"high" },
+      { phase:"europe", country:"瑞士", place:"圣莫里茨 · 恩嘎丁", notes:"环球 8 个月（≈11 月）；瑞士秋天；Lago di Saoseo（徒步 2–3h）、Malojasee 夕阳、Morteratsch 冰川", moment:"「终于在瑞士拥抱了最美的秋天」· 落叶松与雪山倒映蓝绿湖水", visit:"2024-11", videoId:"67289695000000003c014e19", videoTitle:"粤A车环球8个月！走过四季 拥抱瑞士的秋天🍂", conf:"high" },
+      { phase:"europe", country:"瑞士", place:"采尔马特 · 马特洪峰", notes:"≈第 248 天（11/2）；瑞士明信片；缆车停运日抵达仍被马特洪峰与小镇惊艳；火车/高山湖/徒步留待下次", moment:"「巧克力包装上吃过的雪山，长大后开车来看到了」", visit:"2024-11-02 前后", videoId:"67328daf000000001d03be58", videoTitle:"瑞士巧克力吃过的雪山 长大后开车来看到啦", conf:"high" },
+      { phase:"europe", country:"意大利", place:"多洛米蒂 · 富内斯山谷 · Seceda", notes:"<strong>此生必去 Top3 第 2</strong>；Val di Funes 如梦如幻 · Seceda 魔戒之路 · 悬崖边坐看云海；详见 <a href=\"#lifetime-top3-guide\" class=\"guide-jump\">↓ Top3 攻略</a>", moment:"「走在多洛米蒂的魔戒之路」· 生活里的琐碎和烦恼此时都不重要了", visit:"2024-10~11", videoId:"67f7f039000000000e006cd9", videoTitle:"走遍45国后，才敢给你推荐的此生必去Top3‼️", conf:"high" },
+      { phase:"europe", country:"安道尔", place:"途经", notes:"2024.11 总结帖月份清单；仅公路进出", moment:"", visit:"2024-11", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"europe", country:"西班牙", place:"塞维利亚", notes:"第 32 国；安达卢西亚；弗拉明戈、斗牛场；Citywalk：西班牙广场、大教堂、萨尔瓦多教堂；海鲜饭与伊比利亚火腿", moment:"「没来过塞维利亚就不算到了真正的西班牙」· 最爱的西班牙城市", visit:"2024-11~12", videoId:"698afc1b000000001503b4e6", videoTitle:"没来过塞维利亚 就不算到了真正的西班牙💃", conf:"high" },
+      { phase:"europe", country:"西班牙", place:"巴塞罗那等 / 进非前", notes:"2025.1 从西班牙抵摩洛哥（非洲22国视频）；塞维利亚另有专帖；法罗老人赴约", moment:"跨洲偶遇后的重逢约定", visit:"2024-11 ~ 2025-01", videoId:"695d4a920000000022033f02", videoTitle:"非洲22国总览（西→摩）", conf:"mid" },
+      { phase:"europe", country:"葡萄牙", place:"途经", notes:"2024.11 总结帖月份清单；11 月伊比利亚段", moment:"", visit:"2024-11", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"摩洛哥", place:"撒哈拉 · 梅尔祖卡", notes:"9 个月（≈12 月）从广州抵非洲；老邓 33 岁生日帖；抵达撒哈拉沙漠；帖内附前 33 国完整清单", moment:"「出发就是最好的计划」· 当初的梦想一步步实现", visit:"2024-12", videoId:"674da19e000000000201b2ae", videoTitle:"9个月从广州开到非洲 老邓生日快乐", conf:"high" },
+      { phase:"africa", country:"摩洛哥", place:"舍夫沙万（Chefchaouen）", notes:"第 34 国 · 非洲第 1 站；蓝白小镇；拍照：Dar Qalai、Boutique EL-ASRI 彩虹阶梯、橙汁店、Bouzafer 清真寺全景；餐厅：Bab Ssour 塔吉锅、Oudia（午餐）", moment:"「只为舍夫沙万这片蓝色」· 欧洲 9 个月后重感烟火气", visit:"2024-12", videoId:"674b649d0000000002029aca", videoTitle:"粤A广州直达摩洛哥💙 只为舍夫沙万这片蓝色", conf:"high" },
+      { phase:"africa", country:"非洲22国", place:"西非 → 南非 → 东非（总览）", notes:"2025 穿越非洲 22 国；570 天 9 万公里；详见 <a href=\"#trip-overview-guide\" class=\"guide-jump\">↓ 570 天行程总览</a>", moment:"「一起看看我们的故事吧」· 路上崩溃无数次但不后悔", visit:"2025-01 起", videoId:"695d4a920000000022033f02", videoTitle:"粤A自驾穿越非洲22国 我们经历了些什么？", conf:"high" },
+      { phase:"africa", country:"西撒哈拉", place:"阿尤恩（阿雍城）", notes:"第 34 国；三毛故居金河路 44 号——站在她家阳台、看见掉羊的天井与水桶；国家旅馆、街角投信邮局信箱仍在", moment:"「浪漫的不是远方，浪漫的是三毛」· 15 年前被窝看三毛的高中生，如今和爱的人一起赴约写自己的故事", visit:"2025-01", videoId:"69d53841000000001a02a279", videoTitle:"你好，三毛！我终于来到了你笔下的撒哈拉", conf:"high" },
+      { phase:"africa", country:"毛里塔尼亚", place:"全国（西非入境段）", notes:"第 35 国 · 穿越非洲第 2 国；摩洛哥尚是旅行模式，毛塔起正式体会「寸步难行」——签证/路条/检查站；一路升级打怪", moment:"「关关难过关关过」· 困难重重的非洲之旅正式开始", visit:"2025-01", videoId:"683f5dd7000000000f038adc", videoTitle:"中国车自驾非洲有多难？关关难过关关过", conf:"high" },
+      { phase:"africa", country:"塞内加尔", place:"途经", notes:"2025.1 总结帖月份清单；西非段", moment:"", visit:"2025-01", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"几内亚", place:"途经", notes:"2025.1 总结帖月份清单；西非段", moment:"", visit:"2025-01", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"科特迪瓦", place:"途经", notes:"2025.2 总结帖月份清单", moment:"", visit:"2025-02", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"加纳", place:"途经", notes:"2025.2 总结帖月份清单", moment:"", visit:"2025-02", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"尼日利亚", place:"途经", notes:"2025.2 总结帖月份清单", moment:"", visit:"2025-02", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"喀麦隆", place:"途经", notes:"2025.2 总结帖月份清单", moment:"", visit:"2025-02", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"刚果(布)", place:"途经", notes:"2025.3 总结帖月份清单", moment:"", visit:"2025-03", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"安哥拉", place:"途经", notes:"2025.3 总结帖月份清单", moment:"", visit:"2025-03", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"纳米比亚", place:"埃托沙等", notes:"Safari Top5 第 5；详见 <a href=\"#safari-top5-guide\" class=\"guide-jump\">↓ Safari 攻略</a>", moment:"", visit:"2025-04", videoId:"68ae9d2c000000001d03844c", videoTitle:"穿越非洲21国，才敢给你推荐的Safari天花板", conf:"high" },
+      { phase:"africa", country:"南非", place:"开普敦 · 好望角 · 克鲁格", notes:"150 万+ 爆款帖后续 Q&A；克鲁格 Safari Top5 第 3（详见 Safari 攻略）；高德从广州导航到南非", moment:"「和你们这些天赋型选手拼了」· 十分钟落日谁也没举相机", visit:"2025-05~06", videoId:"686d0b3f00000000130119f4", videoTitle:"150万人看过的帖子后续来啦！！", conf:"high" },
+      { phase:"africa", country:"南非", place:"47 国节点 · 综述", notes:"裸辞一年；大厂裸辞带妈妈们自驾；广州→南非；穿越亚欧非 47 国；收获很多也失去很多", moment:"「我们活成爽文主角了吗？」· 把梦想真的变成生活", visit:"2025-05", videoId:"686e712a0000000012023a33", videoTitle:"裸辞一年，穿越47国，我们活成爽文主角了吗？", conf:"high" },
+      { phase:"africa", country:"南非", place:"克鲁格国家公园", notes:"第 47 国；非洲大陆最南端；克鲁格 Safari；《动物世界》照进现实；非洲五霸；Safari Top5 第 3", moment:"「童年的电视屏幕无限延展成了我们身处的整个真实世界」· 象群红尘、狮子金光、长颈鹿夕阳", visit:"2025-05", videoId:"6875c8cd00000000150208e2", videoTitle:"环球自驾47国 把《动物世界》变成人生纪录片", conf:"high" },
+      { phase:"africa", country:"津巴布韦", place:"途经", notes:"2025.7 总结帖月份清单；东非 Safari 段", moment:"", visit:"2025-07", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"博茨瓦纳", place:"奥卡万戈 · Savuti", notes:"Safari Top5 第 1（天花板）；2025.7 总结帖月份清单；详见 <a href=\"#safari-top5-guide\" class=\"guide-jump\">↓ Safari 攻略</a>", moment:"妈妈在非洲追动物的惊喜", visit:"2025-07", videoId:"68ae9d2c000000001d03844c", videoTitle:"穿越非洲21国，才敢给你推荐的Safari天花板", conf:"high" },
+      { phase:"africa", country:"赞比亚", place:"卢萨卡 · 非洲少林寺", notes:"第 50 国", moment:"释永信新闻当天到访", visit:"2025-07", videoId:"68880be20000000012030363", videoTitle:"第50国·非洲少林寺", conf:"high" },
+      { phase:"africa", country:"坦桑尼亚", place:"塞伦盖蒂", notes:"Safari Top5 第 2；详见 <a href=\"#safari-top5-guide\" class=\"guide-jump\">↓ Safari 攻略</a>", moment:"", visit:"2025-08", videoId:"68ae9d2c000000001d03844c", videoTitle:"穿越非洲21国，才敢给你推荐的Safari天花板", conf:"high" },
+      { phase:"africa", country:"卢旺达", place:"全国", notes:"第 52 国（≈7–8 月）；2025.8 总结帖月份清单；「世界上最像中国的国家」", moment:"「慢慢爱上非洲，它和我们想象中如此不同」", visit:"2025-07~08", videoId:"68a6490a000000001d01f406", videoTitle:"最像中国的国家，原来在非洲！", conf:"high" },
+      { phase:"africa", country:"乌干达", place:"途经", notes:"2025.8 总结帖月份清单", moment:"", visit:"2025-08", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（国家清单）", conf:"mid" },
+      { phase:"africa", country:"肯尼亚", place:"马塞马拉", notes:"Safari Top5 第 4；2025.9 总结帖月份清单；详见 <a href=\"#safari-top5-guide\" class=\"guide-jump\">↓ Safari 攻略</a>", moment:"", visit:"2025-09", videoId:"68ae9d2c000000001d03844c", videoTitle:"穿越非洲21国，才敢给你推荐的Safari天花板", conf:"high" },
+      { phase:"africa", country:"肯尼亚", place:"乞力马扎罗视角", notes:"第 54 国（≈9 月）；花一年半、9 万公里抵肯；地理课本非洲第一高峰；在肯尼亚侧远眺", moment:"「书本教会我认识世界，而站在这里我学会平等自由地看待世界」", visit:"2025-09", videoId:"6a736ba000000000250060b2", videoTitle:"30岁，我终于来到了课本里的乞力马扎罗…", conf:"high" },
+      { phase:"africa", country:"马达加斯加", place:"穆隆达瓦 · 猴面包树大道", notes:"≈第 555 天（9 月）；第 55 国、非洲最后一国；小王子书里会把星球挤爆的猴面包树故乡", moment:"猴面包树大道日落——「送给每一个看过小王子的你」", visit:"2025-09", videoId:"68fa4ab0000000000301cbac", videoTitle:"环球55国 来到马达加斯加！猴面包树的故乡", conf:"high" },
+      { phase:"return", country:"—", place:"苏丹（未通行）", notes:"总结帖：苏丹过不去，改从肯尼亚船运回国", moment:"", visit:"2025-09", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（苏丹段）", conf:"high" },
+      { phase:"return", country:"肯尼亚", place:"船运 · 海关", notes:"粤A（阿坦）船运回国；海关手续极其复杂曲折，又多折腾约 2 个月（总结帖）", moment:"", visit:"2025-09~11", videoId:"69a2c764000000001b01cbc6", videoTitle:"570天总结帖（船运段）", conf:"high" },
+      { phase:"return", country:"中国", place:"广州 · 收官", notes:"11 月底阿坦抵广州；570 天·9 万公里·55 国；详见 <a href=\"#trip-overview-guide\" class=\"guide-jump\">↓ 570 天行程总览</a> · <a href=\"#budget-tips-guide\" class=\"guide-jump\">↓ 省钱技巧</a>", moment:"「不可能变成了我们做到了」· 妈妈在挪威极光里蹦跳、非洲追动物时的惊喜 · 再问一万遍也很值得 · 下一站计划澳洲", visit:"2025-11", videoId:"69a2c764000000001b01cbc6", videoTitle:"自驾环游世界，和妈妈们570天的冒险终于结束", conf:"high" },
+      { phase:"europe", country:"综述", place:"570 天 · 55 国总览", notes:"2024 亚欧 33 国 + 2025 非洲 22 国；裸辞 2 年总结；详见 <a href=\"#trip-overview-guide\" class=\"guide-jump\">↓ 570 天行程总览详情</a>", moment:"「很难很累，但再问一万遍也很值得」· 妈妈们是对世界永远好奇的探险家", visit:"2024-2025", videoId:"69a2c764000000001b01cbc6", videoTitle:"自驾环游世界，和妈妈们570天的冒险终于结束", conf:"high" },
+      { phase:"europe", country:"综述", place:"55 国花费", notes:"570 天 4 人 9 万公里；自驾人均不到 10 万；核心：自己做饭+不豪华住宿，人均日 &lt;100 吃+住；详见 <a href=\"#budget-tips-guide\" class=\"guide-jump\">↓ 570 天省钱技巧</a>", moment:"", visit:"570 天", videoId:"69cabef80000000021039266", videoTitle:"一家四口55国要花多少钱", conf:"high" },
+      { phase:"asia", country:"综述", place:"车辆出入境攻略", notes:"3.1 出发约一个月后抵挪威；中→哈→俄→申根（挪威）；暂时进出境·贴纸签·口岸政策；详见 <a href=\"#vehicle-border-guide\" class=\"guide-jump\">↓ 车辆出入境攻略详情</a>", moment:"「超新超详细，看这一篇就够了」", visit:"2024-03~04", videoId:"660eaef8000000001b0110f3", videoTitle:"环球自驾车辆出入境攻略看这一篇就够了🌍", conf:"high" },
+      { phase:"europe", country:"综述", place:"此生必去 Top3", notes:"2025.4 发布（约 45 国节点）；🥇挪威罗弗敦 🥈意大利多洛米蒂 🥉冰岛；附自驾/语言/网络出行攻略；详见 <a href=\"#lifetime-top3-guide\" class=\"guide-jump\">↓ Top3 攻略详情</a>", moment:"「45 个国家里最美的地方」· 冬天的挪威才是天花板（评论区）", visit:"2025-04", videoId:"67f7f039000000000e006cd9", videoTitle:"走遍45国后，才敢给你推荐的此生必去Top3‼️", conf:"high" },
+      { phase:"europe", country:"综述", place:"全行程混剪", notes:"两分钟回顾；含挪威极光等", moment:"2025 最小单位的快乐", visit:"2024-2025", videoId:"69515adf00000000210313d4", videoTitle:"570天·舍不得删掉的瞬间", conf:"high" },
+      { phase:"europe", country:"综述", place:"30 岁 · 人生感悟", notes:"95年30岁；大厂裸辞；570天/60国是最好的礼物；开普敦酒庄「找到喜欢的生活方式」；成功不止一种样子", moment:"「上岸的我们又游回了海里」· 爱你老己 · 投资回忆边际幸福递增", visit:"2025", videoId:"694bb75100000000190261c9", videoTitle:"95年 30岁 上岸的我们又游回了海里🌊", conf:"high" },
+      { phase:"europe", country:"综述", place:"55国 · 冰岛 / 巴黎等", notes:"主页新帖（2026-08 探测）；粤A 亚欧非 55 国色彩回顾", moment:"「你带我来这个世界，我带你看这个世界」", visit:"2026-08", videoId:"6a797adb0000000006007775", videoTitle:"这世界大得让你很难不旅游", conf:"high" }
+    ];
+
+    function openGuideSection(id, scroll) {
+      var section = document.getElementById(id);
+      if (!section) return;
+      var details = section.querySelector("details");
+      if (details) details.open = true;
+      if (scroll !== false) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function openIcelandGuide(scroll) {
+      openGuideSection("iceland-14d-guide", scroll);
+    }
+
+    function renderTable(filterPhase, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (filterPhase !== "all" && row.phase !== filterPhase) return;
+        var hay = [row.country, row.place, row.notes, row.moment, row.visit, row.videoTitle].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var noteText = row.notes;
+        if (row.moment) noteText += (noteText ? "<br>" : "") + "<span class=\"cell-muted\">✦ " + row.moment + "</span>";
+        var videoCell = row.videoTitle
+          ? (row.videoId
+            ? "<a href=\"" + xhsUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">" + row.videoTitle + "</a>"
+            : row.videoTitle + "<br><span class=\"cell-muted\">ID 待补</span>")
+          : "—";
+        var linkCell = row.videoId
+          ? "<a href=\"" + xhsUrl(row.videoId) + "\" target=\"_blank\" rel=\"noopener\">小红书</a>"
+          : "—";
+        var countryNo = getCountryNo(row.country);
+        var countryNoCell = countryNo ? "<span class=\"country-no\" title=\"第 " + countryNo + " 国\">" + countryNo + "</span>" : "—";
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td>" + countryNoCell + "</td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + noteText + "</td>" +
+          "<td>" + row.visit + "</td>" +
+          "<td>" + videoCell + "</td>" +
+          "<td><span class=\"conf " + row.conf + "\">" + (row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低") + "</span></td>" +
+          "<td>" + linkCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "中国→哈→俄", sub: "2024.3", start: "2024-03-01", end: "2024-03-31", color: "#e76f51" },
+        { name: "北欧·斯瓦尔巴·法罗", sub: "2024.4", start: "2024-04-01", end: "2024-04-30", color: "#2a9d8f" },
+        { name: "冰岛·荷德比", sub: "2024.5", start: "2024-05-01", end: "2024-05-31", color: "#3d8b7a" },
+        { name: "英伦三岛", sub: "2024.6–7", start: "2024-06-01", end: "2024-07-31", color: "#457b9d" },
+        { name: "中欧八国", sub: "2024.8", start: "2024-08-01", end: "2024-08-31", color: "#f4a261" },
+        { name: "巴尔干", sub: "2024.9", start: "2024-09-01", end: "2024-09-30", color: "#e9c46a" },
+        { name: "南欧·伊比利亚", sub: "2024.10–11", start: "2024-10-01", end: "2024-11-30", color: "#bc6c25" },
+        { name: "摩洛哥", sub: "2024.12", start: "2024-12-01", end: "2024-12-31", color: "#d4a574" },
+        { name: "西非", sub: "2025.1–2", start: "2025-01-01", end: "2025-02-28", color: "#c1121f" },
+        { name: "刚果(布)·安哥拉", sub: "2025.3", start: "2025-03-01", end: "2025-03-31", color: "#9d0208" },
+        { name: "纳米·南非", sub: "2025.4–6", start: "2025-04-01", end: "2025-06-30", color: "#6a994e" },
+        { name: "津博赞·坦卢乌", sub: "2025.7–8", start: "2025-07-01", end: "2025-08-31", color: "#386641" },
+        { name: "肯·马达加斯加", sub: "2025.9", start: "2025-09-01", end: "2025-09-30", color: "#283618" },
+        { name: "船运回国", sub: "2025.10–11", start: "2025-10-01", end: "2025-11-30", color: "#8b9cb3" }
+      ];
+      var min = new Date("2024-03-01").getTime();
+      var max = new Date("2025-12-01").getTime();
+      var span = max - min;
+      var bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(function (p) {
+        var s = new Date(p.start).getTime();
+        var e = new Date(p.end).getTime();
+        var left = ((s - min) / span) * 100;
+        var width = Math.max(((e - s) / span) * 100, 1.2);
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"left:" + left + "%;width:" + width + "%;background:" + p.color + "\"></div></div>";
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("phase-filter").addEventListener("change", function (e) {
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", function (e) {
+      renderTable(document.getElementById("phase-filter").value, e.target.value);
+    });
+
+    document.getElementById("tbody").addEventListener("click", function (e) {
+      var link = e.target.closest('a.guide-jump[href^="#"]');
+      if (!link) return;
+      var id = link.getAttribute("href").slice(1);
+      if (!id) return;
+      e.preventDefault();
+      openGuideSection(id, true);
+      history.replaceState(null, "", "#" + id);
+    });
+
+    if (location.hash === "#iceland-14d-guide") openIcelandGuide(false);
+    if (location.hash === "#trip-overview-guide") openGuideSection("trip-overview-guide", false);
+    if (location.hash === "#budget-tips-guide") openGuideSection("budget-tips-guide", false);
+    if (location.hash === "#vehicle-border-guide") openGuideSection("vehicle-border-guide", false);
+    if (location.hash === "#murmansk-aurora-guide") openGuideSection("murmansk-aurora-guide", false);
+    if (location.hash === "#safari-top5-guide") openGuideSection("safari-top5-guide", false);
+    if (location.hash === "#lifetime-top3-guide") openGuideSection("lifetime-top3-guide", false);
+    if (location.hash === "#google-maps-setup-guide") openGuideSection("google-maps-setup-guide", false);
+    if (location.hash === "#uk-village-guide") openGuideSection("uk-village-guide", false);
+    if (location.hash === "#croatia-guide") openGuideSection("croatia-guide", false);
+    if (location.hash === "#senja-day33-guide") openGuideSection("senja-day33-guide", false);
+
+    renderBar();
+    renderTable("all", "");
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      // 页面内地图优先级：googleMapsApiKey → myMapsEmbedUrl → Leaflet
+      // 你已配置 My Maps，默认嵌入你的 Google 地图
+      var MAP_CONFIG = {
+        myMapsEditUrl: "https://www.google.com/maps/d/edit?mid=1nThsZ95mngfQtcxejdnH_J7UgHqG67w&usp=sharing",
+        myMapsEmbedUrl: "https://www.google.com/maps/d/embed?mid=1nThsZ95mngfQtcxejdnH_J7UgHqG67w&ehbc=2E312F",
+        googleMapsApiKey: ""
+      };
+
+      var phaseColors = { asia: "#e76f51", europe: "#5eb3ff", africa: "#34d399", return: "#8b9cb3" };
+      var phaseLineWeight = { asia: 4, europe: 4, africa: 6, return: 3 };
+      var phaseLineOpacity = { asia: 0.9, europe: 0.9, africa: 1, return: 0.85 };
+      var mapEngine = ""; // "leaflet" | "google" | "mymaps"
+      var map, layerGroup, overlays = [], infoWindow;
+
+      var routeSegments = [
+        { filter: ["all", "eurasia"], phase: "asia", points: [
+          { lat: 23.129, lng: 113.264, name: "广州", country: "中国", visit: "2024-03-01", note: "570 天起点 · 粤 A 出发" },
+          { lat: 44.213, lng: 80.421, name: "霍尔果斯", country: "中国", visit: "2024-03", note: "陆路出境" },
+          { lat: 43.222, lng: 76.851, name: "阿拉木图", country: "哈萨克斯坦", visit: "2024-03-08", note: "38 女神节 · 升天大教堂" },
+          { lat: 51.169, lng: 71.449, name: "阿斯塔纳", country: "哈萨克斯坦", visit: "2024-03", note: "全球第二冷首都" },
+          { lat: 56.839, lng: 60.606, name: "叶卡捷琳堡", country: "俄罗斯", visit: "2024-03", note: "亚欧分界线" },
+          { lat: 55.756, lng: 37.617, name: "莫斯科", country: "俄罗斯", visit: "2024-03", note: "Tom 熊 · 红场" },
+          { lat: 68.959, lng: 33.083, name: "摩尔曼斯克", country: "俄罗斯", visit: "2024-03", note: "追极光 · 进北极圈" }
+        ]},
+        { filter: ["all", "eurasia"], phase: "europe", points: [
+          { lat: 71.170, lng: 25.784, name: "北角", country: "挪威", visit: "2024-03", note: "欧洲大陆最北端" },
+          { lat: 78.223, lng: 15.627, name: "朗伊尔城", country: "挪威/斯瓦尔巴", visit: "2024-03", note: "第31天 · 观熊船/博物馆/狗拉雪橇/种子库" },
+          { lat: 69.649, lng: 18.955, name: "特罗姆瑟", country: "挪威", visit: "2024-03", note: "北极圈白色角落" },
+          { lat: 60.391, lng: 5.324, name: "卑尔根", country: "挪威", visit: "2024-04", note: "挪威缩影 · 峡湾" },
+          { lat: 59.329, lng: 18.069, name: "斯德哥尔摩", country: "瑞典", visit: "2024-04", note: "第 4 国" },
+          { lat: 55.676, lng: 12.568, name: "哥本哈根", country: "丹麦", visit: "2024-04", note: "修车 · 丹麦童话" },
+          { lat: 62.008, lng: -6.791, name: "托尔斯港", country: "法罗群岛", visit: "2024-04", note: "世界尽头 · 邮轮载车" }
+        ]},
+        { filter: ["all", "eurasia"], phase: "europe", points: [
+          { lat: 64.147, lng: -21.943, name: "雷克雅未克", country: "冰岛", visit: "2024-05", note: "追鲸 · 环岛" },
+          { lat: 52.741, lng: 6.078, name: "羊角村", country: "荷兰", visit: "2024-05", note: "第 8 国" }
+        ]},
+        { filter: ["all", "eurasia"], phase: "europe", points: [
+          { lat: 51.507, lng: -0.128, name: "伦敦", country: "英国", visit: "2024-05", note: "79 天 11 国抵英" },
+          { lat: 50.266, lng: -5.052, name: "兰兹角", country: "英国", visit: "2024-05", note: "英国天涯海角" },
+          { lat: 55.953, lng: -3.188, name: "爱丁堡", country: "苏格兰", visit: "2024-06", note: "霉霉 Eras Tour" },
+          { lat: 54.597, lng: -5.930, name: "贝尔法斯特", country: "北爱尔兰", visit: "2024-06", note: "英伦三岛" },
+          { lat: 53.350, lng: -6.261, name: "都柏林", country: "爱尔兰", visit: "2024-07", note: "7 月段" }
+        ]},
+        { filter: ["all", "eurasia"], phase: "europe", points: [
+          { lat: 48.857, lng: 2.352, name: "巴黎", country: "法国", visit: "2024-07", note: "2024 奥运 · 夜游" },
+          { lat: 46.624, lng: 8.041, name: "格林德瓦", country: "瑞士", visit: "2024-08", note: "少女峰私藏路线" },
+          { lat: 47.562, lng: 13.649, name: "哈尔施塔特", country: "奥地利", visit: "2024-08", note: "第 18 国" },
+          { lat: 50.076, lng: 14.438, name: "布拉格", country: "捷克", visit: "2024-08", note: "查理大桥" },
+          { lat: 47.498, lng: 19.040, name: "布达佩斯", country: "匈牙利", visit: "2024-08", note: "中欧八国" }
+        ]},
+        { filter: ["all", "eurasia"], phase: "europe", points: [
+          { lat: 44.787, lng: 20.449, name: "贝尔格莱德", country: "塞尔维亚", visit: "2024-09", note: "巴尔干起点" },
+          { lat: 37.860, lng: 20.624, name: "沉船湾", country: "希腊", visit: "2024-09", note: "扎金索斯 Navagio · 第 24 国" },
+          { lat: 37.984, lng: 23.728, name: "雅典", country: "希腊", visit: "2024-09", note: "巴尔干南线" },
+          { lat: 43.856, lng: 18.413, name: "萨拉热窝", country: "波黑", visit: "2024-09", note: "一半城池一半坟墓" },
+          { lat: 42.651, lng: 18.094, name: "杜布罗夫尼克", country: "克罗地亚", visit: "2024-10", note: "第 27 国 · 权游君临城" },
+          { lat: 41.903, lng: 12.496, name: "罗马/阿马尔菲", country: "意大利", visit: "2024-10", note: "波西塔诺" },
+          { lat: 46.021, lng: 7.749, name: "采尔马特", country: "瑞士", visit: "2024-11", note: "马特洪峰" },
+          { lat: 37.389, lng: -5.984, name: "塞维利亚", country: "西班牙", visit: "2024-11", note: "第 32 国" },
+          { lat: 38.722, lng: -9.139, name: "里斯本", country: "葡萄牙", visit: "2024-11", note: "伊比利亚收官" }
+        ]},
+        { filter: ["all", "eurasia", "africa"], phase: "africa", points: [
+          { lat: 35.169, lng: -5.264, name: "舍夫沙万", country: "摩洛哥", visit: "2024-12", note: "第 34 国 · 非洲第 1 站" },
+          { lat: 31.099, lng: -4.012, name: "梅尔祖卡", country: "摩洛哥", visit: "2024-12", note: "撒哈拉 · 9 个月抵非" }
+        ]},
+        { filter: ["all", "africa"], phase: "africa", points: [
+          { lat: 27.154, lng: -13.203, name: "阿尤恩", country: "西撒哈拉", visit: "2025-01", note: "三毛故居" },
+          { lat: 18.074, lng: -15.958, name: "努瓦克肖特", country: "毛里塔尼亚", visit: "2025-01", note: "第 35 国 · 寸步难行开始" },
+          { lat: 14.717, lng: -17.468, name: "达喀尔", country: "塞内加尔", visit: "2025-01", note: "西非段" },
+          { lat: 9.641, lng: -13.578, name: "科纳克里", country: "几内亚", visit: "2025-01", note: "西非段" },
+          { lat: 5.360, lng: -4.008, name: "阿比让", country: "科特迪瓦", visit: "2025-02", note: "西非段" },
+          { lat: 5.604, lng: -0.187, name: "阿克拉", country: "加纳", visit: "2025-02", note: "西非段" },
+          { lat: 6.524, lng: 3.379, name: "拉各斯", country: "尼日利亚", visit: "2025-02", note: "西非段" },
+          { lat: 4.051, lng: 9.768, name: "杜阿拉", country: "喀麦隆", visit: "2025-02", note: "西非段" },
+          { lat: -4.263, lng: 15.243, name: "布拉柴维尔", country: "刚果(布)", visit: "2025-03", note: "中西非" },
+          { lat: -8.839, lng: 13.289, name: "罗安达", country: "安哥拉", visit: "2025-03", note: "进入南部非洲" }
+        ]},
+        { filter: ["all", "africa"], phase: "africa", points: [
+          { lat: -22.561, lng: 17.066, name: "温德霍克", country: "纳米比亚", visit: "2025-04", note: "埃托沙 Safari Top5 第 5" },
+          { lat: -33.925, lng: 18.424, name: "开普敦", country: "南非", visit: "2025-05", note: "好望角" },
+          { lat: -24.995, lng: 31.591, name: "克鲁格", country: "南非", visit: "2025-05", note: "第 47 国 · Safari Top5 第 3" }
+        ]},
+        { filter: ["all", "africa"], phase: "africa", points: [
+          { lat: -17.825, lng: 31.033, name: "哈拉雷", country: "津巴布韦", visit: "2025-07", note: "东非 Safari 段" },
+          { lat: -19.983, lng: 23.417, name: "马翁", country: "博茨瓦纳", visit: "2025-07", note: "奥卡万戈 · Safari Top5 第 1" },
+          { lat: -15.388, lng: 28.323, name: "卢萨卡", country: "赞比亚", visit: "2025-07", note: "第 50 国 · 非洲少林寺" },
+          { lat: -3.387, lng: 36.683, name: "阿鲁沙", country: "坦桑尼亚", visit: "2025-08", note: "塞伦盖蒂 Safari Top5 第 2" },
+          { lat: -1.940, lng: 29.873, name: "基加利", country: "卢旺达", visit: "2025-08", note: "第 52 国" },
+          { lat: 0.348, lng: 32.583, name: "坎帕拉", country: "乌干达", visit: "2025-08", note: "东非段" },
+          { lat: -1.292, lng: 36.822, name: "内罗毕", country: "肯尼亚", visit: "2025-09", note: "马塞马拉 · 乞力马扎罗视角" },
+          { lat: -20.291, lng: 44.300, name: "穆隆达瓦", country: "马达加斯加", visit: "2025-09", note: "第 55 国 · 猴面包树大道" }
+        ]},
+        { filter: ["all"], phase: "return", dashed: true, points: [
+          { lat: -4.044, lng: 39.668, name: "蒙巴萨", country: "肯尼亚", visit: "2025-09", note: "苏丹未通行 · 车辆船运回国" },
+          { lat: 23.129, lng: 113.264, name: "广州", country: "中国", visit: "2025-11", note: "阿坦抵港 · 570 天收官" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function bindFilterButtons(renderFn) {
+        document.querySelectorAll(".map-filter").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            renderFn(btn.getAttribute("data-filter"));
+          });
+        });
+      }
+
+      function shouldBridgeSegments(fromSeg, toSeg, filter) {
+        if (!fromSeg || !toSeg || fromSeg.points.length === 0 || toSeg.points.length === 0) return null;
+        var a = fromSeg.points[fromSeg.points.length - 1];
+        var b = toSeg.points[0];
+        if (a.lat === b.lat && a.lng === b.lng) return null;
+        if (toSeg.dashed) return "dashed";
+        if (fromSeg.dashed) return null;
+        if (fromSeg.phase === toSeg.phase) return "solid";
+        if (filter === "all") return "solid";
+        return null;
+      }
+
+      function renderRouteLeaflet(filter) {
+        if (!map || mapEngine !== "leaflet") return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg, segIdx) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          var weight = phaseLineWeight[seg.phase] || 4;
+          var opacity = phaseLineOpacity[seg.phase] || 0.85;
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? weight - 1 : weight,
+              opacity: opacity,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p, idx) {
+            bounds.push([p.lat, p.lng]);
+            var isStart = filter === "all" && seg === routeSegments[0] && idx === 0;
+            var isEnd = filter === "all" && seg.dashed && idx === seg.points.length - 1;
+            var marker = L.circleMarker([p.lat, p.lng], {
+              radius: isStart || isEnd ? 8 : 6,
+              color: isStart ? "#fff" : isEnd ? "#fff" : color,
+              fillColor: color,
+              fillOpacity: 0.9,
+              weight: isStart || isEnd ? 2 : 1.5
+            }).addTo(layerGroup);
+            marker.bindPopup(popupHtml(p));
+          });
+          if (segIdx < visible.length - 1) {
+            var bridge = shouldBridgeSegments(seg, visible[segIdx + 1], filter);
+            if (bridge) {
+              var from = seg.points[seg.points.length - 1];
+              var to = visible[segIdx + 1].points[0];
+              var bridgeColor = phaseColors[seg.phase] || color;
+              var bridgeWeight = phaseLineWeight[seg.phase] || 4;
+              var bridgeOpacity = phaseLineOpacity[seg.phase] || 0.85;
+              L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+                color: bridge === "dashed" ? phaseColors.return || "#8b9cb3" : bridgeColor,
+                weight: bridge === "dashed" ? 3 : bridgeWeight,
+                opacity: bridge === "dashed" ? 0.7 : bridgeOpacity,
+                dashArray: bridge === "dashed" ? "10 8" : null
+              }).addTo(layerGroup);
+            }
+          }
+        });
+        if (bounds.length) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: filter === "africa" ? 5 : 4 });
+        }
+      }
+
+      function initLeafletMap() {
+        mapEngine = "leaflet";
+        map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 19
+        }).addTo(map);
+        layerGroup = L.layerGroup().addTo(map);
+        bindFilterButtons(renderRouteLeaflet);
+        renderRouteLeaflet("all");
+        setTimeout(function () { map.invalidateSize(); }, 200);
+        document.getElementById("map-legend-hint").textContent = "📍 点击标记查看地点 · 国内默认可用";
+      }
+
+      var darkMapStyle = [
+        { elementType: "geometry", stylers: [{ color: "#1d2430" }] },
+        { elementType: "labels.text.stroke", stylers: [{ color: "#1d2430" }] },
+        { elementType: "labels.text.fill", stylers: [{ color: "#8b9cb3" }] },
+        { featureType: "water", elementType: "geometry", stylers: [{ color: "#0d1117" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#2a3444" }] },
+        { featureType: "poi", elementType: "geometry", stylers: [{ color: "#243044" }] },
+        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4a5568" }] }
+      ];
+
+      function popupHtml(p) {
+        return "<div style=\"font-weight:600;color:#f4a261;margin-bottom:4px\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function clearOverlays() {
+        overlays.forEach(function (o) { o.setMap(null); });
+        overlays = [];
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        clearOverlays();
+        var bounds = new google.maps.LatLngBounds();
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg, segIdx) {
+          var color = phaseColors[seg.phase] || "#888888";
+          var weight = phaseLineWeight[seg.phase] || 4;
+          var opacity = phaseLineOpacity[seg.phase] || 0.85;
+          var path = seg.points.map(function (p) {
+            var latLng = { lat: p.lat, lng: p.lng };
+            bounds.extend(latLng);
+            return latLng;
+          });
+          if (path.length >= 2) {
+            var lineOpts = {
+              map: map,
+              path: path,
+              geodesic: true,
+              strokeColor: color,
+              strokeOpacity: opacity,
+              strokeWeight: seg.dashed ? weight - 1 : weight
+            };
+            if (seg.dashed) {
+              lineOpts.icons = [{
+                icon: { path: "M 0,-1 0,1", strokeOpacity: 1, scale: 3, strokeColor: color },
+                offset: "0",
+                repeat: "16px"
+              }];
+              lineOpts.strokeOpacity = 0;
+            }
+            overlays.push(new google.maps.Polyline(lineOpts));
+          }
+          seg.points.forEach(function (p, idx) {
+            var isStart = filter === "all" && seg === routeSegments[0] && idx === 0;
+            var isEnd = filter === "all" && seg.dashed && idx === seg.points.length - 1;
+            var scale = isStart || isEnd ? 8 : 6;
+            var marker = new google.maps.Marker({
+              map: map,
+              position: { lat: p.lat, lng: p.lng },
+              title: p.name + " · " + p.country,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: scale,
+                fillColor: color,
+                fillOpacity: 0.92,
+                strokeColor: isStart || isEnd ? "#ffffff" : color,
+                strokeWeight: isStart || isEnd ? 2 : 1.5
+              }
+            });
+            marker.addListener("click", function () {
+              infoWindow.setContent(popupHtml(p));
+              infoWindow.open(map, marker);
+            });
+            overlays.push(marker);
+          });
+          if (segIdx < visible.length - 1) {
+            var bridge = shouldBridgeSegments(seg, visible[segIdx + 1], filter);
+            if (bridge) {
+              var from = seg.points[seg.points.length - 1];
+              var to = visible[segIdx + 1].points[0];
+              var bridgeColor = bridge === "dashed" ? (phaseColors.return || "#8b9cb3") : (phaseColors[seg.phase] || color);
+              var bridgeWeight = bridge === "dashed" ? 3 : (phaseLineWeight[seg.phase] || 4);
+              var bridgeOpacity = bridge === "dashed" ? 0.7 : (phaseLineOpacity[seg.phase] || 0.85);
+              var bridgeOpts = {
+                map: map,
+                path: [{ lat: from.lat, lng: from.lng }, { lat: to.lat, lng: to.lng }],
+                geodesic: true,
+                strokeColor: bridgeColor,
+                strokeOpacity: bridgeOpacity,
+                strokeWeight: bridgeWeight
+              };
+              if (bridge === "dashed") {
+                bridgeOpts.icons = [{
+                  icon: { path: "M 0,-1 0,1", strokeOpacity: 1, scale: 3, strokeColor: bridgeColor },
+                  offset: "0",
+                  repeat: "16px"
+                }];
+                bridgeOpts.strokeOpacity = 0;
+              }
+              overlays.push(new google.maps.Polyline(bridgeOpts));
+              bounds.extend({ lat: to.lat, lng: to.lng });
+            }
+          }
+        });
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds, filter === "africa" ? 48 : 40);
+        }
+      }
+
+      function bindFilterButtons() {
+        document.querySelectorAll(".map-filter").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            renderRoute(btn.getAttribute("data-filter"));
+          });
+        });
+      }
+
+      function showSetupPanel() {
+        var el = document.getElementById("route-map");
+        el.innerHTML =
+          "<div class=\"map-setup\">" +
+          "<h3>🗺️ 启用 Google Maps</h3>" +
+          "<p class=\"map-setup-note\"><strong>国内提示：</strong>Google My Maps（google.com/maps/d/）通常需 VPN 才能打开。</p>" +
+          "<p>路线文件：<a href=\"route.kml\" download>route.kml</a>（7 个阶段文件夹 · 关键点 + 分段连线）</p>" +
+          "<ol>" +
+          "<li>VPN 下打开 <a href=\"https://www.google.com/maps/d/\" target=\"_blank\" rel=\"noopener\">Google My Maps</a> → <strong>创建新地图</strong></li>" +
+          "<li><strong>导入</strong> <code>route.kml</code> → 分享为「知道链接的任何人」→ <strong>嵌入地图</strong> → 复制 iframe 的 <code>src</code></li>" +
+          "<li>填入 <code>MAP_CONFIG.myMapsEmbedUrl</code> 后刷新</li>" +
+          "</ol>" +
+          "<p>👉 完整图文步骤见下方 <a href=\"#google-maps-setup-guide\" class=\"guide-jump\">Google Maps 配置教程</a>（含常见问题）</p>" +
+          "</div>";
+        document.getElementById("map-filter-controls").style.display = "none";
+        document.getElementById("map-legend-hint").textContent = "配置 MAP_CONFIG 后刷新 · 或展开下方教程";
+      }
+
+      function initMyMapsEmbed(url) {
+        var el = document.getElementById("route-map");
+        el.innerHTML = "<iframe loading=\"lazy\" allowfullscreen referrerpolicy=\"no-referrer-when-downgrade\" " +
+          "src=\"" + url.replace(/"/g, "") + "\"></iframe>";
+        document.getElementById("map-filter-controls").style.display = "none";
+        document.getElementById("map-legend-hint").textContent = "My Maps 图层可在地图内切换";
+      }
+
+      function initGoogleMapsApi(apiKey) {
+        mapEngine = "google";
+        window.__initRouteMap = function () {
+          map = new google.maps.Map(document.getElementById("route-map"), {
+            center: { lat: 30, lng: 20 },
+            zoom: 2,
+            styles: darkMapStyle,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true
+          });
+          infoWindow = new google.maps.InfoWindow();
+          bindFilterButtons(renderRoute);
+          renderRoute("all");
+          document.getElementById("map-filter-controls").style.display = "";
+          document.getElementById("map-legend-hint").textContent = "📍 点击标记查看地点 · Google Maps";
+        };
+        var s = document.createElement("script");
+        s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(apiKey) + "&callback=__initRouteMap";
+        s.async = true;
+        s.defer = true;
+        s.onerror = showSetupPanel;
+        document.head.appendChild(s);
+      }
+
+      function initRouteMap() {
+        var editUrl = (MAP_CONFIG.myMapsEditUrl || "").trim();
+        var embedUrl = (MAP_CONFIG.myMapsEmbedUrl || "").trim();
+        var apiKey = (MAP_CONFIG.googleMapsApiKey || "").trim();
+        var editLink = document.getElementById("mymaps-edit-link");
+        if (editLink && editUrl) editLink.href = editUrl;
+        if (apiKey) {
+          initGoogleMapsApi(apiKey);
+        } else if (embedUrl) {
+          initMyMapsEmbed(embedUrl);
+        } else {
+          initLeafletMap();
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initRouteMap);
+      } else {
+        initRouteMap();
+      }
+    })();
+  </script>
+</body>
+</html>
