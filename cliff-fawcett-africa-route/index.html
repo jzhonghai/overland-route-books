@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cliff Fawcett · 非洲摄影 Overland 路书</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #fbbf24;
+      --accent-2: #38bdf8;
+      --warn: #fb923c;
+      --west: #fb923c;
+      --south: #34d399;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 960px; }
+    .subtitle a { color: #79c0ff; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.1rem; font-weight: 600; }
+    .note {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #fde68a;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    h2.section-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .veh-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+    .veh-panel h3 { margin: 0 0 10px; color: var(--warn); font-size: 1.05rem; }
+    .veh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      font-size: 0.92rem;
+    }
+    .veh-grid dt { color: var(--muted); font-size: 0.82rem; margin: 0 0 2px; }
+    .veh-grid dd { margin: 0 0 10px; }
+    .map-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: space-between; align-items: flex-start;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0 0 4px; font-size: 1.05rem; color: var(--accent); }
+    .map-header p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-filter {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 6px 14px; font-size: 0.84rem; cursor: pointer;
+    }
+    .map-filter:hover { border-color: var(--accent); }
+    .map-filter.active { background: rgba(251, 191, 36, 0.15); border-color: var(--accent); color: #fde68a; }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+      vertical-align: middle; margin-right: 4px;
+    }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 1080px; font-size: 0.92rem; }
+    .visit-time { color: #fde68a; font-size: 0.86rem; white-space: nowrap; }
+    .visit-est { color: var(--muted); font-size: 0.78rem; }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(251, 191, 36, 0.06); }
+    .region {
+      display: inline-flex; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .region.west { background: rgba(251, 146, 60, 0.15); color: #fdba74; }
+    .region.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .region.full { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; }
+    .rating {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .rating.top { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
+    .rating.good { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .rating.mixed { background: rgba(251, 191, 36, 0.15); color: #fde68a; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    td a { color: #ffd4a8; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .guide-section summary {
+      padding: 16px 20px; cursor: pointer; font-weight: 600;
+      font-size: 1.05rem; color: var(--accent); list-style: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before { content: "▸ "; color: var(--muted); }
+    .guide-section details[open] summary::before { content: "▾ "; }
+    .guide-body { padding: 0 20px 18px; border-top: 1px solid var(--border); }
+    .guide-days { margin: 14px 0 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      #route-map { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Cliff Fawcett · 非洲摄影 Overland 路书</h1>
+      <p class="subtitle">
+        英国夫妇 Cliff &amp; Mon · YouTube
+        <a href="https://www.youtube.com/@CliffFawcettPhoto" target="_blank" rel="noopener">@CliffFawcettPhoto</a>
+        · 品牌 And Other Horizons · 摄影纪录片而非 vlog 流水账。
+        汇总页 <a href="../youtube-africa-overland/index.html">YouTube 非洲自驾索引</a>
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">里程</div><div class="value">50,000+ km</div></div>
+      <div class="card"><div class="label">西非</div><div class="value">11 国纵穿</div></div>
+      <div class="card"><div class="label">南部非洲</div><div class="value">≈6 个月</div></div>
+      <div class="card"><div class="label">车辆</div><div class="value">Defender「Sully」</div></div>
+      <div class="card"><div class="label">摄影地点</div><div class="value" id="spot-count">21 处</div></div>
+      <div class="card"><div class="label">非洲段</div><div class="value">2025-02 — 2026-03</div></div>
+    </div>
+
+    <div class="note">
+      <strong>定位：</strong>
+      以<strong>风光与野生动物摄影</strong>为主线的 Overland 纪录片；西非片强调「11 countries, one broken differential」，
+      南部非洲片按国别出长片（纳米、Kruger、博茨雨季、Eswatini 等）。
+      路线为视频叙事顺序整理，<strong>非 GPS 轨迹</strong>。<br>
+      <strong>造访时间：</strong>视频未逐条标注拍摄日期；下表按<strong>发布顺序 + 行程叙事</strong>推断（通常比上传早约 4–8 周），精度到<strong>月</strong>，供规划参考。
+    </div>
+
+    <div class="veh-panel">
+      <h3>🚗 车辆 · Land Rover Defender 110「Sully」</h3>
+      <div class="veh-grid">
+        <div>
+          <dt>年份 / 动力</dt><dd>1997 · 300 TDI 柴油</dd>
+          <dt>昵称</dt><dd>Sully（频道 tour 片）</dd>
+        </div>
+        <div>
+          <dt>用途</dt><dd>摄影器材运输 + 远程露营 · 车顶帐/侧帐类配置（见 Sully tour 片）</dd>
+          <dt>典型损耗</dt><dd>西非纵穿：<strong>差速器损坏</strong>（总结片标题点题）</dd>
+        </div>
+        <div>
+          <dt>频道</dt><dd><a href="https://www.youtube.com/@CliffFawcettPhoto" target="_blank" rel="noopener">@CliffFawcettPhoto</a></dd>
+          <dt>官网</dt><dd><a href="https://clifffawcett.com/films" target="_blank" rel="noopener">clifffawcett.com/films</a></dd>
+        </div>
+      </div>
+    </div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · 关键点连线 · <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="west">西非 11 国</button>
+          <button type="button" class="map-filter" data-filter="south">南部非洲</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#fb923c"></i>西非段</span>
+        <span><i style="background:#34d399"></i>南部非洲段</span>
+        <span>📍 点击标记查看影片对照</span>
+      </div>
+    </section>
+
+    <h2 class="section-title">📍 推荐摄影地点清单（含造访时间）</h2>
+    <div class="toolbar">
+      <label for="spot-region-filter">区域</label>
+      <select id="spot-region-filter">
+        <option value="all">全部</option>
+        <option value="west">西非</option>
+        <option value="south">南部非洲</option>
+      </select>
+      <label for="spot-year-filter">年份</label>
+      <select id="spot-year-filter">
+        <option value="all">全部</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+      </select>
+      <input type="search" id="spot-search" placeholder="搜索国家、地点、主题…" />
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家</th>
+            <th>摄影地点</th>
+            <th>拍什么</th>
+            <th>造访时间</th>
+            <th>评价</th>
+            <th>视频</th>
+          </tr>
+        </thead>
+        <tbody id="spot-tbody"></tbody>
+      </table>
+    </div>
+    <p class="visit-est" style="margin:8px 0 28px;">造访时间依据 YouTube 上传日期（2025-03 — 2026-03）反推；西非纵穿约 2025-02 — 2025-08，南部非洲约 2025-08 — 2026-03。</p>
+
+    <h2 class="section-title">📺 代表影片目录（可筛选）</h2>
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="west">西非</option>
+        <option value="south">南部非洲</option>
+        <option value="full">综述</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、地点、片名…" />
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家</th>
+            <th>地点 / 主题</th>
+            <th>造访时间</th>
+            <th>摘要 · 评价</th>
+            <th>视频</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section">
+      <details open>
+        <summary>西非 11 国 · 摄影纵穿要点</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>🇲🇦 摩洛哥</strong>（≈2025-03）— 舍夫沙万 · 撒哈拉 · Medina · 👍 色彩与集市</li>
+            <li><strong>🇲🇷 毛里塔尼亚</strong>（≈2025-02）— Unreal Sahara · 👍 沙漠视觉天花板</li>
+            <li><strong>🇸🇳 塞内加尔</strong>（≈2025-04）— Sine Saloum Delta · 👍 三角洲人文</li>
+            <li><strong>🇬🇲 冈比亚</strong>（≈2025-04）— 3 个国家公园 · 👍 黑猩猩/河马/鸟</li>
+            <li><strong>🇬🇼 几内亚比绍</strong>（≈2025-05）— Forgotten Coast · 👍 原始海岸</li>
+            <li><strong>🇬🇳 几内亚</strong>（≈2025-05）— Saala 瀑布 · 高地 Coffee Route · 👍</li>
+            <li><strong>🇧🇯 贝宁</strong>（≈2025-06）— Voodoo 文化 · 👍 仪式摄影沉浸</li>
+            <li><strong>🇳🇬🇨🇲 尼日利亚/喀麦隆</strong>（≈2025-06 — 2025-07）— 陆路穿越 · ⚖️ 挑战大</li>
+            <li><strong>🇨🇲 喀麦隆</strong>（≈2025-07，湿季）— Mount Cameroon 4095 m · 👍</li>
+            <li><strong>🇨🇬 刚果（布）</strong>（≈2025-08）— 低地大猩猩 · 👍 极 remote</li>
+            <li><strong>综述</strong>（2025-08 发布）— Photographing West Africa · 「11 countries, one broken differential」</li>
+          </ul>
+          <p class="guide-link"><a href="https://www.youtube.com/watch?v=zOMUQ9NMacI" target="_blank" rel="noopener">▶ Photographing West Africa</a></p>
+        </div>
+      </details>
+      <details>
+        <summary>南部非洲 6 个月 · 国别长片</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>🇦🇴 安哥拉</strong>（≈2025-08 — 2025-09）— Shipwreck Coast 无人机 · 👍 沉船海岸</li>
+            <li><strong>🇳🇦 纳米比亚</strong>（≈2025-09 — 2025-11）— Kolmanskop · Deadvlei · Himba · 沙漠象 · 银河 · 👍 Photography Dream</li>
+            <li><strong>🇿🇦 南非</strong>（≈2025-11 — 2026-02）— Kruger 花豹 5 天 · 鲸/浪/象/山 · 👍</li>
+            <li><strong>🇱🇸 莱索托</strong>（≈2025-12 — 2026-01）— Sani Pass · Maletsunyane · ⚖️ 景好路难</li>
+            <li><strong>🇲🇿 莫桑比克</strong>（≈2026-01 — 2026-02）— Ponta do Ouro → Vilankulos → Pomene · 👍 Last Wild Coast</li>
+            <li><strong>🇧🇼 博茨瓦纳</strong>（≈2026-01 — 2026-03，湿季）— Okavango · Chobe · Makgadikgadi · 👍 最难 Safari</li>
+            <li><strong>🇸🇿 Eswatini</strong>（≈2026-01）— Hlane · Mlilwane · Mantenga · 👍 人少王国</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>推荐观看顺序</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>了解车况</strong> → <a href="https://www.youtube.com/watch?v=Au3g4fh7wiM" target="_blank" rel="noopener">Sully Defender Tour</a></li>
+            <li><strong>西非总览</strong> → Photographing West Africa</li>
+            <li><strong>南部入门</strong> → Namibia Was a Photography Dream → 5 Days Searching for a Leopard</li>
+            <li><strong>预算参考</strong> → What it ACTUALLY Costs to Photograph Africa（38 min）</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-14 · 造访时间为粉丝推断（非官方行程表）· 来源：YouTube @CliffFawcettPhoto</p>
+      <p>地图：<a href="route.kml" download>route.kml</a> ·
+        <a href="../huskyrover-africa-route/index.html">HuskyRover 详版路书</a> ·
+        <a href="../youtube-africa-overland/index.html">YouTube 非洲总索引</a> ·
+        <a href="../index.html">路书首页</a></p>
+    </footer>
+  </div>
+
+  <script>
+    var regionLabel = { west: "西非", south: "南部非洲", full: "综述" };
+    var ratingClass = { top: "top", good: "good", mixed: "mixed" };
+    var ratingText = { top: "👍 强烈推荐", good: "🙂 值得看", mixed: "⚖️ 喜忧参半" };
+
+    var spotRows = [
+      { region: "west", country: "毛里塔尼亚", place: "撒哈拉沙漠（无尽沙丘）", subject: "超现实风光 · 越野", visit: "2025-02", year: "2025", rating: "top", video: "Mauritania's Unreal Sahara", url: "https://www.youtube.com/watch?v=D7D1bMoKgu8" },
+      { region: "west", country: "摩洛哥", place: "舍夫沙万 · 撒哈拉 · Medina · Souk", subject: "色彩 · 人文 · 晨光", visit: "2025-03", year: "2025", rating: "top", video: "Capturing Morocco", url: "https://www.youtube.com/watch?v=QUp2LQfePA8" },
+      { region: "west", country: "塞内加尔", place: "Sine Saloum Delta", subject: "红树林 · 猴面包树 · pirogue", visit: "2025-04", year: "2025", rating: "top", video: "Sine Saloum Senegal", url: "https://www.youtube.com/watch?v=bvzwkw-dwYw" },
+      { region: "west", country: "冈比亚", place: "Kiang West · River Gambia · Pirang Bonto", subject: "黑猩猩 · 河马 · 鸟类", visit: "2025-04", year: "2025", rating: "top", video: "3 Gambia National Parks", url: "https://www.youtube.com/watch?v=_wVFHd9WTXY" },
+      { region: "west", country: "几内亚比绍", place: "Forgotten Coast", subject: "无人海滩 · 河流 · 天然泳池", visit: "2025-05", year: "2025", rating: "top", video: "The Forgotten Coast", url: "https://www.youtube.com/watch?v=9QAUcqrjH3Y" },
+      { region: "west", country: "几内亚", place: "Saala 瀑布 · 几内亚高地 · Coffee Route", subject: "越野风光 · 高地", visit: "2025-05", year: "2025", rating: "good", video: "Guinea Off-Road", url: "https://www.youtube.com/watch?v=FWxev5D3UU0" },
+      { region: "west", country: "贝宁", place: "Voodoo 文化区", subject: "仪式 · 纪实人像", visit: "2025-06", year: "2025", rating: "top", video: "Inside Benin's Voodoo Culture", url: "https://www.youtube.com/watch?v=-Xm9chIUk5Y" },
+      { region: "west", country: "尼日利亚/喀麦隆", place: "陆路穿越段", subject: "路况 · 安全 · 人文纪实", visit: "2025-06 — 2025-07", year: "2025", rating: "mixed", video: "Driving Through Nigeria and Cameroon", url: "https://www.youtube.com/watch?v=vUEqMni0EYA" },
+      { region: "west", country: "喀麦隆", place: "Mount Cameroon（4095 m）", subject: "湿季登山 · 火山风光", visit: "2025-07", year: "2025", rating: "top", video: "Climbing Mount Cameroon", url: "https://www.youtube.com/watch?v=qCRPQk3h9uU" },
+      { region: "west", country: "刚果（布）", place: "雨林", subject: "低地大猩猩", visit: "2025-08", year: "2025", rating: "top", video: "Lowland Gorillas in the Congo", url: "https://www.youtube.com/watch?v=P3IEqMKqibA" },
+      { region: "south", country: "安哥拉", place: "Shipwreck Coast · 大西洋岸", subject: "无人机 · 沉船 · 冷门景观", visit: "2025-08 — 2025-09", year: "2025", rating: "top", video: "Angola From Above", url: "https://www.youtube.com/watch?v=y1kXXglDpes" },
+      { region: "south", country: "纳米比亚", place: "Kolmanskop 鬼城", subject: "废城建筑 · 光影", visit: "2025-10", year: "2025", rating: "top", video: "10 Ghost Town Tips", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", country: "纳米比亚", place: "Deadvlei · 红沙丘", subject: "经典风光 · 晨雾", visit: "2025-10 — 2025-11", year: "2025", rating: "top", video: "Namibia Was a Photography Dream", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", country: "纳米比亚", place: "Himba 村落", subject: "人文肖像", visit: "2025-10", year: "2025", rating: "top", video: "Namibia Was a Photography Dream", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", country: "纳米比亚", place: "沙漠象 · 峡谷", subject: "野生动物 · 日落", visit: "2025-10 — 2025-11", year: "2025", rating: "top", video: "Elephants in Namibia", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", country: "纳米比亚", place: "Darkest Skies", subject: "银河 · 星空", visit: "2025-09 — 2025-10", year: "2025", rating: "top", video: "Milky Way Adventure", url: "https://www.youtube.com/watch?v=QzHS6AqGzWE" },
+      { region: "south", country: "南非", place: "Kruger NP（北部）", subject: "花豹 · 5 天蹲守", visit: "2026-02", year: "2026", rating: "top", video: "5 Days Searching for a Leopard", url: "https://www.youtube.com/watch?v=34lSuYJ3Yec" },
+      { region: "south", country: "南非", place: "海岸/山区多地", subject: "鲸鱼 · 海浪 · 大象 · 越野", visit: "2025-11 — 2025-12", year: "2025", rating: "top", video: "5 impossible photos", url: "https://www.youtube.com/watch?v=kJMiMn29ldQ" },
+      { region: "south", country: "莱索托", place: "Sani Pass · Maletsunyane · Sehlabathebe", subject: "高山 · 瀑布 · 极端天气", visit: "2025-12 — 2026-01", year: "2026", rating: "mixed", video: "Lesotho Adventure Film", url: "https://www.youtube.com/watch?v=AeCFh0wutKc" },
+      { region: "south", country: "莫桑比克", place: "Ponta do Ouro → Vilankulos → Pomene", subject: "原始海岸 · 抽象构图", visit: "2026-01 — 2026-02", year: "2026", rating: "top", video: "Mozambique's Last Wild Coast", url: "https://www.youtube.com/watch?v=2Vg-S1XVl4o" },
+      { region: "south", country: "博茨瓦纳", place: "Okavango · Chobe · Moremi · Makgadikgadi", subject: "湿季 Safari · 洪水 pan", visit: "2026-01 — 2026-03", year: "2026", rating: "top", video: "Wet Season in Botswana", url: "https://www.youtube.com/watch?v=RKKNb0fzy3g" },
+      { region: "south", country: "Eswatini", place: "Hlane · Mlilwane · Mantenga", subject: "狮群 · 徒步 Safari · 文化", visit: "2026-01", year: "2026", rating: "top", video: "Photographing Eswatini", url: "https://www.youtube.com/watch?v=SRGXQmbWTZY" }
+    ];
+
+    var rows = [
+      { region: "full", country: "综述", place: "西非 11 国纵穿", visit: "2025-02 — 2025-08", notes: "11 countries, one broken differential · 摄影纪录片", rating: "top", video: "Photographing West Africa", url: "https://www.youtube.com/watch?v=zOMUQ9NMacI" },
+      { region: "west", country: "摩洛哥", place: "摄影之旅", visit: "2025-03", notes: "北非入非首站 · 上传 2025-04-13", rating: "good", video: "Capturing Morocco", url: "https://www.youtube.com/watch?v=QUp2LQfePA8" },
+      { region: "west", country: "毛里塔尼亚", place: "撒哈拉", visit: "2025-02", notes: "沙漠风光 · 上传 2025-03-29", rating: "top", video: "Mauritania's Unreal Sahara", url: "https://www.youtube.com/watch?v=D7D1bMoKgu8" },
+      { region: "west", country: "塞内加尔", place: "Sine Saloum Delta", visit: "2025-04", notes: "三角洲摄影故事 · 上传 2025-05-03", rating: "good", video: "Sine Saloum Senegal", url: "https://www.youtube.com/watch?v=bvzwkw-dwYw" },
+      { region: "west", country: "冈比亚", place: "3 个国家公园", visit: "2025-04", notes: "野生动物 · 上传 2025-05-17", rating: "top", video: "3 Gambia National Parks", url: "https://www.youtube.com/watch?v=_wVFHd9WTXY" },
+      { region: "west", country: "几内亚比绍", place: "Forgotten Coast", visit: "2025-05", notes: "原始海岸 · 上传 2025-05-31", rating: "top", video: "The Forgotten Coast", url: "https://www.youtube.com/watch?v=9QAUcqrjH3Y" },
+      { region: "west", country: "几内亚", place: "Off-Road 高地", visit: "2025-05", notes: "Saala 瀑布 · 上传 2025-06-14", rating: "good", video: "Guinea Off-Road", url: "https://www.youtube.com/watch?v=FWxev5D3UU0" },
+      { region: "west", country: "贝宁", place: "Voodoo 文化", visit: "2025-06", notes: "仪式与文化沉浸 · 上传 2025-07-12", rating: "top", video: "Inside Benin's Voodoo Culture", url: "https://www.youtube.com/watch?v=-Xm9chIUk5Y" },
+      { region: "west", country: "尼日利亚/喀麦隆", place: "陆路穿越", visit: "2025-06 — 2025-07", notes: "上传 2025-07-26", rating: "mixed", video: "Driving Through Nigeria and Cameroon", url: "https://www.youtube.com/watch?v=vUEqMni0EYA" },
+      { region: "west", country: "喀麦隆", place: "Mount Cameroon", visit: "2025-07", notes: "湿季登山 · 上传 2025-08-09", rating: "top", video: "Climbing Mount Cameroon", url: "https://www.youtube.com/watch?v=qCRPQk3h9uU" },
+      { region: "west", country: "刚果（布）", place: "低地大猩猩", visit: "2025-08", notes: "雨林 · 上传 2025-08-31", rating: "top", video: "Lowland Gorillas in the Congo", url: "https://www.youtube.com/watch?v=P3IEqMKqibA" },
+      { region: "south", country: "安哥拉", place: "Shipwreck Coast", visit: "2025-08 — 2025-09", notes: "无人机 · 上传 2025-09-14", rating: "top", video: "Angola From Above", url: "https://www.youtube.com/watch?v=y1kXXglDpes" },
+      { region: "south", country: "纳米比亚", place: "Kolmanskop · Deadvlei · Himba", visit: "2025-09 — 2025-11", notes: "Photography Dream · 上传 2025-10 — 12", rating: "top", video: "Namibia Was a Photography Dream", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", country: "纳米比亚", place: "Darkest Skies", visit: "2025-09 — 2025-10", notes: "银河 · 上传 2025-10-26", rating: "top", video: "Milky Way Adventure", url: "https://www.youtube.com/watch?v=QzHS6AqGzWE" },
+      { region: "south", country: "南非", place: "Kruger NP", visit: "2026-02", notes: "5 天蹲 leopard · 上传 2026-03-06", rating: "top", video: "5 Days Searching for a Leopard", url: "https://www.youtube.com/watch?v=34lSuYJ3Yec" },
+      { region: "south", country: "南非", place: "5 impossible photos", visit: "2025-11 — 2025-12", notes: "鲸/浪/象/山 · 上传 2026-01-09", rating: "top", video: "5 impossible photos", url: "https://www.youtube.com/watch?v=kJMiMn29ldQ" },
+      { region: "south", country: "莱索托", place: "Kingdom in the Clouds", visit: "2025-12 — 2026-01", notes: "Sani Pass · 上传 2026-01-23", rating: "mixed", video: "Lesotho Adventure Film", url: "https://www.youtube.com/watch?v=AeCFh0wutKc" },
+      { region: "south", country: "莫桑比克", place: "Last Wild Coast", visit: "2026-01 — 2026-02", notes: "上传 2026-02-20", rating: "top", video: "Mozambique's Last Wild Coast", url: "https://www.youtube.com/watch?v=2Vg-S1XVl4o" },
+      { region: "south", country: "博茨瓦纳", place: "Wet Season Safari", visit: "2026-01 — 2026-03", notes: "湿季 Okavango · 上传 2026-03-20", rating: "top", video: "Wet Season in Botswana", url: "https://www.youtube.com/watch?v=RKKNb0fzy3g" },
+      { region: "south", country: "Eswatini", place: "Hlane · Mlilwane", visit: "2026-01", notes: "上传 2026-02-06", rating: "top", video: "Photographing Eswatini", url: "https://www.youtube.com/watch?v=SRGXQmbWTZY" },
+      { region: "full", country: "综述", place: "摄影成本", visit: "2025 — 2026", notes: "What it ACTUALLY Costs · 38 min · 上传 2026-05-01", rating: "good", video: "What it ACTUALLY Costs", url: "https://www.youtube.com/watch?v=cS9xVeyF0-w" },
+      { region: "full", country: "车辆", place: "Sully Tour", visit: "2025-09", notes: "50,000 km 非洲段总结 · 上传 2025-09-28", rating: "good", video: "Defender Tour", url: "https://www.youtube.com/watch?v=Au3g4fh7wiM" }
+    ];
+
+    function renderSpotTable(region, year, q) {
+      var tbody = document.getElementById("spot-tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      spotRows.forEach(function (row) {
+        if (region !== "all" && row.region !== region) return;
+        if (year !== "all" && row.year !== year && row.visit.indexOf(year) === -1) return;
+        var hay = [row.country, row.place, row.subject, row.visit, row.video].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td><span class=\"region " + row.region + "\">" + regionLabel[row.region] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td>" + row.subject + "</td>" +
+          "<td><span class=\"visit-time\">" + row.visit + "</span></td>" +
+          "<td><span class=\"rating " + ratingClass[row.rating] + "\">" + ratingText[row.rating] + "</span></td>" +
+          "<td><a href=\"" + row.url + "\" target=\"_blank\" rel=\"noopener\">" + row.video + "</a></td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("spot-count").textContent = spotRows.length + " 处";
+    }
+
+    function renderTable(region, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (region !== "all" && row.region !== region) return;
+        var hay = [row.country, row.place, row.notes, row.visit, row.video].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td><span class=\"region " + row.region + "\">" + regionLabel[row.region] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td><span class=\"visit-time\">" + row.visit + "</span></td>" +
+          "<td><span class=\"rating " + ratingClass[row.rating] + "\">" + ratingText[row.rating] + "</span><br>" + row.notes + "</td>" +
+          "<td><a href=\"" + row.url + "\" target=\"_blank\" rel=\"noopener\">" + row.video + "</a></td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("spot-region-filter").addEventListener("change", spotSync);
+    document.getElementById("spot-year-filter").addEventListener("change", spotSync);
+    document.getElementById("spot-search").addEventListener("input", spotSync);
+    function spotSync() {
+      renderSpotTable(
+        document.getElementById("spot-region-filter").value,
+        document.getElementById("spot-year-filter").value,
+        document.getElementById("spot-search").value
+      );
+    }
+
+    document.getElementById("region-filter").addEventListener("change", sync);
+    document.getElementById("search").addEventListener("input", sync);
+    function sync() {
+      renderTable(
+        document.getElementById("region-filter").value,
+        document.getElementById("search").value
+      );
+    }
+    spotSync();
+    sync();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = { west: "#fb923c", south: "#34d399" };
+      var routeSegments = [
+        { filter: ["all", "west"], phase: "west", points: [
+          { lat: 33.573, lng: -7.589, name: "舍夫沙万/摩洛哥", country: "摩洛哥", visit: "≈2025-03", note: "北非入非" },
+          { lat: 18.073, lng: -15.958, name: "努瓦克肖特", country: "毛里塔尼亚", visit: "≈2025-02", note: "撒哈拉" },
+          { lat: 13.833, lng: -16.589, name: "Sine Saloum", country: "塞内加尔", visit: "≈2025-04", note: "三角洲" },
+          { lat: 13.454, lng: -16.577, name: "冈比亚 NP", country: "冈比亚", visit: "≈2025-04", note: "野生动物" },
+          { lat: 11.863, lng: -15.584, name: "Forgotten Coast", country: "几内亚比绍", visit: "≈2025-05", note: "原始海岸" },
+          { lat: 9.082, lng: 8.675, name: "阿布贾区域", country: "尼日利亚", visit: "≈2025-06", note: "⚖️ 挑战段" },
+          { lat: 6.365, lng: 2.418, name: "波多诺伏", country: "贝宁", visit: "≈2025-06", note: "Voodoo" }
+        ]},
+        { filter: ["all", "south"], phase: "south", points: [
+          { lat: -8.839, lng: 13.234, name: "罗安达", country: "安哥拉", visit: "≈2025-08", note: "沉船海岸" },
+          { lat: -26.704, lng: 16.284, name: "Kolmanskop", country: "纳米比亚", visit: "≈2025-10", note: "鬼城" },
+          { lat: -24.760, lng: 15.292, name: "Deadvlei", country: "纳米比亚", visit: "≈2025-10", note: "红沙丘" },
+          { lat: -24.988, lng: 31.554, name: "Kruger", country: "南非", visit: "≈2026-02", note: "蹲豹" },
+          { lat: -29.316, lng: 28.233, name: "莱索托高原", country: "莱索托", visit: "≈2025-12", note: "Sani Pass" },
+          { lat: -15.038, lng: 35.529, name: "莫桑比克海岸", country: "莫桑比克", visit: "≈2026-01", note: "Wild Coast" },
+          { lat: -19.995, lng: 25.912, name: "Okavango 区域", country: "博茨瓦纳", visit: "≈2026-02", note: "湿季 Safari" },
+          { lat: -26.522, lng: 31.465, name: "Hlane", country: "Eswatini", visit: "≈2026-01", note: "徒步 Safari" }
+        ]}
+      ];
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div class=\"visit-time\">造访 " + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+      var map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OSM &copy; CARTO", subdomains: "abcd", maxZoom: 19
+      }).addTo(map);
+      var layerGroup = L.layerGroup().addTo(map);
+      function renderRoute(filter) {
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) { return seg.filter.indexOf(filter) !== -1; });
+        visible.forEach(function (seg, segIdx) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase];
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, { color: color, weight: 5, opacity: 0.88 }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6, color: color, fillColor: color, fillOpacity: 0.9, weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+          if (segIdx < visible.length - 1) {
+            var a = seg.points[seg.points.length - 1];
+            var b = visible[segIdx + 1].points[0];
+            L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
+              color: "#64748b", weight: 2, opacity: 0.5, dashArray: "6 6"
+            }).addTo(layerGroup);
+          }
+        });
+        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: filter === "all" ? 4 : 6 });
+      }
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

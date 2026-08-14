@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube 国外博主 · 非洲自驾探访路书</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #79c0ff;
+      --accent-2: #a78bfa;
+      --warn: #fbbf24;
+      --south: #34d399;
+      --east: #38bdf8;
+      --west: #fb923c;
+      --north: #f472b6;
+      --full: #c084fc;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 960px; }
+    .subtitle a { color: var(--accent); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .note {
+      background: rgba(121, 192, 255, 0.08);
+      border: 1px solid rgba(121, 192, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #cce5ff;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    h2.section-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .vehicle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .vehicle-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .vehicle-card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+    .vehicle-card .veh-name {
+      font-weight: 600;
+      color: var(--warn);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    .vehicle-card p { margin: 0 0 6px; font-size: 0.88rem; color: var(--muted); }
+    .vehicle-card a { font-size: 0.88rem; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.south { background: var(--south); }
+    .dot.east { background: var(--east); }
+    .dot.west { background: var(--west); }
+    .dot.north { background: var(--north); }
+    .dot.full { background: var(--full); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1150px; font-size: 0.92rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(121, 192, 255, 0.06); }
+    .region {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .region.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .region.east { background: rgba(56, 189, 248, 0.15); color: #bae6fd; }
+    .region.west { background: rgba(251, 146, 60, 0.15); color: #fdba74; }
+    .region.north { background: rgba(244, 114, 182, 0.15); color: #f9a8d4; }
+    .region.full { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; }
+    .rating {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .rating.top { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
+    .rating.good { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .rating.mixed { background: rgba(251, 191, 36, 0.15); color: #fde68a; }
+    .rating.hard { background: rgba(251, 113, 133, 0.15); color: #fda4af; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    td a { color: #ffd4a8; text-underline-offset: 2px; }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    .creator-tag {
+      font-size: 0.78rem;
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ ";
+      display: inline-block;
+      transition: transform 0.15s ease;
+      color: var(--muted);
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-section summary:hover { background: rgba(121, 192, 255, 0.06); }
+    .guide-body {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-intro { margin: 14px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .guide-days { margin: 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .map-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: space-between; align-items: flex-start;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0 0 4px; font-size: 1.05rem; color: var(--accent); }
+    .map-header p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 6px; max-width: 720px; justify-content: flex-end; }
+    .map-filter {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
+    }
+    .map-filter:hover { border-color: var(--accent); }
+    .map-filter.active { background: rgba(121, 192, 255, 0.15); border-color: var(--accent); color: #b6dcff; }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      padding: 10px 16px 14px; font-size: 0.82rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend i {
+      display: inline-block; width: 18px; height: 4px; border-radius: 2px;
+      vertical-align: middle; margin-right: 4px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      #route-map { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>YouTube 国外博主 · 非洲自驾探访</h1>
+      <p class="subtitle">
+        整理自 YouTube / 公开博客 · 页面风格参考
+        <a href="../chloe-laodeng-roadtrip/index.html">克洛伊和老邓路书</a> ·
+        对比 <a href="../yaoyang-africa-route/index.html">耀阳非洲</a> ·
+        <a href="../wushan-africa-route/index.html">吴珊非洲</a> ·
+        <a href="../chuanmei-africa-route/index.html">川妹欧亚非</a>
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">收录博主</div><div class="value">8 组</div></div>
+      <div class="card"><div class="label">主要车型</div><div class="value">Land Rover Defender 为主</div></div>
+      <div class="card"><div class="label">覆盖区域</div><div class="value">南 / 东 / 西非 + 北非入非</div></div>
+      <div class="card"><div class="label">记录条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>说明：</strong>
+      均为<strong>外国（非中国籍/非中国牌）</strong>自驾或长租 4×4 的 YouTube 系列；时间与国别来自视频简介、章节与博客交叉核对，<strong>非官方行程表</strong>。
+      「评价」为博主原话或视频态度的摘要（👍 强烈推荐 / 🙂 值得去 / ⚖️ 喜忧参半 / ⚠️ 挑战大）。
+      国内博主非洲路书见上方链接；本页 YouTube 链接可直接打开（无需登录）。
+    </div>
+
+    <h2 class="section-title">🚗 车辆一览</h2>
+    <div class="vehicle-grid">
+      <div class="vehicle-card">
+        <h3>HuskyRover Overland</h3>
+        <div class="veh-name">Land Rover Defender 110 ·「Old Lad」</div>
+        <p>澳籍夫妇 · 从澳大利亚海运至开普敦 · 66,000 km / 约 15 个月 / 13 国 · <strong>S.1 全 47 集连载</strong></p>
+        <a href="../huskyrover-africa-route/index.html">📋 详版路书 + 地图</a>
+        · <a href="https://www.youtube.com/@HuskyRover1" target="_blank" rel="noopener">▶ @HuskyRover1</a>
+        · <a href="https://www.youtube.com/watch?v=_5Q6fWbXXuU" target="_blank" rel="noopener">总结片</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>Wandering Pango</h3>
+        <div class="veh-name">Land Rover Defender ·「Pango」</div>
+        <p>Carla &amp; Lida（荷/欧）· 在非洲盲买改装 · 全职 Overland · 东非大裂谷 8 个月环线</p>
+        <a href="https://www.youtube.com/@wanderingpango" target="_blank" rel="noopener">▶ 频道主页</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>The Jammy Gits</h3>
+        <div class="veh-name">2005 Land Rover Defender 110 ·「Jambo」</div>
+        <p>Martha &amp; Mitch（英国）· 2025-09 起环世界 4 年 · 非洲段经摩洛哥南下</p>
+        <a href="https://www.youtube.com/@JammyGits" target="_blank" rel="noopener">▶ 频道主页</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>A2A Expedition</h3>
+        <div class="veh-name">Land Rover Defender 130 双 cab ·「Mafuta」</div>
+        <p>Bell 一家（南非）· 自建 camper · 8 年+ 环球 · 67 国 · 西非段有完整片单</p>
+        <a href="https://www.youtube.com/@OverlandingMan" target="_blank" rel="noopener">▶ 频道主页</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>Rafiki on Tour</h3>
+        <div class="veh-name">Defender 110 ·「Rafiki」· 300TDI</div>
+        <p>Tobias &amp; Manon（荷兰）· 2022-06 起非洲长线 · 车顶帐 + 离网改装</p>
+        <a href="https://www.youtube.com/@RafikionTour" target="_blank" rel="noopener">▶ 频道主页</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>Monty The Land Rover</h3>
+        <div class="veh-name">Land Rover Defender ·「Monty」</div>
+        <p>2009 伦敦→开普敦 · 17 国 · 19,005 mi · 博客+视频归档</p>
+        <a href="https://montythelandrover.com/" target="_blank" rel="noopener">▶ 官网 / 路线地图</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>TraveLynn Family</h3>
+        <div class="veh-name">租用 Land Rover Defender（Bush Lore / Southern Sands）</div>
+        <p>英国家庭 · 2018 · 101 天 · 15,000 km · 车顶帐 · 娃 2 &amp; 4 岁</p>
+        <a href="https://travelynnfamily.com/travelling-africa-with-kids-faq/" target="_blank" rel="noopener">▶ 博客 FAQ</a>
+      </div>
+      <div class="vehicle-card">
+        <h3>Cliff Fawcett · And Other Horizons</h3>
+        <div class="veh-name">1997 Defender 110 300 TDI ·「Sully」</div>
+        <p>Cliff &amp; Mon（英）· 摄影纪录片 · 西非 11 国 + 南部非洲 · 50,000+ km · <strong>2025-02 — 2026-03</strong></p>
+        <a href="../cliff-fawcett-africa-route/index.html">📋 详版路书 + 地图</a>
+        · <a href="https://www.youtube.com/@CliffFawcettPhoto" target="_blank" rel="noopener">▶ YouTube</a>
+        · <a href="https://www.youtube.com/watch?v=Au3g4fh7wiM" target="_blank" rel="noopener">Sully 车况</a>
+      </div>
+    </div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 8 组博主路线概览</h2>
+          <p>Leaflet 暗色底图 · 关键点示意（非 GPS）· HuskyRover / Cliff 见 <a href="../huskyrover-africa-route/index.html">详版地图</a> · <a href="../cliff-fawcett-africa-route/index.html">Cliff 详版</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全部</button>
+          <button type="button" class="map-filter" data-filter="husky">HuskyRover</button>
+          <button type="button" class="map-filter" data-filter="cliff">Cliff</button>
+          <button type="button" class="map-filter" data-filter="pango">Pango</button>
+          <button type="button" class="map-filter" data-filter="jammy">Jammy</button>
+          <button type="button" class="map-filter" data-filter="a2a">A2A</button>
+          <button type="button" class="map-filter" data-filter="monty">Monty</button>
+          <button type="button" class="map-filter" data-filter="travelynn">TraveLynn</button>
+          <button type="button" class="map-filter" data-filter="rafiki">Rafiki</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#f4a261"></i>HuskyRover</span>
+        <span><i style="background:#fbbf24"></i>Cliff</span>
+        <span><i style="background:#a78bfa"></i>Pango</span>
+        <span><i style="background:#34d399"></i>Jammy</span>
+        <span><i style="background:#fb923c"></i>A2A 西非</span>
+        <span><i style="background:#f472b6"></i>Monty</span>
+        <span><i style="background:#2dd4bf"></i>TraveLynn</span>
+        <span><i style="background:#38bdf8"></i>Rafiki</span>
+      </div>
+    </section>
+
+    <section class="guide-section">
+      <details open>
+        <summary>行程总览 · 按博主</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>HuskyRover</strong> — 海运至南非 → 莱索托 · 纳米 · 博茨 · 津巴布韦 · 赞比亚 · 马拉维 · 坦桑 · 肯尼亚 · 乌干达等 13 国（约 2024 中–2026 初，15 个月）· <a href="../huskyrover-africa-route/index.html">详版路书 + 地图</a></li>
+            <li><strong>Wandering Pango</strong> — 南非西海岸起步 → 东非大裂谷 6 国段（马拉维 Nyika、坦桑 Mbeya、卢旺达、乌干达等）· 8 个月环线精华片 2025 前后</li>
+            <li><strong>Jammy Gits</strong> — 2025-09 英国出发 → 法西摩 → 纳米比亚连载中（Etosha、Skeleton Coast 海豹群等）</li>
+            <li><strong>A2A Expedition</strong> — 摩洛哥入非 → 毛里塔尼亚 → 加纳/多哥/贝宁 → 尼日利亚（2019 西非）· 早年另线开普敦—塞伦盖蒂</li>
+            <li><strong>Rafiki on Tour</strong> — 2022-06 赴非 → 持续南下/东行（尼日利亚救助犬 Nimba 同行）· 多集 YouTube 连载</li>
+            <li><strong>Monty</strong> — 2009 伦敦出发纵穿撒哈拉/东非角 → 开普敦（17 国，含利比亚/埃及/苏丹/埃塞等）</li>
+            <li><strong>TraveLynn</strong> — 2018 南非克鲁格附近取车 → 莫桑比克 → 马拉维 → 坦桑 → 赞比亚 → 纳米 → 还车（101 天）</li>
+            <li><strong>Cliff Fawcett</strong> — 西非 11 国（2025-02 — 2025-08）→ 南部非洲（2025-08 — 2026-03）· 21 处推荐摄影点 · <a href="../cliff-fawcett-africa-route/index.html">详版路书 + 地图 + 造访时间</a></li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <div class="toolbar">
+      <label for="creator-filter">博主</label>
+      <select id="creator-filter">
+        <option value="all">全部</option>
+        <option value="husky">HuskyRover Overland</option>
+        <option value="pango">Wandering Pango</option>
+        <option value="jammy">The Jammy Gits</option>
+        <option value="a2a">A2A Expedition</option>
+        <option value="rafiki">Rafiki on Tour</option>
+        <option value="monty">Monty The Land Rover</option>
+        <option value="travelynn">TraveLynn Family</option>
+        <option value="cliff">Cliff Fawcett</option>
+      </select>
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="south">南部非洲</option>
+        <option value="east">东非</option>
+        <option value="west">西非</option>
+        <option value="north">北非</option>
+        <option value="full">多国/综述</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、景点、评价、博主…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot south"></span>南部非洲</span>
+      <span><span class="dot east"></span>东非</span>
+      <span><span class="dot west"></span>西非</span>
+      <span><span class="dot north"></span>北非</span>
+      <span><span class="dot full"></span>多国综述</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>博主</th>
+            <th>区域</th>
+            <th>国家</th>
+            <th>景点 / 地点</th>
+            <th>博主评价（摘要）</th>
+            <th>造访时间（估）</th>
+            <th>视频 / 链接</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section">
+      <details>
+        <summary>HuskyRover · 13 国 6.6 万 km 总结片要点</summary>
+        <div class="guide-body">
+          <p class="guide-intro">2026-07 发布的总结片，回顾从澳大利亚海运 Defender 至开普敦后 15 个月陆路生活。</p>
+          <ul class="guide-days">
+            <li><strong>边境/Carnet</strong> — 强调车辆护照与各国过境细节，是计划纵穿者的硬核章节</li>
+            <li><strong>克鲁格 Kruger</strong> — 国家公园与野生动物段落占比较大，自驾 Safari 可行</li>
+            <li><strong>Chobe / Etosha</strong> — 博茨与纳米经典兽群水源地，评价极高</li>
+            <li><strong>Serengeti + Ngorongoro</strong> — 东非顶流；与租车 Hilux 车队形成对比（自有 Defender）</li>
+            <li><strong>Victoria Falls</strong> — 赞比亚/津巴布韦侧瀑布与露营</li>
+            <li><strong>Sossusvlei</strong> — 纳米红沙丘；「最上镜」目的地之一</li>
+            <li><strong>修车</strong> — Old Lad 维护章节诚实：Defender 在远程路上的可靠性与人设</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.youtube.com/watch?v=_5Q6fWbXXuU" target="_blank" rel="noopener">Everyone Told Us Not To Drive Across Africa....The Real Story!</a>
+          </p>
+        </div>
+      </details>
+      <details open>
+        <summary>Cliff Fawcett · 推荐摄影地点 + 造访时间（21 处）</summary>
+        <div class="guide-body">
+          <p class="guide-intro">造访时间按 YouTube 上传顺序反推（精度到月，非官方行程表）。完整可筛选表格见 <a href="../cliff-fawcett-africa-route/index.html">Cliff 详版路书</a>；下方选「Cliff Fawcett」可只看本博主条目。</p>
+          <p class="guide-intro"><strong>西非 · 2025-02 — 2025-08</strong></p>
+          <ul class="guide-days">
+            <li><strong>2025-02</strong> · 🇲🇷 毛里塔尼亚 — 撒哈拉无尽沙丘 · 👍</li>
+            <li><strong>2025-03</strong> · 🇲🇦 摩洛哥 — 舍夫沙万 · 撒哈拉 · Medina · Souk · 👍</li>
+            <li><strong>2025-04</strong> · 🇸🇳 塞内加尔 — Sine Saloum Delta · 👍</li>
+            <li><strong>2025-04</strong> · 🇬🇲 冈比亚 — Kiang West / River Gambia / Pirang Bonto 三国公园 · 👍</li>
+            <li><strong>2025-05</strong> · 🇬🇼 几内亚比绍 — Forgotten Coast · 👍</li>
+            <li><strong>2025-05</strong> · 🇬🇳 几内亚 — Saala 瀑布 · 高地 Coffee Route · 👍</li>
+            <li><strong>2025-06</strong> · 🇧🇯 贝宁 — Voodoo 文化区 · 👍</li>
+            <li><strong>2025-06 — 07</strong> · 🇳🇬🇨🇲 尼日利亚/喀麦隆 — 陆路穿越 · ⚖️</li>
+            <li><strong>2025-07</strong> · 🇨🇲 喀麦隆 — Mount Cameroon 湿季登山 · 👍</li>
+            <li><strong>2025-08</strong> · 🇨🇬 刚果（布） — 低地大猩猩 · 👍</li>
+          </ul>
+          <p class="guide-intro"><strong>南部非洲 · 2025-08 — 2026-03</strong></p>
+          <ul class="guide-days">
+            <li><strong>2025-08 — 09</strong> · 🇦🇴 安哥拉 — Shipwreck Coast 无人机 · 👍</li>
+            <li><strong>2025-09 — 10</strong> · 🇳🇦 纳米比亚 — Darkest Skies 银河 · 👍</li>
+            <li><strong>2025-10 — 11</strong> · 🇳🇦 纳米比亚 — Kolmanskop · Deadvlei · Himba · 沙漠象 · 👍</li>
+            <li><strong>2025-11 — 12</strong> · 🇿🇦 南非 — 鲸/浪/象/山（5 impossible photos）· 👍</li>
+            <li><strong>2025-12 — 2026-01</strong> · 🇱🇸 莱索托 — Sani Pass · Maletsunyane · ⚖️ 路难</li>
+            <li><strong>2026-01</strong> · 🇸🇿 Eswatini — Hlane · Mlilwane · Mantenga · 👍</li>
+            <li><strong>2026-01 — 02</strong> · 🇲🇿 莫桑比克 — Ponta do Ouro → Vilankulos → Pomene · 👍</li>
+            <li><strong>2026-02</strong> · 🇿🇦 南非 — Kruger 5 天蹲花豹 · 👍</li>
+            <li><strong>2026-01 — 03</strong> · 🇧🇼 博茨瓦纳 — Okavango · Chobe · Makgadikgadi 湿季 · 👍</li>
+          </ul>
+          <p class="guide-link">
+            <a href="../cliff-fawcett-africa-route/index.html">📋 详版路书（地图 + 21 处清单）</a> ·
+            <a href="https://www.youtube.com/watch?v=zOMUQ9NMacI" target="_blank" rel="noopener">Photographing West Africa</a> ·
+            <a href="https://www.youtube.com/watch?v=8chzFLU2dA4" target="_blank" rel="noopener">Namibia Was a Photography Dream</a>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>Wandering Pango · 东非大裂谷 8 个月</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>Nyika Plateau（马拉维）</strong> — 「Something special」· 高原自驾看兽，像「在非洲滑雪」</li>
+            <li><strong>Mbeya Highlands（坦桑）</strong> — 南线进入坦桑，爬升进入裂谷高地</li>
+            <li><strong>Albertine Rift / Congo-Nile Trail（卢旺达/乌干达）</strong> — 西支裂谷徒步与湖景，生物多样性极强</li>
+            <li><strong>Indian Ocean 终点</strong> — 裂谷与印度洋交汇；片末 tease 继续南部非洲</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.youtube.com/watch?v=sHKyvCNokdE" target="_blank" rel="noopener">Drifting Along the Great Rift</a> ·
+            <a href="https://www.youtube.com/watch?v=Flt0ozYItuk" target="_blank" rel="noopener">Zambia's Backroads S.1 Ep.42</a> ·
+            <a href="https://www.youtube.com/watch?v=QjE8W_PvtbY" target="_blank" rel="noopener">West Coast South Africa</a>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>The Jammy Gits · 2025 起环非段（连载）</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>摩洛哥</strong> — 入非前序；西非海岸南下第一站</li>
+            <li><strong>纳米 Etosha</strong> — 自驾找 giraffe；与租 Hilux 游客群形成对比，「黑 beast」很显眼</li>
+            <li><strong>Cape Cross 海豹 reserve</strong> — 数千只海豹，气味「夺命」但近距离震撼；人生最近距离看海豹</li>
+            <li><strong>纳米 luxury 营地</strong> — 与前期 rough camp 反差大；片中有「五星级」自嘲</li>
+            <li><strong>车况</strong> — 20 年 Defender 胎 puncture 频发、铆钉/pop  panel 真实记录</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.youtube.com/watch?v=ZQmdWglk3pM" target="_blank" rel="noopener">What It's REALLY Like Driving Across AFRICA (Good &amp; Bad)</a>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>A2A Expedition · 西非与全家 Overland</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>毛里塔尼亚</strong> — 「dusty and windy」· 会再来 · Carnet 等待期</li>
+            <li><strong>加纳 / 多哥 / 贝宁</strong> — 48 小时穿越段；多哥海滩 + 贝宁等尼日利亚签</li>
+            <li><strong>尼日利亚</strong> — 迄今最难：入境枪击事件（2019-05）· 但高地穿越日「best in Africa」之一</li>
+            <li><strong>喀麦隆</strong> — 雨季 Gashaka-Gumti 泥路；Grabber X3 胎表现获赞</li>
+            <li><strong>早年</strong> — 开普敦—塞伦盖蒂 6 个月线路，催生全职 Overland 决定</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.a2aexpedition.com/" target="_blank" rel="noopener">官网片单</a> ·
+            <a href="https://www.youtube.com/@OverlandingMan" target="_blank" rel="noopener">YouTube @OverlandingMan</a>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary>TraveLynn · 带娃 101 天南部非洲 Top 经验</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li>最大亮点是<strong>时间</strong> — 可随喜欢改路线；坦桑百年一遇暴雨、马拉维腐败边防也扛过来了</li>
+            <li>纳米本来不在计划，因<strong>路况好 + 景观异世界</strong>临时加入 — Swakopmund 营地定 Top10</li>
+            <li>没去到博茨/津巴 — 留给下次；推荐租 Defender + 车顶帐从 Bush Lore 一类公司</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://travelynnfamily.com/travelling-africa-kids-highlights/" target="_blank" rel="noopener">Top 10 highlights</a> ·
+            <a href="https://travelynnfamily.com/travelling-africa-with-kids-faq/" target="_blank" rel="noopener">完整 FAQ</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-13 · 来源：YouTube 公开视频简介/字幕、TraveLynn / A2A / Monty / Rafiki 官网 · 路线为粉丝整理，非 GPS 轨迹。</p>
+      <p>详版地图：<a href="../huskyrover-africa-route/index.html">HuskyRover</a> ·
+        <a href="../cliff-fawcett-africa-route/index.html">Cliff Fawcett</a> ·
+        <a href="../chloe-laodeng-roadtrip/index.html">克洛伊和老邓 · 570 天 55 国</a> ·
+        <a href="../index.html">陆路环球路书索引</a></p>
+    </footer>
+  </div>
+
+  <script>
+    var creatorLabel = {
+      husky: "HuskyRover",
+      pango: "Wandering Pango",
+      jammy: "Jammy Gits",
+      a2a: "A2A Expedition",
+      rafiki: "Rafiki on Tour",
+      monty: "Monty",
+      travelynn: "TraveLynn",
+      cliff: "Cliff Fawcett"
+    };
+    var regionLabel = {
+      south: "南部非洲",
+      east: "东非",
+      west: "西非",
+      north: "北非",
+      full: "多国"
+    };
+    var ratingClass = {
+      top: "top",
+      good: "good",
+      mixed: "mixed",
+      hard: "hard"
+    };
+    var ratingText = {
+      top: "👍 强烈推荐",
+      good: "🙂 值得去",
+      mixed: "⚖️ 喜忧参半",
+      hard: "⚠️ 挑战大"
+    };
+
+    var rows = [
+      { creator: "husky", region: "full", country: "综述", place: "13 国纵穿总结", notes: "66,000 km · 15 个月 · 海运 Defender 至开普敦；边境/露营/修车全记录", rating: "good", visit: "≈2024-04 — 2026-03", video: "Everyone Told Us Not To Drive Across Africa", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "south", country: "南非", place: "Kruger National Park", notes: "自驾 Safari · 国家公园篇章核心", rating: "top", visit: "2024–2025", video: "同上总结片 · 国家公园章节", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU&t=1458" },
+      { creator: "husky", region: "south", country: "莱索托", place: "山区 pass", notes: "高山王国段落；与南非连访", rating: "good", visit: "2024–2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "south", country: "纳米比亚", place: "Etosha + Sossusvlei", notes: "Etosha 兽群 + 索苏斯弗雷红沙丘；「最 spectacular」类目的地", rating: "top", visit: "2024–2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "south", country: "博茨瓦纳", place: "Chobe", notes: "乔贝河畔兽群；经典 Overland 必访", rating: "top", visit: "2024–2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "south", country: "津巴布韦", place: "Victoria Falls", notes: "维多利亚瀑布；瀑布/湖泊章节", rating: "top", visit: "2024–2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU&t=2630" },
+      { creator: "husky", region: "east", country: "坦桑尼亚", place: "Serengeti · Ngorongoro", notes: "东非顶流 Safari；与 Kenya 连访", rating: "top", visit: "2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "east", country: "肯尼亚", place: "Masai Mara 区域", notes: "兽群与大迁徙相关段落", rating: "top", visit: "2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "east", country: "乌干达", place: "—", notes: "13 国列表末段；具体景点见分集", rating: "good", visit: "2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "east", country: "马拉维", place: "—", notes: "中南非过渡国；露营友好", rating: "good", visit: "2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+      { creator: "husky", region: "south", country: "赞比亚", place: "—", notes: "Victoria Falls 北侧；边境章节", rating: "good", visit: "2025", video: "总结片", url: "https://www.youtube.com/watch?v=_5Q6fWbXXuU" },
+
+      { creator: "pango", region: "full", country: "综述", place: "Great Rift 8-month loop", notes: "东非裂谷 6 国精华；「perfect Africa picture」", rating: "top", visit: "≈2024 — 2025", video: "Drifting Along the Great Rift", url: "https://www.youtube.com/watch?v=sHKyvCNokdE" },
+      { creator: "pango", region: "south", country: "南非", place: "West Coast NP · Franschhoek", notes: "西海岸国家公园潟湖；葡萄酒乡；Pango 送改装", rating: "good", visit: "2025 初", video: "West Coast adventure", url: "https://www.youtube.com/watch?v=QjE8W_PvtbY" },
+      { creator: "pango", region: "south", country: "南非", place: "Gamkaskloof · Die Hel", notes: "Swartberg Pass · 「Beautiful drive」· 4×4 bucket list", rating: "top", visit: "2025–2026", video: "Road to Die Hel", url: "https://www.youtube.com/@wanderingpango" },
+      { creator: "pango", region: "east", country: "马拉维", place: "Nyika Plateau", notes: "高原自驾 Safari；「something special if you love self-drive」", rating: "top", visit: "2024–2025", video: "Great Rift 片", url: "https://www.youtube.com/watch?v=sHKyvCNokdE" },
+      { creator: "pango", region: "east", country: "坦桑尼亚", place: "Mbeya Highlands", notes: "南线入坦桑；裂谷 floor 抬升段", rating: "good", visit: "2024–2025", video: "Great Rift 片", url: "https://www.youtube.com/watch?v=sHKyvCNokdE" },
+      { creator: "pango", region: "east", country: "卢旺达", place: "Congo-Nile Trail", notes: "Albertine Rift 西支；徒步湖Trail", rating: "top", visit: "2024–2025", video: "Great Rift 片", url: "https://www.youtube.com/watch?v=sHKyvCNokdE" },
+      { creator: "pango", region: "east", country: "赞比亚", place: "Backroads · Tanzania 边境", notes: "「 easiest border in East Africa」· 2 分钟过关", rating: "good", visit: "2024–2025", video: "Zambia's Backroads Ep.42", url: "https://www.youtube.com/watch?v=Flt0ozYItuk" },
+
+      { creator: "jammy", region: "north", country: "摩洛哥", place: "—", notes: "2025 环世界入非首站；西非海岸南下前序", rating: "good", visit: "2025-09 — 2025-10", video: "频道早期集", url: "https://www.youtube.com/@JammyGits" },
+      { creator: "jammy", region: "south", country: "纳米比亚", place: "Etosha NP", notes: "自驾找 giraffe；遍地租 Hilux vs 英伦 Defender", rating: "top", visit: "2026 初", video: "Driving Across AFRICA", url: "https://www.youtube.com/watch?v=ZQmdWglk3pM" },
+      { creator: "jammy", region: "south", country: "纳米比亚", place: "Cape Cross Seal Reserve", notes: "2000–3000 只海豹；臭但震撼 · 「closest I've ever been to a seal」", rating: "top", visit: "2026 初", video: "同上", url: "https://www.youtube.com/watch?v=ZQmdWglk3pM" },
+      { creator: "jammy", region: "south", country: "纳米比亚", place: "Skeleton Coast 营地", notes: "私人「房间式」营位；与前期 rough camp 反差", rating: "good", visit: "2026 初", video: "同上", url: "https://www.youtube.com/watch?v=ZQmdWglk3pM" },
+      { creator: "jammy", region: "full", country: "综述", place: "UK → Africa 计划", notes: "2005 Defender 110 · 4 年 RTW · 已走 6 个月到纳米", rating: "mixed", visit: "2025-09 起", video: "Jammy Gits 频道", url: "https://www.youtube.com/@JammyGits" },
+
+      { creator: "a2a", region: "north", country: "摩洛哥", place: "—", notes: "西非入口；进入毛里塔尼亚前", rating: "good", visit: "2018–2019", video: "A2A 西非系列", url: "https://www.youtube.com/@OverlandingMan" },
+      { creator: "a2a", region: "west", country: "毛里塔尼亚", place: "—", notes: "「dusty and windy · will return」· 等 Carnet", rating: "mixed", visit: "2019", video: "Mauritania tour", url: "https://www.a2aexpedition.com/" },
+      { creator: "a2a", region: "west", country: "加纳", place: "穿越段", notes: "48 小时穿越；相对顺利", rating: "good", visit: "2019", video: "Ghana Togo Benin", url: "https://www.a2aexpedition.com/" },
+      { creator: "a2a", region: "west", country: "多哥", place: "海滩", notes: "短暂停留享受海滩", rating: "good", visit: "2019", video: "Ghana Togo Benin", url: "https://www.a2aexpedition.com/" },
+      { creator: "a2a", region: "west", country: "贝宁", place: "—", notes: "等尼日利亚签证", rating: "good", visit: "2019", video: "Ghana Togo Benin", url: "https://www.a2aexpedition.com/" },
+      { creator: "a2a", region: "west", country: "尼日利亚", place: "边境/高地", notes: "入境枪击 · 迄今最难；但高地日「best days in Africa」", rating: "hard", visit: "2019-05", video: "Nigeria Overland Part 1", url: "https://www.a2aexpedition.com/" },
+      { creator: "a2a", region: "west", country: "喀麦隆", place: "Gashaka-Gumti", notes: "雨季泥路；Defender + Grabber X3 表现优异", rating: "mixed", visit: "2019", video: "General Tire 博客", url: "https://generaltire.com/our-world/news/resident-gt-explorer-graeme-bell-blog-4" },
+      { creator: "a2a", region: "east", country: "坦桑尼亚", place: "Serengeti", notes: "早年 6 个月开普敦—塞伦盖蒂；催生全职 Overland", rating: "top", visit: "约 2012", video: "About us", url: "https://www.a2aexpedition.com/about-us" },
+
+      { creator: "rafiki", region: "full", country: "综述", place: "Africa expedition 2022–", notes: "荷兰夫妇 · Defender 110 离网生活 ·  conservation 主题", rating: "good", visit: "2022-06 起", video: "Rafiki on Tour 频道", url: "https://www.youtube.com/@RafikionTour" },
+      { creator: "rafiki", region: "west", country: "尼日利亚", place: "—", notes: "救助犬 Nimba 自尼日利亚领养；西非段落", rating: "mixed", visit: "2023–2024", video: "官网 / YouTube", url: "https://rafikiontour.com/about-us/" },
+
+      { creator: "monty", region: "full", country: "综述", place: "London → Cape Town", notes: "2009 · 17 国 · 19,005 mi · 博客+GPS 轨迹公开", rating: "good", visit: "2009", video: "Monty 官网", url: "https://montythelandrover.com/" },
+      { creator: "monty", region: "north", country: "利比亚", place: "Leptis Magna · 沙漠公路", notes: "需全程导游；油便宜；沙漠公路至托布鲁克", rating: "mixed", visit: "2009", video: "Libya 博客", url: "http://montythelandrover.com/category/africa/libya/" },
+      { creator: "monty", region: "north", country: "埃及", place: "—", notes: "北非南下通道", rating: "good", visit: "2009", video: "Monty 路线地图", url: "https://montythelandrover.com/" },
+      { creator: "monty", region: "east", country: "埃塞俄比亚", place: "Great Rift Valley", notes: "东非裂谷探索；博客提及黑猩猩/山地 gorilla", rating: "top", visit: "2009", video: "Monty 官网", url: "https://montythelandrover.com/" },
+      { creator: "monty", region: "south", country: "南非", place: "Cape Town 终点", notes: "Day 173 抵达；大陆最南端目标", rating: "top", visit: "2009", video: "Monty 官网", url: "https://montythelandrover.com/" },
+
+      { creator: "travelynn", region: "south", country: "南非", place: "Kruger / Hoedspruit", notes: "取 Defender · 4×4 课程 · 101 天起点", rating: "good", visit: "2018", video: "FAQ 博客", url: "https://travelynnfamily.com/travelling-africa-with-kids-faq/" },
+      { creator: "travelynn", region: "south", country: "莫桑比克", place: "海岸线", notes: "首段出国；路况与露营挑战", rating: "good", visit: "2018", video: "Mozambique itinerary", url: "https://travelynnfamily.com/africa-p1-southafrica-mozambique-itinerary-with-kids/" },
+      { creator: "travelynn", region: "east", country: "马拉维", place: "—", notes: "腐败边防 · 不可通行公路需折返", rating: "mixed", visit: "2018", video: "Highlights", url: "https://travelynnfamily.com/travelling-africa-kids-highlights/" },
+      { creator: "travelynn", region: "east", country: "坦桑尼亚", place: "—", notes: "百年一遇暴雨；带娃 hardest 时刻之一", rating: "mixed", visit: "2018", video: "Highlights", url: "https://travelynnfamily.com/travelling-africa-kids-highlights/" },
+      { creator: "travelynn", region: "south", country: "赞比亚", place: "—", notes: "南向进入纳米前", rating: "good", visit: "2018", video: "Namibia part 5", url: "https://travelynnfamily.com/africa-overland-part-5-namibia-itinerary-with-kids/" },
+      { creator: "travelynn", region: "south", country: "纳米比亚", place: "Sossusvlei · Swakopmund · Etosha", notes: "原本不在计划；「other-worldly」· 带娃友好国", rating: "top", visit: "2018", video: "Namibia itinerary", url: "https://travelynnfamily.com/africa-overland-part-5-namibia-itinerary-with-kids/" },
+
+      { creator: "cliff", region: "full", country: "西非综述", place: "11 国纵穿", notes: "「11 countries, one broken differential」· 摄影纪录片", rating: "top", visit: "2025-02 — 2025-08", video: "Photographing West Africa", url: "https://www.youtube.com/watch?v=zOMUQ9NMacI" },
+      { creator: "cliff", region: "west", country: "毛里塔尼亚", place: "撒哈拉沙漠", notes: "Unreal Sahara · 沙漠视觉天花板", rating: "top", visit: "2025-02", video: "Mauritania's Unreal Sahara", url: "https://www.youtube.com/watch?v=D7D1bMoKgu8" },
+      { creator: "cliff", region: "west", country: "摩洛哥", place: "舍夫沙万 · 撒哈拉 · Medina", notes: "Capturing Morocco · 色彩与集市", rating: "top", visit: "2025-03", video: "Capturing Morocco", url: "https://www.youtube.com/watch?v=QUp2LQfePA8" },
+      { creator: "cliff", region: "west", country: "塞内加尔", place: "Sine Saloum Delta", notes: "红树林 · pirogue · 三角洲", rating: "top", visit: "2025-04", video: "Sine Saloum Senegal", url: "https://www.youtube.com/watch?v=bvzwkw-dwYw" },
+      { creator: "cliff", region: "west", country: "冈比亚", place: "3 个国家公园", notes: "黑猩猩 · 河马 · 鸟类", rating: "top", visit: "2025-04", video: "3 Gambia National Parks", url: "https://www.youtube.com/watch?v=_wVFHd9WTXY" },
+      { creator: "cliff", region: "west", country: "几内亚比绍", place: "Forgotten Coast", notes: "无人海滩 · 河流 · 天然泳池", rating: "top", visit: "2025-05", video: "The Forgotten Coast", url: "https://www.youtube.com/watch?v=9QAUcqrjH3Y" },
+      { creator: "cliff", region: "west", country: "几内亚", place: "Saala 瀑布 · 高地", notes: "Coffee Route · 越野风光", rating: "good", visit: "2025-05", video: "Guinea Off-Road", url: "https://www.youtube.com/watch?v=FWxev5D3UU0" },
+      { creator: "cliff", region: "west", country: "贝宁", place: "Voodoo 文化区", notes: "仪式 · 纪实人像", rating: "top", visit: "2025-06", video: "Inside Benin's Voodoo Culture", url: "https://www.youtube.com/watch?v=-Xm9chIUk5Y" },
+      { creator: "cliff", region: "west", country: "尼日利亚/喀麦隆", place: "陆路穿越", notes: "Are They Really That Dangerous?", rating: "mixed", visit: "2025-06 — 2025-07", video: "Driving Through Nigeria and Cameroon", url: "https://www.youtube.com/watch?v=vUEqMni0EYA" },
+      { creator: "cliff", region: "west", country: "喀麦隆", place: "Mount Cameroon", notes: "4095 m · 湿季登山", rating: "top", visit: "2025-07", video: "Climbing Mount Cameroon", url: "https://www.youtube.com/watch?v=qCRPQk3h9uU" },
+      { creator: "cliff", region: "west", country: "刚果（布）", place: "低地大猩猩", notes: "雨林 · 极 remote", rating: "top", visit: "2025-08", video: "Lowland Gorillas in the Congo", url: "https://www.youtube.com/watch?v=P3IEqMKqibA" },
+      { creator: "cliff", region: "south", country: "安哥拉", place: "Shipwreck Coast", notes: "Angola From Above · 沉船海岸无人机", rating: "top", visit: "2025-08 — 2025-09", video: "Angola From Above", url: "https://www.youtube.com/watch?v=y1kXXglDpes" },
+      { creator: "cliff", region: "south", country: "纳米比亚", place: "Darkest Skies", notes: "银河 · Milky Way 专片", rating: "top", visit: "2025-09 — 2025-10", video: "Milky Way Adventure", url: "https://www.youtube.com/watch?v=QzHS6AqGzWE" },
+      { creator: "cliff", region: "south", country: "纳米比亚", place: "Kolmanskop · Deadvlei · Himba", notes: "Photography Dream · 鬼城/红沙丘/人文", rating: "top", visit: "2025-10 — 2025-11", video: "Namibia Was a Photography Dream", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { creator: "cliff", region: "south", country: "南非", place: "海岸/山区（5 impossible）", notes: "鲸 · 海浪 · 大象 · 越野", rating: "top", visit: "2025-11 — 2025-12", video: "5 impossible photos", url: "https://www.youtube.com/watch?v=kJMiMn29ldQ" },
+      { creator: "cliff", region: "south", country: "莱索托", place: "Sani Pass · Maletsunyane", notes: "getting there was the problem", rating: "mixed", visit: "2025-12 — 2026-01", video: "Lesotho Adventure Film", url: "https://www.youtube.com/watch?v=AeCFh0wutKc" },
+      { creator: "cliff", region: "south", country: "Eswatini", place: "Hlane · Mlilwane · Mantenga", notes: "Most Overlooked Kingdom · 徒步 Safari", rating: "top", visit: "2026-01", video: "Photographing Eswatini", url: "https://www.youtube.com/watch?v=SRGXQmbWTZY" },
+      { creator: "cliff", region: "south", country: "莫桑比克", place: "Last Wild Coast", notes: "Ponta do Ouro → Vilankulos → Pomene", rating: "top", visit: "2026-01 — 2026-02", video: "Mozambique's Last Wild Coast", url: "https://www.youtube.com/watch?v=2Vg-S1XVl4o" },
+      { creator: "cliff", region: "south", country: "南非", place: "Kruger NP", notes: "5 天蹲 leopard · Kruger's Hardest Photo", rating: "top", visit: "2026-02", video: "5 Days Searching for a Leopard", url: "https://www.youtube.com/watch?v=34lSuYJ3Yec" },
+      { creator: "cliff", region: "south", country: "博茨瓦纳", place: "Wet Season Safari", notes: "Okavango · Chobe · Makgadikgadi 湿季", rating: "top", visit: "2026-01 — 2026-03", video: "Wet Season in Botswana", url: "https://www.youtube.com/watch?v=RKKNb0fzy3g" },
+      { creator: "cliff", region: "full", country: "综述", place: "非洲摄影成本", notes: "What it ACTUALLY Costs · 38 min", rating: "good", visit: "2025 — 2026", video: "What it ACTUALLY Costs", url: "https://www.youtube.com/watch?v=cS9xVeyF0-w" },
+      { creator: "cliff", region: "full", country: "车辆", place: "Sully Tour", notes: "Defender 110 · 50,000 km 非洲段", rating: "good", visit: "2025-09", video: "Defender Tour", url: "https://www.youtube.com/watch?v=Au3g4fh7wiM" }
+    ];
+
+    function renderTable(creator, region, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var i = 0;
+      var query = (q || "").trim().toLowerCase();
+      rows.forEach(function (row) {
+        if (creator !== "all" && row.creator !== creator) return;
+        if (region !== "all" && row.region !== region) return;
+        var hay = [
+          creatorLabel[row.creator], row.country, row.place, row.notes, row.visit, row.video
+        ].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        i++;
+        var tr = document.createElement("tr");
+        var videoCell = row.url
+          ? "<a href=\"" + row.url + "\" target=\"_blank\" rel=\"noopener\">" + row.video + "</a>"
+          : row.video;
+        tr.innerHTML =
+          "<td>" + i + "</td>" +
+          "<td><span class=\"creator-tag\">" + creatorLabel[row.creator] + "</span></td>" +
+          "<td><span class=\"region " + row.region + "\">" + regionLabel[row.region] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td><span class=\"rating " + ratingClass[row.rating] + "\">" + ratingText[row.rating] + "</span><br>" + row.notes + "</td>" +
+          "<td>" + row.visit + "</td>" +
+          "<td>" + videoCell + "</td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = i + " 条";
+    }
+
+    document.getElementById("creator-filter").addEventListener("change", sync);
+    document.getElementById("region-filter").addEventListener("change", sync);
+    document.getElementById("search").addEventListener("input", sync);
+    function sync() {
+      renderTable(
+        document.getElementById("creator-filter").value,
+        document.getElementById("region-filter").value,
+        document.getElementById("search").value
+      );
+    }
+    renderTable("all", "all", "");
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var colors = {
+        husky: "#f4a261", cliff: "#fbbf24", pango: "#a78bfa", jammy: "#34d399",
+        a2a: "#fb923c", monty: "#f472b6", travelynn: "#2dd4bf", rafiki: "#38bdf8"
+      };
+      var routes = [
+        { id: "husky", points: [
+          { lat: -33.925, lng: 18.424, name: "开普敦", note: "海运接车" },
+          { lat: -29.792, lng: 29.494, name: "Sani Pass", note: "莱索托" },
+          { lat: -17.816, lng: 25.150, name: "Chobe", note: "博茨" },
+          { lat: -24.727, lng: 15.294, name: "Sossusvlei", note: "纳米" },
+          { lat: -12.917, lng: 34.300, name: "Lake Malawi", note: "马拉维" },
+          { lat: -1.292, lng: 36.822, name: "Nairobi", note: "肯尼亚" },
+          { lat: 0.347, lng: 32.583, name: "Murchison", note: "乌干达" }
+        ]},
+        { id: "cliff", points: [
+          { lat: 18.073, lng: -15.958, name: "毛里塔尼亚", when: "2025-02", note: "撒哈拉" },
+          { lat: 33.573, lng: -7.589, name: "摩洛哥", when: "2025-03", note: "舍夫沙万" },
+          { lat: 13.833, lng: -16.589, name: "塞内加尔", when: "2025-04", note: "Sine Saloum" },
+          { lat: 13.454, lng: -16.577, name: "冈比亚", when: "2025-04", note: "3 NP" },
+          { lat: 6.365, lng: 2.418, name: "贝宁", when: "2025-06", note: "Voodoo" },
+          { lat: -8.839, lng: 13.234, name: "安哥拉", when: "2025-08", note: "沉船海岸" },
+          { lat: -26.704, lng: 16.284, name: "Kolmanskop", when: "2025-10", note: "纳米鬼城" },
+          { lat: -24.760, lng: 15.292, name: "Deadvlei", when: "2025-10", note: "红沙丘" },
+          { lat: -24.988, lng: 31.554, name: "Kruger", when: "2026-02", note: "花豹" },
+          { lat: -19.995, lng: 25.912, name: "博茨瓦纳", when: "2026-02", note: "湿季 Safari" },
+          { lat: -26.522, lng: 31.465, name: "Eswatini", when: "2026-01", note: "Hlane" }
+        ]},
+        { id: "pango", points: [
+          { lat: -33.925, lng: 18.424, name: "南非西海岸", note: "起点" },
+          { lat: -12.917, lng: 34.300, name: "Nyika", note: "马拉维" },
+          { lat: -3.386, lng: 36.683, name: "Arusha", note: "坦桑" },
+          { lat: -1.944, lng: 30.061, name: "Kigali", note: "卢旺达" }
+        ]},
+        { id: "jammy", points: [
+          { lat: 51.507, lng: -0.128, name: "伦敦", note: "2025-09 出发" },
+          { lat: 33.573, lng: -7.589, name: "摩洛哥", note: "入非" },
+          { lat: -18.855, lng: 16.329, name: "Etosha", note: "纳米连载中" }
+        ]},
+        { id: "a2a", points: [
+          { lat: 33.573, lng: -7.589, name: "摩洛哥", note: "2018 西非" },
+          { lat: 18.073, lng: -15.958, name: "毛里塔尼亚", note: " dusty" },
+          { lat: 5.560, lng: -0.205, name: "阿克拉", note: "加纳" },
+          { lat: 9.082, lng: 8.675, name: "尼日利亚", note: "⚠️ 最难" },
+          { lat: 4.051, lng: 9.768, name: "杜阿拉", note: "喀麦隆" }
+        ]},
+        { id: "monty", points: [
+          { lat: 51.507, lng: -0.128, name: "伦敦", note: "2009 出发" },
+          { lat: 32.887, lng: 13.191, name: "的黎波里", note: "利比亚" },
+          { lat: 30.044, lng: 31.236, name: "开罗", note: "埃及" },
+          { lat: 9.032, lng: 38.742, name: "亚的斯", note: "埃塞" },
+          { lat: -33.925, lng: 18.424, name: "开普敦", note: "Day 173" }
+        ]},
+        { id: "travelynn", points: [
+          { lat: -24.988, lng: 31.554, name: "Kruger", note: "取 Defender" },
+          { lat: -25.965, lng: 32.589, name: "莫桑比克", note: "首出国" },
+          { lat: -12.917, lng: 34.300, name: "马拉维", note: "101 天" },
+          { lat: -6.792, lng: 39.208, name: "达累斯萨拉姆", note: "坦桑" },
+          { lat: -22.560, lng: 17.065, name: "温得和克", note: "纳米" }
+        ]},
+        { id: "rafiki", points: [
+          { lat: 52.367, lng: 4.904, name: "阿姆斯特丹", note: "2022 出发" },
+          { lat: 9.082, lng: 8.675, name: "尼日利亚", note: "Nimba 领养" },
+          { lat: -1.292, lng: 36.822, name: "内罗毕", note: "东非段" }
+        ]}
+      ];
+      function popupHtml(p, creator) {
+        return "<div class=\"popup-title\">" + p.name + "</div>" +
+          "<div style=\"color:#a78bfa;font-size:0.8rem\">" + creator + "</div>" +
+          (p.when ? "<div style=\"color:#fde68a;font-size:0.84rem\">造访 " + p.when + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+      var map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OSM &copy; CARTO", subdomains: "abcd", maxZoom: 19
+      }).addTo(map);
+      var layerGroup = L.layerGroup().addTo(map);
+      var creatorNames = {
+        husky: "HuskyRover", cliff: "Cliff Fawcett", pango: "Wandering Pango",
+        jammy: "Jammy Gits", a2a: "A2A Expedition", monty: "Monty",
+        travelynn: "TraveLynn", rafiki: "Rafiki on Tour"
+      };
+      function renderMap(filter) {
+        layerGroup.clearLayers();
+        var bounds = [];
+        routes.forEach(function (route) {
+          if (filter !== "all" && route.id !== filter) return;
+          var color = colors[route.id];
+          var latlngs = route.points.map(function (p) { return [p.lat, p.lng]; });
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, { color: color, weight: filter === "all" ? 3 : 5, opacity: 0.85 }).addTo(layerGroup);
+          }
+          route.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: filter === "all" ? 4 : 6,
+              color: color, fillColor: color, fillOpacity: 0.9, weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p, creatorNames[route.id]));
+          });
+        });
+        if (bounds.length) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: filter === "all" ? 3 : 6 });
+        }
+      }
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderMap(btn.getAttribute("data-filter"));
+        });
+      });
+      renderMap("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

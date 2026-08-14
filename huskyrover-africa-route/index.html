@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HuskyRover Overland · 非洲 6.6 万 km 路书（S.1 全 47 集）</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #f4a261;
+      --accent-2: #2a9d8f;
+      --warn: #e76f51;
+      --prep: #8b9cb3;
+      --south: #34d399;
+      --east: #38bdf8;
+      --mech: #fb7185;
+      --summary: #c084fc;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 960px; }
+    .subtitle a { color: #79c0ff; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .card .value { margin-top: 6px; font-size: 1.1rem; font-weight: 600; }
+    .note {
+      background: rgba(244, 162, 97, 0.08);
+      border: 1px solid rgba(244, 162, 97, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6d5b8;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    h2.section-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    .veh-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+    .veh-panel h3 { margin: 0 0 10px; color: var(--warn); font-size: 1.05rem; }
+    .veh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+    .veh-grid dt { color: var(--muted); margin-top: 8px; }
+    .veh-grid dd { margin: 2px 0 0; }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .bar-row .bar-label { color: var(--muted); line-height: 1.35; }
+    .bar-row .bar-label strong { display: block; color: var(--text); font-weight: 600; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 220px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.prep { background: var(--prep); }
+    .dot.south { background: var(--south); }
+    .dot.east { background: var(--east); }
+    .dot.mech { background: var(--mech); }
+    .dot.summary { background: var(--summary); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1100px; font-size: 0.9rem;
+    }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d;
+      color: var(--muted); text-align: left;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(244, 162, 97, 0.06); }
+    tbody tr.mech-row { background: rgba(251, 113, 133, 0.05); }
+    .phase {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.76rem; font-weight: 600; white-space: nowrap;
+    }
+    .phase.prep { background: rgba(139, 156, 179, 0.15); color: #c5d0de; }
+    .phase.south { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+    .phase.east { background: rgba(56, 189, 248, 0.15); color: #bae6fd; }
+    .phase.mech { background: rgba(251, 113, 133, 0.15); color: #fda4af; }
+    .phase.summary { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; }
+    .rating {
+      font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; font-weight: 600;
+    }
+    .rating.top { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
+    .rating.good { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .rating.mixed { background: rgba(251, 191, 36, 0.15); color: #fde68a; }
+    .rating.hard { background: rgba(251, 113, 133, 0.15); color: #fda4af; }
+    a { color: #79c0ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    td a.ep-link { color: var(--accent); }
+    .cell-muted { color: var(--muted); font-size: 0.85rem; }
+    .ep-num { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .guide-section { margin-top: 28px; }
+    .guide-section details {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .guide-section summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--accent);
+      list-style: none;
+      user-select: none;
+    }
+    .guide-section summary::-webkit-details-marker { display: none; }
+    .guide-section summary::before {
+      content: "▸ "; color: var(--muted);
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }
+    .guide-section details[open] summary::before { transform: rotate(90deg); }
+    .guide-body { padding: 0 20px 18px; border-top: 1px solid var(--border); }
+    .guide-intro { margin: 14px 0 12px; color: var(--muted); font-size: 0.92rem; }
+    .guide-days { margin: 0; padding-left: 1.25rem; font-size: 0.92rem; }
+    .guide-days li { margin-bottom: 8px; }
+    .guide-link { margin: 14px 0 0; font-size: 0.88rem; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .map-section {
+      margin: 28px 0 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .map-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .map-header h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+    .map-header p { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); }
+    .map-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .map-controls button {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 14px; font-size: 0.88rem; cursor: pointer;
+    }
+    .map-controls button:hover { border-color: var(--accent-2); }
+    .map-controls button.active {
+      background: rgba(244, 162, 97, 0.2);
+      border-color: var(--accent); color: #f6d5b8;
+    }
+    #route-map { height: 520px; width: 100%; background: #0d1117; }
+    .map-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 10px 16px 14px; font-size: 0.84rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .map-legend i {
+      display: inline-block; width: 22px; height: 4px; border-radius: 2px;
+      vertical-align: middle; margin-right: 4px;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--panel-2); color: var(--text);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    .leaflet-popup-tip { background: var(--panel-2); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 0.88rem; line-height: 1.5; }
+    .popup-title { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      #route-map { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>HuskyRover Overland · 非洲纵穿路书</h1>
+      <p class="subtitle">
+        澳籍夫妇 · YouTube
+        <a href="https://www.youtube.com/@HuskyRover1" target="_blank" rel="noopener">@HuskyRover1</a>
+        （频道显示名 HuskyRover Overland）·
+        <strong>不止总结片</strong>：Season 1 连载 <strong>47 集</strong> + 筹备/抵达片 + 2026-07 总结片。
+        风格参考 <a href="../chloe-laodeng-roadtrip/index.html">克洛伊路书</a> ·
+        汇总页 <a href="../youtube-africa-overland/index.html">YouTube 非洲自驾索引</a>
+      </p>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="label">里程</div><div class="value">66,000 km</div></div>
+      <div class="card"><div class="label">时长</div><div class="value">≈15–18 个月</div></div>
+      <div class="card"><div class="label">国家</div><div class="value">13 国</div></div>
+      <div class="card"><div class="label">视频</div><div class="value">S.1 × 47 + 总结</div></div>
+      <div class="card"><div class="label">车辆</div><div class="value">Defender「Old Lad」</div></div>
+      <div class="card"><div class="label">表格条目</div><div class="value" id="row-count">—</div></div>
+    </div>
+
+    <div class="note">
+      <strong>频道说明（摘自 About）：</strong>
+      夫妇俩辞职、离开澳洲常规生活，驾驶<strong>老旧 Land Rover Defender</strong>开始环球 Overland。
+      非洲段累计 <strong>66,000+ km</strong>，穿越沙漠、山脉、远程土路与无数野营点；
+      系列完结时 Defender 正<strong>运往欧洲</strong>开启下一章。
+      本页数据来自 YouTube 分集标题/简介（2026-08 抓取），国别与集数映射为整理推断。
+    </div>
+
+    <div class="veh-panel">
+      <h3>🚗 车辆 · Land Rover Defender「Old Lad」</h3>
+      <div class="veh-grid">
+        <div>
+          <dt>昵称</dt><dd>Old Lad（频道口语亦称 Old Lad Rover）</dd>
+          <dt>来源</dt><dd>澳大利亚购入 · 海运至南非开普敦启陆</dd>
+        </div>
+        <div>
+          <dt>配置</dt><dd>Defender 110 风格 Overland 改装 · 车顶帐 · 澳式左舵/右舵待视频确认</dd>
+          <dt>动力（非洲末段）</dt><dd>Ep.45 后在 Ladybrand 完整体检 → <strong>发动机大修/重建</strong>（66,000 km 损耗）</dd>
+        </div>
+        <div>
+          <dt>后续计划</dt><dd>频道 About 称下一阶段：<strong>欧洲</strong>；另有 M57 换芯系列（回国整备，非非洲线）</dd>
+          <dt>典型损耗</dt><dd>变速箱碎裂(Ep.6) · 减震(Ep.24) · 坦桑故障(Ep.40) · 全引擎重建(Ep.45)</dd>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">🗺️ 阶段概览（按视频叙事顺序）</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+
+    <section class="map-section" id="route-map-section">
+      <div class="map-header">
+        <div>
+          <h2>🗺️ 行进路线地图</h2>
+          <p>Leaflet 暗色底图 · 关键点连线（非 GPS 轨迹）· <a href="route.kml" download>route.kml</a></p>
+        </div>
+        <div class="map-controls" id="map-filter-controls">
+          <button type="button" class="map-filter active" data-filter="all">全程</button>
+          <button type="button" class="map-filter" data-filter="prep">接车</button>
+          <button type="button" class="map-filter" data-filter="south">南部非洲</button>
+          <button type="button" class="map-filter" data-filter="east">东非</button>
+          <button type="button" class="map-filter" data-filter="loop">回环收尾</button>
+        </div>
+      </div>
+      <div id="route-map"></div>
+      <div class="map-legend">
+        <span><i style="background:#8b9cb3"></i>接车/筹备</span>
+        <span><i style="background:#34d399"></i>南非·莱索托·博茨</span>
+        <span><i style="background:#f4a261"></i>纳米·赞比亚</span>
+        <span><i style="background:#38bdf8"></i>马拉维·东非</span>
+        <span><i style="background:#a78bfa"></i>回环 Ep.42–47</span>
+        <span id="map-legend-hint">📍 点击标记查看地点 · Ep 对照</span>
+      </div>
+    </section>
+
+    <h2 class="section-title">📺 分集目录（可筛选）</h2>
+    <div class="toolbar">
+      <label for="phase-filter">阶段</label>
+      <select id="phase-filter">
+        <option value="all">全部</option>
+        <option value="prep">筹备 / 抵达</option>
+        <option value="south">南部非洲</option>
+        <option value="east">东非</option>
+        <option value="mech">修车 / 机械</option>
+        <option value="summary">总结片</option>
+      </select>
+      <label for="country-filter">国家</label>
+      <select id="country-filter">
+        <option value="all">全部</option>
+        <option value="南非">南非</option>
+        <option value="莱索托">莱索托</option>
+        <option value="纳米">纳米比亚</option>
+        <option value="博茨">博茨瓦纳</option>
+        <option value="津巴">津巴布韦</option>
+        <option value="赞比亚">赞比亚</option>
+        <option value="马拉维">马拉维</option>
+        <option value="坦桑">坦桑尼亚</option>
+        <option value="肯尼亚">肯尼亚</option>
+        <option value="乌干达">乌干达</option>
+        <option value="卢旺达">卢旺达</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索集数、标题、地点、评价…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot prep"></span>筹备</span>
+      <span><span class="dot south"></span>南部非洲</span>
+      <span><span class="dot east"></span>东非</span>
+      <span><span class="dot mech"></span>修车</span>
+      <span><span class="dot summary"></span>总结</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>集</th>
+            <th>阶段</th>
+            <th>国家/地区</th>
+            <th>地点 / 主题</th>
+            <th>内容摘要 · 评价</th>
+            <th>时长</th>
+            <th>视频</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="guide-section">
+      <details open>
+        <summary>13 国 · 代表景点与博主评价</summary>
+        <div class="guide-body">
+          <p class="guide-intro">下列 13 国来自总结片官方列表；分集覆盖其中 11+ 国（含 Zimbabwe 维多利亚瀑布段）。</p>
+          <ul class="guide-days">
+            <li><strong>🇿🇦 南非</strong> — Garden Route、Addo、Kruger 自驾、Naude's Nek、Prince Alfred Pass · 👍 系列主场，露营与山路极多</li>
+            <li><strong>🇱🇸 莱索托</strong> — Sani Pass（-8°C 车顶帐）、Maletsunyane 瀑布 · 👍 「Took our breath away」</li>
+            <li><strong>🇳🇦 纳米比亚</strong> — Sossusvlei/Deadvlei、Fish River Canyon、Spitzkoppe、Messum Crater、Etosha、Skeleton Coast 沙丘 · 👍 摄影与野营天花板</li>
+            <li><strong>🇧🇼 博茨瓦纳</strong> — Khama Rhino、Kubu Island 盐 pan、Chobe 河驱动（象群中间）· Okavango 直升机 · 👍 野生动物 adrenaline 最高</li>
+            <li><strong>🇿🇼 津巴布韦</strong> — Victoria Falls 汛季洪峰（Ep.44）· 👍 水雾遮瀑仍称 highlight</li>
+            <li><strong>🇿🇲 赞比亚</strong> — Livingstone、Great North Road 混乱、最差路之一 · ⚖️ 路况/燃油危机真实</li>
+            <li><strong>🇲🇼 马拉维</strong> — 湖岸公路 · 🙂 过渡 pleasant</li>
+            <li><strong>🇹🇿 坦桑尼亚</strong> — Serengeti 淹水 track、Ngorongoro、Zanzibar · 选举骚乱紧急撤肯尼亚 · ⚖️ 高光与 tense 并存</li>
+            <li><strong>🇰🇪 肯尼亚</strong> — Mount Kenya 3500 m 露营、Safari 野营、海岸 detour（暂离 Defender）· 👍</li>
+            <li><strong>🇺🇬 乌干达</strong> — Murchison Falls（非洲最强大瀑布）、Bwindi 雨林 · 👍 raw &amp; remote</li>
+            <li><strong>🇷🇼 卢旺达</strong> — 「最干净国家？」城市 Overland · 🙂</li>
+            <li><strong>维多利亚湖 / 东非高原</strong> — Ep.38 4×4 环湖 · 👍</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>总结片章节 · Everyone Told Us Not To Drive Across Africa（61 min）</summary>
+        <div class="guide-body">
+          <ol class="guide-days">
+            <li><strong>00:00</strong> Introduction</li>
+            <li><strong>02:55</strong> Shipping the Land Rover Defender（海运）</li>
+            <li><strong>06:11</strong> Carnet de Passages and Border Crossings（车辆护照/边境）</li>
+            <li><strong>10:07</strong> Life on the Road（路上生活）</li>
+            <li><strong>15:20</strong> The Roads（路况）</li>
+            <li><strong>18:43</strong> Keeping the Defender Alive（修车养车）</li>
+            <li><strong>24:18</strong> National Parks, Wilderness &amp; Wildlife（国家公园与兽）</li>
+            <li><strong>43:50</strong> Waterfalls, Mountain Passes and Lakes</li>
+            <li><strong>47:41</strong> People（当地人）</li>
+            <li><strong>52:11</strong> Finding your way around</li>
+            <li><strong>53:20</strong> Driving</li>
+            <li><strong>54:45</strong> Other Stuff</li>
+          </ol>
+          <p class="guide-link">
+            <a href="https://www.youtube.com/watch?v=_5Q6fWbXXuU" target="_blank" rel="noopener">▶ 打开总结片</a>
+          </p>
+        </div>
+      </details>
+
+      <details>
+        <summary>机械故障时间线（Overlander 噩梦诚实版）</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>Ep.6</strong> — 莱索托/南非：<span class="rating hard">变速箱碎裂</span> · 拖板车至 Ladybrand 修理 · 继续往 Kruger</li>
+            <li><strong>Ep.8</strong> — 南非/博茨边境：<span class="rating mixed">签证剩 3 天被拒</span> · 绕路二次过境</li>
+            <li><strong>Ep.22</strong> — Messum Crater 远程 track：<span class="rating mixed">轮胎撕碎</span></li>
+            <li><strong>Ep.24</strong> — 纳米→赞比亚：<span class="rating hard">减震断裂</span> · 「迄今最差路」</li>
+            <li><strong>Ep.40</strong> — 坦桑：<span class="rating hard">Defender 故障</span>（东非段）</li>
+            <li><strong>Ep.44</strong> — 赞比亚：<span class="rating mixed">燃油短缺</span> · 抢油后再赴 Vic Falls</li>
+            <li><strong>Ep.45</strong> — 66,000 km 后：<span class="rating hard">Ladybrand 全引擎重建</span> · 18 个月非洲惩罚的诚实账单</li>
+            <li><strong>Ep.47</strong> — Prince Albert：<span class="rating mixed">暴风雨 / 山洪</span> · 车顶帐最难一夜之一</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>推荐观看顺序</summary>
+        <div class="guide-body">
+          <ul class="guide-days">
+            <li><strong>只想快速了解</strong> → 先看总结片（61 min），再按需跳分集</li>
+            <li><strong>南非入门</strong> → Ep.1 Garden Route → Ep.7 Kruger → Ep.5 Sani Pass</li>
+            <li><strong>野生动物巅峰</strong> → Ep.12 Chobe 象群 → Ep.13 Okavango → Ep.39 Serengeti 淹水</li>
+            <li><strong>纳米经典</strong> → Ep.18 Sossusvlei → Ep.19 Sandwich Harbour → Ep.21–22 Messum Crater</li>
+            <li><strong>东非深度</strong> → Ep.35–37 乌干达/卢旺达 → Ep.38 维多利亚湖 → Ep.39 Serengeti</li>
+            <li><strong>修车党</strong> → Ep.6 → Ep.24 → Ep.40 → Ep.45</li>
+          </ul>
+          <p class="guide-link">
+            <a href="https://www.youtube.com/@HuskyRover1/videos" target="_blank" rel="noopener">▶ 频道全部视频（时间倒序）</a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-13 · 来源：YouTube @HuskyRover1 公开元数据（yt-dlp 抓取 52 条视频列表 + 分集简介）</p>
+      <p>地图：<a href="route.kml" download>route.kml</a>（关键点，非 GPS 精确轨迹）</p>
+      <p>相关：<a href="../youtube-africa-overland/index.html">YouTube 非洲自驾总索引</a> ·
+        <a href="../cliff-fawcett-africa-route/index.html">Cliff Fawcett 路书</a> ·
+        <a href="../chloe-laodeng-roadtrip/index.html">克洛伊和老邓 570 天</a> ·
+        <a href="../index.html">路书首页</a></p>
+    </footer>
+  </div>
+
+  <script>
+    function fmtDur(sec) {
+      if (!sec) return "—";
+      var m = Math.floor(sec / 60);
+      var s = sec % 60;
+      return m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    function yt(id) {
+      return "https://www.youtube.com/watch?v=" + id;
+    }
+
+    var episodes = [
+      { ep: "—", phase: "prep", country: "澳大利亚", place: "Fraser Island", notes: "本土热身 / 沙岛", rating: "good", dur: 1494, id: "mbrr6Szhfds", title: "HuskyRover on Fraser Island" },
+      { ep: "—", phase: "prep", country: "澳大利亚", place: "购车 · 海运准备", notes: "从购车到装柜发运非洲", rating: "good", dur: 689, id: "OkfTTy7kXZI", title: "Preparing for Overlanding and Shipping" },
+      { ep: "—", phase: "prep", country: "东南亚", place: "飞东南亚", notes: "陆路前旅行；等车运到南非", rating: "good", dur: 1987, id: "k8_ICareQic", title: "Exploring South East Asia before an Epic World Overland Adventure" },
+      { ep: "—", phase: "prep", country: "南非", place: "Cape Town 接车", notes: "海运抵达 · 开普敦 Welcome", rating: "good", dur: 1210, id: "Ar0T0v51tow", title: "Welcome to Cape Town" },
+
+      { ep: "1", phase: "south", country: "南非", place: "Garden Route · Plettenberg Bay", notes: "首周上路：企鹅 colony、Robberg 徒步遇风暴、狒狒、营地", rating: "top", dur: 1919, id: "DU3YhUuHQSc", title: "Africa - Our first few days on the road" },
+      { ep: "2", phase: "south", country: "南非", place: "Prince Alfred Pass · Baviaanskloof", notes: "经典 off-road 山路", rating: "top", dur: 1853, id: "g3JH6eUUgZY", title: "Prince Alfred Pass and Baviaanskloof" },
+      { ep: "3", phase: "south", country: "南非", place: "Addo · Schotia Game Reserve", notes: "私人保护区 Safari", rating: "top", dur: 1452, id: "cGpiXG2uZwc", title: "Amazing Addo Elephant & Schotia" },
+      { ep: "4", phase: "south", country: "南非", place: "Naude's Nek · Rhodes–Underberg", notes: "高山 pass", rating: "good", dur: 1780, id: "ByciTdyI5nI", title: "Naude's Nek Mountain Pass" },
+      { ep: "5", phase: "south", country: "莱索托", place: "Sani Pass", notes: "4×4 上 Sani · homestay · 车顶帐 -8°C · 「really that difficult?」", rating: "top", dur: 2059, id: "giAut-u_QPY", title: "Sani Pass and Lesotho" },
+      { ep: "6", phase: "mech", country: "莱索托/南非", place: "Ladybrand 修车", notes: "⚠️ 变速箱碎裂 · 拖板车 · Overlander 噩梦", rating: "hard", dur: 1145, id: "rBoc-BoZ9Rg", title: "Breaking Down In Africa - Fixing The Defender", mech: true },
+      { ep: "7", phase: "south", country: "南非", place: "Kruger NP", notes: "自驾 Safari · what to expect", rating: "top", dur: 1686, id: "oGQY9UlnTA8", title: "Self-driving Kruger National Park" },
+      { ep: "8", phase: "south", country: "南非/博茨", place: "Botswana 边境", notes: "⚠️ 签证剩 3 天被拒 · 绕路二次过境", rating: "hard", dur: 1421, id: "6QxzDGZRxz4", title: "Turned away at the border" },
+
+      { ep: "9", phase: "south", country: "博茨", place: "Khama Rhino Sanctuary", notes: "自驾 Safari · 4×4 track", rating: "good", dur: 878, id: "u_7MfvNCfQQ", title: "Khama Rhino Sanctuary" },
+      { ep: "10", phase: "south", country: "博茨", place: "Kubu Island 盐 pan", notes: "经典 4×4 盐沼岛", rating: "top", dur: 1743, id: "t0CNI3R56qQ", title: "4x4 on Botswana's Salt Pans" },
+      { ep: "11", phase: "south", country: "博茨", place: "Botswana 公路", notes: "博茨 overland 公路段", rating: "good", dur: 1576, id: "80oIlD_goOM", title: "Botswana Overland" },
+      { ep: "12", phase: "south", country: "博茨", place: "Chobe River Drive", notes: "👍 Sand track 象群包围 · 河马 · 最 intense 之一", rating: "top", dur: 1873, id: "4TTreugWUF8", title: "Intense Chobe River Drive - elephant herd!" },
+      { ep: "13", phase: "south", country: "博茨", place: "Chobe + Okavango", notes: "Chobe NP + 直升机看 Delta", rating: "top", dur: 1838, id: "4RLhSyzUvuw", title: "Chobe and Okavango Delta" },
+
+      { ep: "14", phase: "south", country: "纳米", place: "Southern Namibia · Canyon Roadhouse", notes: "南线进入纳米", rating: "good", dur: 1956, id: "_HEENUrOUqU", title: "Southern Namibia - Canyon Roadhouse" },
+      { ep: "15", phase: "south", country: "纳米", place: "Fish River Canyon", notes: "Defender on the edge", rating: "top", dur: 1150, id: "FG_mzjyUC-8", title: "Defender on the Edge of Fish River Canyon" },
+      { ep: "16", phase: "south", country: "纳米", place: "Ghost Town", notes: "南部鬼城 · haunted?", rating: "good", dur: 1503, id: "8o86jhbP7do", title: "Ghost Town in Southern Namibia" },
+      { ep: "17", phase: "south", country: "纳米", place: "Quiver trees · 化石", notes: "中部纳米 · bush camp", rating: "good", dur: 1204, id: "dTOr5cZlD6a", title: "Central Namibia - Quiver trees" },
+      { ep: "18", phase: "south", country: "纳米", place: "Sossusvlei · Deadvlei · Sesriem", notes: "👍 红 dun · 900 年黑树 · 路本身也 stunning", rating: "top", dur: 1418, id: "2hQL4Mmx1GU", title: "Sossusvlei - Iconic Namibia" },
+      { ep: "19", phase: "south", country: "纳米", place: "Sandwich Harbour 沙丘", notes: "沙丘直抵大西洋", rating: "top", dur: 1742, id: "UAInJDlF1jU", title: "Dune Driving Sandwich Harbour" },
+      { ep: "20", phase: "south", country: "纳米", place: "Spitzkoppe", notes: "野营 granite 峰", rating: "top", dur: 1644, id: "fmE89XX8QsM", title: "Wild Camping at Spitzkoppe" },
+      { ep: "21", phase: "south", country: "纳米", place: "Brandberg → Messum Crater", notes: "远程 4×4  expedition", rating: "top", dur: 1824, id: "XWevOZHbS4A", title: "Remote Expedition Brandberg to Messum Crater" },
+      { ep: "22", phase: "mech", country: "纳米", place: "Messum Crater track", notes: "⚠️ 远程 track 轮胎 shredded", rating: "hard", dur: 1461, id: "jJkXm-TqtOo", title: "Shredded Tyre on Remote Track to Messum Crater", mech: true },
+      { ep: "23", phase: "south", country: "纳米", place: "Etosha → Caprivi", notes: "兽群向北", rating: "top", dur: 1423, id: "N5AlwxXGoXY", title: "Overlanding Namibia - Etosha to Caprivi" },
+      { ep: "24", phase: "mech", country: "纳米/赞比亚", place: "「Worst Road in Africa?」", notes: "⚠️ 减震断裂 · 迄今最差路", rating: "hard", dur: 1930, id: "WclG7yghYK0", title: "Broken Shock Absorber | Worst Road in Africa?", mech: true },
+
+      { ep: "25", phase: "south", country: "赞比亚", place: "Victoria Falls → Chipata", notes: "瀑布区域东进", rating: "good", dur: 1653, id: "JPAzUG7emhY", title: "Overlanding Zambia - Victoria Falls to Chipata" },
+      { ep: "26", phase: "east", country: "马拉维", place: "Lake Malawi 湖岸", notes: "沿湖 driving the coast", rating: "good", dur: 2267, id: "N9BCKyr0hmw", title: "Lake Malawi - Driving the Coast" },
+      { ep: "27", phase: "east", country: "坦桑", place: "Southern TZ → Iringa", notes: "边境 · homestay · market", rating: "good", dur: 1532, id: "MUiI0zCo9Mw", title: "Exploring Southern Tanzania to Iringa" },
+      { ep: "28", phase: "east", country: "坦桑", place: "Iringa → Arusha", notes: "中部坦桑", rating: "good", dur: 1467, id: "OCsGyDZoHjY", title: "Overlanding Central Tanzania Iringa to Arusha" },
+      { ep: "29", phase: "east", country: "坦桑/肯尼亚", place: "Zanzibar · 选举骚乱", notes: "⚠️ 飞 Zanzibar · 选举抗议 · tense 逃肯尼亚", rating: "hard", dur: 1764, id: "QfvMhi6hIBo", title: "Zanzibar, Election Protests & Escape to Kenya" },
+
+      { ep: "30", phase: "east", country: "肯尼亚", place: "Kenya begins", notes: "疯狂路 · 山地露营", rating: "good", dur: 1431, id: "OBOFiDWkmbQ", title: "Overlanding Kenya Begins" },
+      { ep: "31", phase: "east", country: "肯尼亚", place: "Kenya Coast detour", notes: "暂离 Defender · 海岸度假？「还算 Overland 吗」", rating: "mixed", dur: 1364, id: "0XWCPwXPwDs", title: "Kenya Coast Detour | Without the Defender??" },
+      { ep: "32", phase: "east", country: "肯尼亚", place: "Mount Kenya 3500 m", notes: "高海拔露营", rating: "top", dur: 1614, id: "ARvmuWD8NfU", title: "Mount Kenya - Camping at 3500m" },
+      { ep: "33", phase: "east", country: "肯尼亚", place: "Safari wild camping", notes: "肯尼亚 Safari 野营", rating: "top", dur: 1486, id: "BSUO0ntm2uQ", title: "Overlanding Kenya Gets Wild! Safari Camping" },
+      { ep: "34", phase: "east", country: "肯尼亚/乌干达", place: "边境 · 瀑布", notes: "Kenya → Uganda 过境", rating: "good", dur: 1616, id: "dm1T4ZtBRxc", title: "Kenya to Uganda | Border Crossing" },
+
+      { ep: "35", phase: "east", country: "乌干达", place: "Murchison Falls NP", notes: "👍 非洲最强大瀑布 · 尼罗河 boat safari", rating: "top", dur: 1524, id: "OttAL-xiRlo", title: "Africa's Most Powerful Waterfall (Murchison)" },
+      { ep: "36", phase: "east", country: "乌干达", place: "Western Uganda · Bwindi", notes: " crater lakes · Lake Albert ·  impenetrable forest", rating: "top", dur: 2216, id: "7i8Vz2P7tog", title: "Lost In Remote Uganda" },
+      { ep: "37", phase: "east", country: "卢旺达", place: "Rwanda overland", notes: "「Africa's cleanest country?」", rating: "good", dur: 1597, id: "XE8E7yUK1vQ", title: "Is Rwanda REALLY Africa's Cleanest Country?" },
+      { ep: "38", phase: "east", country: "东非", place: "Lake Victoria 4×4", notes: "环维多利亚湖 · Into the heart of East Africa", rating: "top", dur: 1508, id: "vRNc82V7EKQ", title: "Lake Victoria 4X4 Overlanding Adventure" },
+
+      { ep: "39", phase: "east", country: "坦桑", place: "Serengeti 淹水 track", notes: "👍 Great Migration · 无围栏营 · 救援 stuck Cruiser", rating: "top", dur: 1713, id: "9stYobjhSsI", title: "4x4 vs Flooded Serengeti Tracks" },
+      { ep: "40", phase: "mech", country: "坦桑", place: "Tanzania 故障", notes: "⚠️ Defender broke in Tanzania", rating: "hard", dur: 1496, id: "e-VWtsM3C4U", title: "Our Land Rover Defender Broke in Tanzania!", mech: true },
+      { ep: "41", phase: "east", country: "坦桑", place: "Bush camping TZ", notes: "Hidden Tanzania · bush camp", rating: "good", dur: 2162, id: "6xGicU_ZTz4", title: "Hidden Tanzania by 4x4 | Bush Camping" },
+
+      { ep: "42", phase: "south", country: "坦桑/赞比亚", place: "TZ–ZM 边境 · Backroads", notes: "「 easiest border in East Africa」· 2 分钟过关", rating: "good", dur: 1735, id: "Flt0ozYItuk", title: "Zambia's Backroads | TZ border" },
+      { ep: "43", phase: "south", country: "赞比亚", place: "Great North Road", notes: "👎 Chaos on the Great North Road", rating: "hard", dur: 2254, id: "VkrgmtR2NdI", title: "Overlanding Zambia | Chaos on the Great North Road" },
+      { ep: "44", phase: "south", country: "赞比亚/津巴", place: "Victoria Falls 汛季", notes: "⚠️ 燃油危机 · 瀑布 full flood · highlight", rating: "top", dur: 1873, id: "5t3vJ7PAK9Y", title: "Fuel Crisis & Victoria Falls in Flood" },
+      { ep: "45", phase: "mech", country: "博茨/南非", place: "Ladybrand 引擎重建", notes: "⚠️ 66,000 km 后全引擎 rebuild · 18 个月惩罚", rating: "hard", dur: 1917, id: "XIIVoFE8_5c", title: "Did Our 4x4 Finally Break? 66,000km", mech: true },
+      { ep: "46", phase: "south", country: "莱索托", place: "Maletsunyane Falls", notes: "👍 Took our breath away · 非洲最高单落瀑布之一", rating: "top", dur: 1416, id: "AK1mtE7wgOk", title: "Lesotho's Epic Waterfall" },
+      { ep: "47", phase: "south", country: "南非", place: "Prince Albert 暴风雨", notes: "⚠️ 山洪 flash flood · 车顶帐最难夜之一", rating: "mixed", dur: 1964, id: "eajpVIKBEP4", title: "Storm Camping & Flash Flood Adventure" },
+
+      { ep: "∑", phase: "summary", country: "13 国综述", place: "全旅程回顾", notes: "海运/Carnet/路况/修车/国家公园/人 · 61 min 章节化", rating: "top", dur: 3707, id: "_5Q6fWbXXuU", title: "Everyone Told Us Not To Drive Across Africa....The Real Story!" }
+    ];
+
+    var ratingText = { top: "👍 强烈推荐", good: "🙂 值得看", mixed: "⚖️ 喜忧参半", hard: "⚠️ 挑战/修车" };
+    var phaseLabel = { prep: "筹备", south: "南部非洲", east: "东非", mech: "修车", summary: "总结" };
+
+    var countryKeys = {
+      "南非": "南非", "莱索托": "莱索托", "纳米": "纳米", "博茨": "博茨",
+      "津巴": "津巴", "赞比亚": "赞比亚", "马拉维": "马拉维", "坦桑": "坦桑",
+      "肯尼亚": "肯尼亚", "乌干达": "乌干达", "卢旺达": "卢旺达"
+    };
+
+    function countryMatch(row, filter) {
+      if (filter === "all") return true;
+      var c = row.country;
+      if (filter === "纳米") return c.indexOf("纳米") >= 0;
+      if (filter === "博茨") return c.indexOf("博茨") >= 0;
+      if (filter === "津巴") return c.indexOf("津巴") >= 0;
+      if (filter === "坦桑") return c.indexOf("坦桑") >= 0;
+      return c.indexOf(filter) >= 0;
+    }
+
+    function renderTable(phase, country, q) {
+      var tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      var n = 0;
+      var query = (q || "").trim().toLowerCase();
+      episodes.forEach(function (row) {
+        if (phase !== "all" && row.phase !== phase) return;
+        if (!countryMatch(row, country)) return;
+        var hay = [row.ep, row.title, row.country, row.place, row.notes].join(" ").toLowerCase();
+        if (query && hay.indexOf(query) === -1) return;
+        n++;
+        var tr = document.createElement("tr");
+        if (row.mech) tr.className = "mech-row";
+        tr.innerHTML =
+          "<td><span class=\"ep-num\">" + (row.ep === "—" ? "预备" : row.ep === "∑" ? "总结" : "Ep." + row.ep) + "</span></td>" +
+          "<td><span class=\"phase " + row.phase + "\">" + phaseLabel[row.phase] + "</span></td>" +
+          "<td>" + row.country + "</td>" +
+          "<td>" + row.place + "</td>" +
+          "<td><span class=\"rating " + row.rating + "\">" + ratingText[row.rating] + "</span><br>" + row.notes + "</td>" +
+          "<td class=\"cell-muted\">" + fmtDur(row.dur) + "</td>" +
+          "<td><a class=\"ep-link\" href=\"" + yt(row.id) + "\" target=\"_blank\" rel=\"noopener\">" + row.title + "</a></td>";
+        tbody.appendChild(tr);
+      });
+      document.getElementById("row-count").textContent = n + " 条";
+    }
+
+    function renderBar() {
+      var phases = [
+        { name: "筹备/接车", sub: "海运·开普敦", pct: 5, color: "#8b9cb3" },
+        { name: "南非/莱索托", sub: "Ep.1–8", pct: 17, color: "#34d399" },
+        { name: "博茨瓦纳", sub: "Ep.9–13", pct: 11, color: "#2dd4bf" },
+        { name: "纳米比亚", sub: "Ep.14–24", pct: 23, color: "#f4a261" },
+        { name: "赞比亚/马拉维", sub: "Ep.25–26", pct: 8, color: "#e9c46a" },
+        { name: "东非纵穿", sub: "Ep.27–41", pct: 26, color: "#38bdf8" },
+        { name: "回环/收尾", sub: "Ep.42–47", pct: 10, color: "#a78bfa" }
+      ];
+      var host = document.getElementById("timeline-bar");
+      host.innerHTML = "";
+      phases.forEach(function (p) {
+        var row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          "<div class=\"bar-label\"><strong>" + p.name + "</strong>" + p.sub + "</div>" +
+          "<div class=\"bar-track\"><div class=\"bar-fill\" style=\"width:" + p.pct + "%;background:" + p.color + "\"></div></div>";
+        host.appendChild(row);
+      });
+    }
+
+    function sync() {
+      renderTable(
+        document.getElementById("phase-filter").value,
+        document.getElementById("country-filter").value,
+        document.getElementById("search").value
+      );
+    }
+
+    document.getElementById("phase-filter").addEventListener("change", sync);
+    document.getElementById("country-filter").addEventListener("change", sync);
+    document.getElementById("search").addEventListener("input", sync);
+    renderBar();
+    sync();
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var phaseColors = {
+        prep: "#8b9cb3", sa: "#34d399", bw: "#2dd4bf", na: "#f4a261",
+        zm: "#e9c46a", east: "#38bdf8", loop: "#a78bfa"
+      };
+      var map, layerGroup;
+      var routeSegments = [
+        { filter: ["all", "prep"], phase: "prep", dashed: true, points: [
+          { lat: -37.813, lng: 144.963, name: "墨尔本", country: "澳大利亚", visit: "筹备", note: "购车 · 装柜海运" },
+          { lat: -33.925, lng: 18.424, name: "开普敦", country: "南非", visit: "接车", note: "Welcome · Ep.预备" }
+        ]},
+        { filter: ["all", "south"], phase: "sa", points: [
+          { lat: -34.052, lng: 23.371, name: "Plettenberg Bay", country: "南非", visit: "Ep.1", note: "Garden Route" },
+          { lat: -33.446, lng: 25.747, name: "Addo", country: "南非", visit: "Ep.3", note: "Schotia Safari" },
+          { lat: -29.792, lng: 29.494, name: "Sani Pass", country: "莱索托", visit: "Ep.5", note: "-8°C 车顶帐" },
+          { lat: -29.083, lng: 27.167, name: "Ladybrand", country: "南非", visit: "Ep.6", note: "⚠️ 变速箱碎" },
+          { lat: -24.988, lng: 31.554, name: "Kruger", country: "南非", visit: "Ep.7", note: "自驾 Safari" }
+        ]},
+        { filter: ["all", "south"], phase: "bw", points: [
+          { lat: -22.260, lng: 26.720, name: "Khama Rhino", country: "博茨瓦纳", visit: "Ep.9", note: "Rhino Sanctuary" },
+          { lat: -20.895, lng: 25.792, name: "Kubu Island", country: "博茨瓦纳", visit: "Ep.10", note: "盐 pan" },
+          { lat: -17.816, lng: 25.150, name: "Chobe", country: "博茨瓦纳", visit: "Ep.12–13", note: "象群河驱动" }
+        ]},
+        { filter: ["all", "south"], phase: "na", points: [
+          { lat: -27.587, lng: 17.593, name: "Fish River Canyon", country: "纳米比亚", visit: "Ep.15", note: "峡谷边缘" },
+          { lat: -24.727, lng: 15.294, name: "Sossusvlei", country: "纳米比亚", visit: "Ep.18", note: "Deadvlei" },
+          { lat: -22.957, lng: 14.505, name: "Sandwich Harbour", country: "纳米比亚", visit: "Ep.19", note: "沙丘入海" },
+          { lat: -21.825, lng: 15.292, name: "Spitzkoppe", country: "纳米比亚", visit: "Ep.20", note: "野营" },
+          { lat: -19.450, lng: 13.750, name: "Messum Crater", country: "纳米比亚", visit: "Ep.21–22", note: "⚠️ 爆胎" },
+          { lat: -18.855, lng: 16.329, name: "Etosha", country: "纳米比亚", visit: "Ep.23", note: "→ Caprivi" }
+        ]},
+        { filter: ["all", "south"], phase: "zm", points: [
+          { lat: -17.924, lng: 25.857, name: "Livingstone", country: "赞比亚", visit: "Ep.25", note: "Victoria Falls 侧" },
+          { lat: -13.633, lng: 32.650, name: "Chipata", country: "赞比亚", visit: "Ep.25", note: "东进马拉维" }
+        ]},
+        { filter: ["all", "east"], phase: "east", points: [
+          { lat: -12.917, lng: 34.300, name: "Lake Malawi", country: "马拉维", visit: "Ep.26", note: "湖岸" },
+          { lat: -7.766, lng: 35.700, name: "Iringa", country: "坦桑尼亚", visit: "Ep.27", note: "南坦桑" },
+          { lat: -3.386, lng: 36.683, name: "Arusha", country: "坦桑尼亚", visit: "Ep.28–29", note: "→ Zanzibar/肯尼亚" },
+          { lat: -1.292, lng: 36.822, name: "Nairobi", country: "肯尼亚", visit: "Ep.30–33", note: "Mount Kenya · Safari" },
+          { lat: 0.347, lng: 32.583, name: "Murchison Falls", country: "乌干达", visit: "Ep.35", note: "最强大瀑布" },
+          { lat: -0.968, lng: 29.692, name: "Bwindi", country: "乌干达", visit: "Ep.36", note: "西部 remote" },
+          { lat: -1.944, lng: 30.061, name: "Kigali", country: "卢旺达", visit: "Ep.37", note: "最干净？" },
+          { lat: -1.000, lng: 33.000, name: "Lake Victoria", country: "东非", visit: "Ep.38", note: "环湖 4×4" },
+          { lat: -2.333, lng: 34.833, name: "Serengeti", country: "坦桑尼亚", visit: "Ep.39–41", note: "淹水 track · 迁徙" }
+        ]},
+        { filter: ["all", "loop"], phase: "loop", points: [
+          { lat: -15.388, lng: 28.323, name: "Lusaka", country: "赞比亚", visit: "Ep.43–44", note: "燃油危机" },
+          { lat: -17.924, lng: 25.857, name: "Victoria Falls", country: "津巴布韦", visit: "Ep.44", note: "汛季洪峰" },
+          { lat: -29.083, lng: 27.167, name: "Ladybrand", country: "南非", visit: "Ep.45", note: "⚠️ 引擎重建" },
+          { lat: -29.883, lng: 28.883, name: "Maletsunyane", country: "莱索托", visit: "Ep.46", note: "瀑布" },
+          { lat: -33.224, lng: 22.027, name: "Prince Albert", country: "南非", visit: "Ep.47", note: "暴风雨山洪" }
+        ]}
+      ];
+
+      function popupHtml(p) {
+        return "<div class=\"popup-title\">" + p.name + " · " + p.country + "</div>" +
+          (p.visit ? "<div>" + p.visit + "</div>" : "") +
+          (p.note ? "<div style=\"color:#93a4bd;margin-top:4px\">" + p.note + "</div>" : "");
+      }
+
+      function renderRoute(filter) {
+        if (!map) return;
+        layerGroup.clearLayers();
+        var bounds = [];
+        var visible = routeSegments.filter(function (seg) {
+          return seg.filter.indexOf(filter) !== -1;
+        });
+        visible.forEach(function (seg, segIdx) {
+          var latlngs = seg.points.map(function (p) { return [p.lat, p.lng]; });
+          var color = phaseColors[seg.phase] || "#888";
+          if (latlngs.length >= 2) {
+            L.polyline(latlngs, {
+              color: color,
+              weight: seg.dashed ? 3 : 5,
+              opacity: 0.88,
+              dashArray: seg.dashed ? "10 8" : null
+            }).addTo(layerGroup);
+          }
+          seg.points.forEach(function (p) {
+            bounds.push([p.lat, p.lng]);
+            L.circleMarker([p.lat, p.lng], {
+              radius: 6, color: color, fillColor: color, fillOpacity: 0.9, weight: 1.5
+            }).addTo(layerGroup).bindPopup(popupHtml(p));
+          });
+          if (segIdx < visible.length - 1) {
+            var a = seg.points[seg.points.length - 1];
+            var b = visible[segIdx + 1].points[0];
+            if (a.lat !== b.lat || a.lng !== b.lng) {
+              L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
+                color: "#64748b", weight: 2, opacity: 0.5, dashArray: "6 6"
+              }).addTo(layerGroup);
+            }
+          }
+        });
+        if (bounds.length) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: filter === "prep" ? 4 : 6 });
+        }
+      }
+
+      map = L.map("route-map", { worldCopyJump: true, scrollWheelZoom: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OSM &copy; CARTO",
+        subdomains: "abcd", maxZoom: 19
+      }).addTo(map);
+      layerGroup = L.layerGroup().addTo(map);
+      document.querySelectorAll(".map-filter").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".map-filter").forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          renderRoute(btn.getAttribute("data-filter"));
+        });
+      });
+      renderRoute("all");
+      setTimeout(function () { map.invalidateSize(); }, 200);
+    })();
+  </script>
+</body>
+</html>

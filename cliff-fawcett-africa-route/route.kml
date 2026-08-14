@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Cliff Fawcett · 非洲摄影 Overland 关键点</name>
+    <description>西非 11 国 + 南部非洲 6 个月 · 粉丝整理 · 非 GPS 轨迹 · 2026-08-13</description>
+    <Folder><name>西非</name>
+      <Placemark><name>摩洛哥</name><Point><coordinates>-7.589,33.573,0</coordinates></Point></Placemark>
+      <Placemark><name>毛里塔尼亚</name><Point><coordinates>-15.958,18.073,0</coordinates></Point></Placemark>
+      <Placemark><name>塞内加尔 Sine Saloum</name><Point><coordinates>-16.589,13.833,0</coordinates></Point></Placemark>
+      <Placemark><name>尼日利亚/喀麦隆</name><Point><coordinates>8.675,9.082,0</coordinates></Point></Placemark>
+      <Placemark><name>贝宁</name><Point><coordinates>2.418,6.365,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>南部非洲</name>
+      <Placemark><name>安哥拉</name><Point><coordinates>13.234,-8.839,0</coordinates></Point></Placemark>
+      <Placemark><name>纳米 Kolmanskop</name><Point><coordinates>16.284,-26.704,0</coordinates></Point></Placemark>
+      <Placemark><name>Deadvlei</name><Point><coordinates>15.292,-24.760,0</coordinates></Point></Placemark>
+      <Placemark><name>Kruger</name><Point><coordinates>31.554,-24.988,0</coordinates></Point></Placemark>
+      <Placemark><name>莱索托</name><Point><coordinates>28.233,-29.316,0</coordinates></Point></Placemark>
+      <Placemark><name>莫桑比克</name><Point><coordinates>35.529,-15.038,0</coordinates></Point></Placemark>
+      <Placemark><name>博茨瓦纳</name><Point><coordinates>25.912,-19.995,0</coordinates></Point></Placemark>
+      <Placemark><name>Eswatini</name><Point><coordinates>31.465,-26.522,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

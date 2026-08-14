@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>HuskyRover Overland · 非洲路线关键点</name>
+    <description>粉丝整理 · 据 S.1 Ep.1–47 叙事顺序 · 非 GPS 轨迹 · 2026-08-13</description>
+    <Folder><name>接车</name>
+      <Placemark><name>开普敦</name><description>海运接 Old Lad</description><Point><coordinates>18.424,-33.925,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>南非·莱索托·博茨</name>
+      <Placemark><name>Garden Route</name><Point><coordinates>23.371,-34.052,0</coordinates></Point></Placemark>
+      <Placemark><name>Addo</name><Point><coordinates>25.747,-33.446,0</coordinates></Point></Placemark>
+      <Placemark><name>Sani Pass</name><Point><coordinates>29.494,-29.792,0</coordinates></Point></Placemark>
+      <Placemark><name>Ladybrand 修车</name><Point><coordinates>27.167,-29.083,0</coordinates></Point></Placemark>
+      <Placemark><name>Kruger</name><Point><coordinates>31.554,-24.988,0</coordinates></Point></Placemark>
+      <Placemark><name>Chobe</name><Point><coordinates>25.150,-17.816,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>纳米比亚</name>
+      <Placemark><name>Fish River Canyon</name><Point><coordinates>17.593,-27.587,0</coordinates></Point></Placemark>
+      <Placemark><name>Sossusvlei</name><Point><coordinates>15.294,-24.727,0</coordinates></Point></Placemark>
+      <Placemark><name>Etosha</name><Point><coordinates>16.329,-18.855,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>东非</name>
+      <Placemark><name>Lake Malawi</name><Point><coordinates>34.300,-12.917,0</coordinates></Point></Placemark>
+      <Placemark><name>Arusha</name><Point><coordinates>36.683,-3.386,0</coordinates></Point></Placemark>
+      <Placemark><name>Nairobi</name><Point><coordinates>36.822,-1.292,0</coordinates></Point></Placemark>
+      <Placemark><name>Murchison Falls</name><Point><coordinates>32.583,0.347,0</coordinates></Point></Placemark>
+      <Placemark><name>Serengeti</name><Point><coordinates>34.833,-2.333,0</coordinates></Point></Placemark>
+    </Folder>
+    <Folder><name>回环收尾</name>
+      <Placemark><name>Victoria Falls</name><Point><coordinates>25.857,-17.924,0</coordinates></Point></Placemark>
+      <Placemark><name>Maletsunyane Falls</name><Point><coordinates>28.883,-29.883,0</coordinates></Point></Placemark>
+      <Placemark><name>Prince Albert</name><Point><coordinates>22.027,-33.224,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>
