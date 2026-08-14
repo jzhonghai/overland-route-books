@@ -136,6 +136,66 @@
     table { width: 100%; border-collapse: collapse; min-width: 1080px; font-size: 0.92rem; }
     .visit-time { color: #fde68a; font-size: 0.86rem; white-space: nowrap; }
     .visit-est { color: var(--muted); font-size: 0.78rem; }
+    .photo-section { margin-bottom: 28px; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .photo-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+    .photo-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #0d1117;
+    }
+    .photo-cap {
+      padding: 12px 14px 14px;
+    }
+    .photo-cap .photo-place {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .photo-cap .photo-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .photo-cap .photo-meta .visit-time { display: inline-block; margin-right: 8px; }
+    .photo-feature {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .photo-feature .photo-card:first-child { grid-row: span 1; }
+    .photo-feature .photo-card img { aspect-ratio: 16 / 9; height: 100%; min-height: 200px; }
+    @media (max-width: 900px) {
+      .photo-feature { grid-template-columns: 1fr 1fr; }
+      .photo-feature .photo-card:first-child { grid-column: span 2; }
+    }
+    @media (max-width: 560px) {
+      .photo-feature { grid-template-columns: 1fr; }
+      .photo-feature .photo-card:first-child { grid-column: span 1; }
+    }
     thead th {
       position: sticky; top: 0; background: #1f2a3d;
       color: var(--muted); text-align: left;
@@ -245,6 +305,22 @@
         </div>
       </div>
     </div>
+
+    <section class="photo-section" id="photo-gallery">
+      <h2 class="section-title">📷 代表性作品（影片画面）</h2>
+      <p class="visit-est" style="margin:0 0 12px;">缩略图来自 Cliff 官方 YouTube 影片 · 点击可跳转原片 · 粉丝整理非商用</p>
+      <div class="toolbar" style="margin-bottom:14px;">
+        <label for="photo-region-filter">区域</label>
+        <select id="photo-region-filter">
+          <option value="all">全部</option>
+          <option value="west">西非</option>
+          <option value="south">南部非洲</option>
+        </select>
+      </div>
+
+      <div class="photo-feature" id="photo-feature"></div>
+      <div class="photo-grid" id="photo-grid"></div>
+    </section>
 
     <section class="map-section" id="route-map-section">
       <div class="map-header">
@@ -512,6 +588,61 @@
     }
     spotSync();
     sync();
+
+    var photoRows = [
+      { region: "west", featured: true, country: "毛里塔尼亚", place: "撒哈拉沙漠", visit: "2025-02", subject: "Unreal Sahara · 超现实沙丘", videoId: "D7D1bMoKgu8", url: "https://www.youtube.com/watch?v=D7D1bMoKgu8" },
+      { region: "south", featured: true, country: "纳米比亚", place: "Deadvlei · Kolmanskop", visit: "2025-10", subject: "Photography Dream · 红沙丘与鬼城", videoId: "8chzFLU2dA4", url: "https://www.youtube.com/watch?v=8chzFLU2dA4" },
+      { region: "south", featured: true, country: "南非", place: "Kruger NP", visit: "2026-02", subject: "5 天蹲一只花豹", videoId: "34lSuYJ3Yec", url: "https://www.youtube.com/watch?v=34lSuYJ3Yec" },
+      { region: "west", country: "摩洛哥", place: "舍夫沙万 · 撒哈拉", visit: "2025-03", subject: "色彩与 Medina 晨光", videoId: "QUp2LQfePA8", url: "https://www.youtube.com/watch?v=QUp2LQfePA8" },
+      { region: "west", country: "塞内加尔", place: "Sine Saloum Delta", visit: "2025-04", subject: "三角洲 · pirogue 与镜面水", videoId: "bvzwkw-dwYw", url: "https://www.youtube.com/watch?v=bvzwkw-dwYw" },
+      { region: "west", country: "冈比亚", place: "3 个国家公园", visit: "2025-04", subject: "黑猩猩 · 河马 · 鸟类", videoId: "_wVFHd9WTXY", url: "https://www.youtube.com/watch?v=_wVFHd9WTXY" },
+      { region: "west", country: "几内亚比绍", place: "Forgotten Coast", visit: "2025-05", subject: "无人海滩与天然泳池", videoId: "9QAUcqrjH3Y", url: "https://www.youtube.com/watch?v=9QAUcqrjH3Y" },
+      { region: "west", country: "贝宁", place: "Voodoo 文化", visit: "2025-06", subject: "仪式 · 纪实人像", videoId: "-Xm9chIUk5Y", url: "https://www.youtube.com/watch?v=-Xm9chIUk5Y" },
+      { region: "west", country: "喀麦隆", place: "Mount Cameroon", visit: "2025-07", subject: "湿季登山 · 4095 m", videoId: "qCRPQk3h9uU", url: "https://www.youtube.com/watch?v=qCRPQk3h9uU" },
+      { region: "west", country: "刚果（布）", place: "低地大猩猩", visit: "2025-08", subject: "雨林 wildlife", videoId: "P3IEqMKqibA", url: "https://www.youtube.com/watch?v=P3IEqMKqibA" },
+      { region: "south", country: "安哥拉", place: "Shipwreck Coast", visit: "2025-08", subject: "无人机 · 沉船海岸", videoId: "y1kXXglDpes", url: "https://www.youtube.com/watch?v=y1kXXglDpes" },
+      { region: "south", country: "纳米比亚", place: "Darkest Skies", visit: "2025-09", subject: "银河 · Milky Way", videoId: "QzHS6AqGzWE", url: "https://www.youtube.com/watch?v=QzHS6AqGzWE" },
+      { region: "south", country: "莱索托", place: "Sani Pass · 瀑布", visit: "2025-12", subject: "Kingdom in the Clouds", videoId: "AeCFh0wutKc", url: "https://www.youtube.com/watch?v=AeCFh0wutKc" },
+      { region: "south", country: "博茨瓦纳", place: "Okavango 湿季", visit: "2026-02", subject: "最难拍的 Safari", videoId: "RKKNb0fzy3g", url: "https://www.youtube.com/watch?v=RKKNb0fzy3g" },
+      { region: "south", country: "莫桑比克", place: "Last Wild Coast", visit: "2026-01", subject: "原始印度洋海岸", videoId: "2Vg-S1XVl4o", url: "https://www.youtube.com/watch?v=2Vg-S1XVl4o" },
+      { region: "south", country: "Eswatini", place: "Hlane · Mlilwane", visit: "2026-01", subject: "最易被忽视的小王国", videoId: "SRGXQmbWTZY", url: "https://www.youtube.com/watch?v=SRGXQmbWTZY" }
+    ];
+
+    function photoCardHtml(p) {
+      var thumb = "https://i.ytimg.com/vi/" + p.videoId + "/maxresdefault.jpg";
+      var fallback = "https://i.ytimg.com/vi/" + p.videoId + "/hqdefault.jpg";
+      var regionTag = p.region === "west" ? "西非" : "南部非洲";
+      return "<a class=\"photo-card\" data-region=\"" + p.region + "\" href=\"" + p.url + "\" target=\"_blank\" rel=\"noopener\">" +
+        "<img src=\"" + thumb + "\" alt=\"" + p.country + " · " + p.place + "\" loading=\"lazy\" " +
+        "onerror=\"this.onerror=null;this.src='" + fallback + "'\">" +
+        "<div class=\"photo-cap\">" +
+        "<div class=\"photo-place\">" + p.country + " · " + p.place + "</div>" +
+        "<div class=\"photo-meta\">" +
+        "<span class=\"visit-time\">" + p.visit + "</span>" +
+        "<span class=\"region " + p.region + "\">" + regionTag + "</span><br>" +
+        p.subject +
+        "</div></div></a>";
+    }
+
+    function renderPhotos(region) {
+      var featureHost = document.getElementById("photo-feature");
+      var gridHost = document.getElementById("photo-grid");
+      featureHost.innerHTML = "";
+      gridHost.innerHTML = "";
+      var showFeature = region === "all";
+      photoRows.forEach(function (p) {
+        if (region !== "all" && p.region !== region) return;
+        if (showFeature && p.featured) {
+          featureHost.insertAdjacentHTML("beforeend", photoCardHtml(p));
+        } else {
+          gridHost.insertAdjacentHTML("beforeend", photoCardHtml(p));
+        }
+      });
+    }
+    document.getElementById("photo-region-filter").addEventListener("change", function () {
+      renderPhotos(this.value);
+    });
+    renderPhotos("all");
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
