@@ -1,0 +1,17 @@
+const photos = [
+  { place: "乌斯怀亚 · 泛美公路终点", desc: "火地岛 3 号公路尽头标志", section: "七、世界尽头", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/ushuaia-sign.jpg", original: "陈勇-泛美公路游记-assets/ushuaia-sign.jpg", article: "http://www.mkyzty.com/" },
+  { place: "旧金山 · 金门大桥", desc: "2018-08-25 旧金山提车「小哈」", section: "一、行前与启运", region: "other", source: "guide", thumb: "陈勇-泛美公路游记-assets/golden-gate.jpg", original: "陈勇-泛美公路游记-assets/golden-gate.jpg", article: "http://www.mkyzty.com/" },
+  { place: "长城哈弗 H5", desc: "川Q·JD678「小哈」· 国产自主品牌", section: "一、行前与启运", region: "other", source: "guide", thumb: "陈勇-泛美公路游记-assets/haval-h5.svg", original: "陈勇-泛美公路游记-assets/haval-h5.svg", article: "http://www.mkyzty.com/" },
+  { place: "阿拉斯加 · 道顿公路", desc: "Dalton Highway · 泛美北段「死亡公路」", section: "二、北美段", region: "north", source: "guide", thumb: "陈勇-泛美公路游记-assets/dalton.jpg", original: "陈勇-泛美公路游记-assets/dalton.jpg", article: "http://www.mkyzty.com/" },
+  { place: "黄石国家公园", desc: "2018-11-05 黑熊追人视频抖音 614 万+播放", section: "二、北美段", region: "north", source: "guide", thumb: "陈勇-泛美公路游记-assets/yellowstone.jpg", original: "陈勇-泛美公路游记-assets/yellowstone.jpg", article: "http://www.mkyzty.com/" },
+  { place: "特奥蒂瓦坎", desc: "墨西哥城边太阳/月亮金字塔", section: "三、墨西哥", region: "central", source: "guide", thumb: "陈勇-泛美公路游记-assets/teotihuacan.jpg", original: "陈勇-泛美公路游记-assets/teotihuacan.jpg", article: "http://www.mkyzty.com/" },
+  { place: "奇琴伊察", desc: "库库尔坎金字塔", section: "三、墨西哥", region: "central", source: "guide", thumb: "陈勇-泛美公路游记-assets/chichen.jpg", original: "陈勇-泛美公路游记-assets/chichen.jpg", article: "http://www.mkyzty.com/" },
+  { place: "伯利兹 · 大蓝洞", desc: "潜水下潜约 40 m", section: "四、中美洲", region: "central", source: "guide", thumb: "陈勇-泛美公路游记-assets/blue-hole.jpg", original: "陈勇-泛美公路游记-assets/blue-hole.jpg", article: "http://www.mkyzty.com/" },
+  { place: "危地马拉 · 蒂卡尔", desc: "玛雅金字塔群", section: "四、中美洲", region: "central", source: "guide", thumb: "陈勇-泛美公路游记-assets/tikal.svg", original: "陈勇-泛美公路游记-assets/tikal.svg", article: "http://www.mkyzty.com/" },
+  { place: "哥伦比亚 · 卡塔赫纳", desc: "达连海运登陆港 · 古城", section: "五、达连隘口", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/cartagena.jpg", original: "陈勇-泛美公路游记-assets/cartagena.jpg", article: "http://www.mkyzty.com/" },
+  { place: "秘鲁 · 马丘比丘", desc: "印加文明核心", section: "六、南美洲", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/machu.jpg", original: "陈勇-泛美公路游记-assets/machu.jpg", article: "http://www.mkyzty.com/" },
+  { place: "玻利维亚 · 乌尤尼盐沼", desc: "天空之镜", section: "六、南美洲", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/uyuni.svg", original: "陈勇-泛美公路游记-assets/uyuni.svg", article: "http://www.mkyzty.com/" },
+  { place: "智利 · 百内 / 巴塔哥尼亚", desc: "Torres del Paine 方向", section: "六、南美洲", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/torres.svg", original: "陈勇-泛美公路游记-assets/torres.svg", article: "http://www.mkyzty.com/" },
+  { place: "乌斯怀亚 · 火地岛", desc: "世界尽头城市", section: "七、世界尽头", region: "south", source: "guide", thumb: "陈勇-泛美公路游记-assets/ushuaia-city.svg", original: "陈勇-泛美公路游记-assets/ushuaia-city.svg", article: "http://www.mkyzty.com/" },
+  { place: "巴西 · 里约基督像", desc: "2019-03-05 拜访中国驻里约总领馆", section: "八、延伸段", region: "other", source: "guide", thumb: "陈勇-泛美公路游记-assets/christ.jpg", original: "陈勇-泛美公路游记-assets/christ.jpg", article: "http://www.mkyzty.com/" },
+];

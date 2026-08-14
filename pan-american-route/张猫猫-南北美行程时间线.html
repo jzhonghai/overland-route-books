@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>张猫猫 · 南北美造访时间线</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #5eb3ff;
+      --accent-2: #7ee787;
+      --warn: #f0b429;
+      --south: #ff7b72;
+      --north: #79c0ff;
+      --central: #d2a8ff;
+      --other: #7ee787;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .subtitle a { color: var(--accent); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .card.highlight {
+      border-color: rgba(126, 231, 135, 0.45);
+      background: linear-gradient(135deg, rgba(126, 231, 135, 0.08) 0%, var(--panel) 100%);
+    }
+    .card.highlight .value { color: var(--accent-2); font-size: 1.35rem; }
+    .hero-highlight {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px 28px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(94, 179, 255, 0.1) 0%, rgba(126, 231, 135, 0.08) 100%);
+      border: 1px solid rgba(94, 179, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero-number {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent-2);
+      letter-spacing: -0.02em;
+    }
+    .hero-unit {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .hero-desc { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 720px; }
+    .hero-desc strong { color: var(--text); }
+    .country-tags {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .country-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .country-tag:hover,
+    .country-tag.active {
+      border-color: rgba(94, 179, 255, 0.55);
+      color: var(--accent);
+      background: rgba(94, 179, 255, 0.12);
+      text-decoration: none;
+    }
+    tbody tr.country-focus { background: rgba(94, 179, 255, 0.1); }
+    tbody tr[id^="country-"] { scroll-margin-top: 88px; }
+    tbody tr:target { background: rgba(126, 231, 135, 0.14); outline: 1px solid rgba(126, 231, 135, 0.35); }
+    .route-map {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .route-map h2 { margin: 0 0 12px; font-size: 1.1rem; color: var(--accent); }
+    .route-map figure { margin: 0; }
+    .route-map img {
+      width: 100%;
+      max-height: 720px;
+      object-fit: contain;
+      background: #0b1017;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .route-map figcaption {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .route-schematic {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .route-schematic strong { color: var(--text); }
+    .note {
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6df9b;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .sources a {
+      display: inline-block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .sources a:hover { background: var(--panel-2); text-decoration: underline; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.south { background: var(--south); }
+    .dot.north { background: var(--north); }
+    .dot.central { background: var(--central); }
+    .dot.other { background: var(--other); }
+    .table-wrap {
+      overflow: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; font-size: 0.92rem; }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d; color: var(--muted);
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(94, 179, 255, 0.06); }
+    .region {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .region.south { background: rgba(255, 123, 114, 0.15); color: #ffb4ae; }
+    .region.north { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .region.central { background: rgba(210, 168, 255, 0.15); color: #e2c7ff; }
+    .region.other { background: rgba(126, 231, 135, 0.12); color: #b7f0bd; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(240, 180, 41, 0.15); color: #f6df9b; }
+    .conf.low { background: rgba(255, 123, 114, 0.12); color: #ffb4ae; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .ref-tag { color: var(--muted); font-size: 0.84rem; }
+    .pantanal-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin: 28px 0 8px;
+      box-shadow: var(--shadow);
+    }
+    .pantanal-panel h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--accent-2); }
+    .pantanal-panel ul { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+    .pantanal-panel li { margin-bottom: 6px; }
+    .pantanal-panel .meta { margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+    .tip-detail {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.25);
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    .travel-tips-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px 22px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .travel-tips-section > h2 { margin: 0 0 6px; font-size: 1.15rem; color: var(--accent); }
+    .travel-tips-section > .tips-intro {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 920px;
+    }
+    .tip-group-title {
+      margin: 22px 0 10px;
+      font-size: 0.95rem;
+      color: var(--accent-2);
+      letter-spacing: 0.03em;
+    }
+    .tip-group-title:first-of-type { margin-top: 0; }
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .tip-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 15px;
+    }
+    .tip-card h4 { margin: 0 0 6px; font-size: 0.93rem; color: var(--text); line-height: 1.35; }
+    .tip-card .when {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      color: var(--warn);
+      background: rgba(240, 180, 41, 0.1);
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
+    .tip-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+    .tip-card .ref { margin-top: 8px; font-size: 0.78rem; color: rgba(147, 164, 189, 0.85); }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid; grid-template-columns: 130px 1fr; gap: 12px;
+      align-items: center; font-size: 0.84rem;
+    }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04); border-radius: 999px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+
+    .photo-section { margin-top: 40px; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .photo-card:hover { border-color: rgba(94, 179, 255, 0.45); }
+    .photo-card a.img-link { display: block; line-height: 0; background: #0b1017; }
+    .photo-card img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
+    .photo-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .photo-place { font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
+    .photo-desc { color: var(--muted); font-size: 0.86rem; }
+    .photo-meta { margin-top: auto; padding-top: 8px; font-size: 0.8rem; color: var(--muted); }
+    .photo-links { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 0.82rem; }
+    .photo-empty { color: var(--muted); padding: 24px; text-align: center; grid-column: 1 / -1; }
+
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .hero-highlight { grid-template-columns: 1fr; text-align: center; }
+      .hero-number { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>张猫猫 · 南北美造访时间线</h1>
+      <p class="subtitle">
+        博主：<strong>张猫猫历险记</strong>（B 站 mid: 389957251 · <a href="https://www.youtube.com/@zhangmaomao" target="_blank" rel="noopener">YouTube @zhangmaomao</a>）· 数据整理自公开视频标题与发布时间。
+        她<strong>未完成泛美公路全程自驾</strong>（2023-07 阿根廷购车后被海关扣押，乌斯怀亚→美国自驾计划取消），美洲段以<strong>背包 / 大巴 / 智利短租</strong>为主。
+        共造访 <strong>11 个美洲国家</strong> + 南极；<strong>2023-03~04 另有美国租车游</strong>（纽约→丹佛→拉斯维加斯→洛杉矶）。<strong>未经过</strong>哥伦比亚、巴拿马、哥斯达黎加、加拿大、阿拉斯加。
+      </p>
+    </header>
+
+    <section class="hero-highlight" aria-label="行程亮点">
+      <div>
+        <span class="hero-number">11</span>
+        <span class="hero-unit">个国家</span>
+      </div>
+      <p class="hero-desc">
+        2023 年初南极邮轮从<strong>乌斯怀亚</strong>登船；之后纵穿南美经智利、玻利维亚、秘鲁、厄瓜多尔，
+        2024 年飞<strong>迈阿密</strong>中转后走访古巴、墨西哥、危地马拉、伯利兹。
+        <strong>2023-03~04</strong> 自纽约起<strong>租车穷游美国约一个月</strong>（丹佛滑雪、沙漠 650 km、拉斯维加斯、洛杉矶）；2023-05 非洲久居后访美消费对比；<strong>非完整泛美公路自驾</strong>。
+      </p>
+      <div class="country-tags" id="country-tags">
+        <a class="country-tag" href="#country-argentina" data-country="argentina">🇦🇷 阿根廷</a>
+        <a class="country-tag" href="#country-uruguay" data-country="uruguay">🇺🇾 乌拉圭</a>
+        <a class="country-tag" href="#country-chile" data-country="chile">🇨🇱 智利</a>
+        <a class="country-tag" href="#country-bolivia" data-country="bolivia">🇧🇴 玻利维亚</a>
+        <a class="country-tag" href="#country-peru" data-country="peru">🇵🇪 秘鲁</a>
+        <a class="country-tag" href="#country-ecuador" data-country="ecuador">🇪🇨 厄瓜多尔</a>
+        <a class="country-tag" href="#country-usa" data-country="usa">🇺🇸 美国</a>
+        <a class="country-tag" href="#country-cuba" data-country="cuba">🇨🇺 古巴</a>
+        <a class="country-tag" href="#country-mexico" data-country="mexico">🇲🇽 墨西哥</a>
+        <a class="country-tag" href="#country-guatemala" data-country="guatemala">🇬🇹 危地马拉</a>
+        <a class="country-tag" href="#country-belize" data-country="belize">🇧🇿 伯利兹</a>
+      </div>
+    </section>
+
+    <section class="route-map" id="route-map">
+      <h2>阿根廷购车 · 泛美自驾计划受挫（BV1bX4y1a7uY）</h2>
+      <figure>
+        <a href="https://www.bilibili.com/video/BV1bX4y1a7uY" target="_blank" rel="noopener" title="查看 B 站视频">
+          <img
+            src="http://i2.hdslb.com/bfs/archive/90df71139a46508fbd1413c090ed180b69628ce1.jpg"
+            alt="张猫猫在阿根廷乌斯怀亚购买二手车 · 泛美公路自驾计划"
+            loading="eager"
+          />
+        </a>
+        <figcaption>
+          2023-07 在乌斯怀亚「贪便宜」购入二手车，计划沿泛美公路北行至美国；数日后车辆被海关扣押，自驾计划取消，改背包 / 大巴继续。
+        </figcaption>
+      </figure>
+      <div class="route-schematic">
+        <strong>路线示意（南→北）：</strong>
+        <strong>南极半岛</strong>（邮轮，乌斯怀亚登船/下船）→ <strong>乌斯怀亚</strong> → 乌拉圭日归 → 阿根廷布宜诺斯艾利斯 →
+        智利（火地岛→百内→奇洛埃→圣地亚哥→复活节岛→瓦尔帕莱索→阿塔卡马→伊基克）→
+        玻利维亚（乌尤尼→苏克雷→拉巴斯）→ 秘鲁（的的喀喀湖→库斯科→马丘比丘→Huayhuash→亚马逊）→
+        厄瓜多尔（亚马逊河船运→基多）→ <strong>飞迈阿密</strong>（非陆路穿越达连）→
+        古巴 → 墨西哥 → 危地马拉 → 伯利兹。
+        <br><strong>未经过：</strong>哥伦比亚、巴拿马、哥斯达黎加、加拿大、阿拉斯加。
+      </div>
+    </section>
+
+    <div class="cards">
+      <div class="card highlight">
+        <div class="label">造访国家</div>
+        <div class="value">11 国 + 南极</div>
+      </div>
+      <div class="card">
+        <div class="label">美洲段大致跨度</div>
+        <div class="value">2023-01 ~ 2024-12</div>
+      </div>
+      <div class="card">
+        <div class="label">交通方式</div>
+        <div class="value">背包 / 大巴 / 短租</div>
+      </div>
+      <div class="card">
+        <div class="label">记录条目</div>
+        <div class="value" id="row-count">—</div>
+      </div>
+      <div class="card">
+        <div class="label">视频封面</div>
+        <div class="value" id="photo-count">11 张</div>
+      </div>
+    </div>
+
+    <div class="sources">
+      <a href="https://space.bilibili.com/389957251" target="_blank" rel="noopener">📺 B 站主页</a>
+      <a href="https://www.youtube.com/@zhangmaomao" target="_blank" rel="noopener">▶️ YouTube 频道</a>
+      <a href="https://space.bilibili.com/389957251/channel/collectiondetail?sid=3866464" target="_blank" rel="noopener">📁 南美篇合集</a>
+      <a href="#route-map">🗺️ 路线示意</a>
+      <a href="#travel-tips">💡 旅行贴士</a>
+      <a href="#timeline">🗺️ 时间线</a>
+      <a href="#panam-cancel">🚫 自驾取消专题</a>
+      <a href="#photos">📷 视频封面（11 张）</a>
+    </div>
+
+    <div class="note">
+      <strong>时间说明：</strong>
+      「造访时间」为根据视频内容、连载顺序、标题中天数及发布日期<strong>反推的估算区间</strong>，并非博主官方行程表。
+      「视频发布」为 B 站确认日期（高置信）；二者可能相差数周至数月（剪辑滞后）。
+      置信度：高 = 有明确发布日且与内容强相关；中 = 由相邻视频与合理停留期推断；低 = 仅知大致阶段。
+      <br><strong>非泛美全程：</strong>2023-07 阿根廷购车后被海关扣押，<strong>乌斯怀亚→美国自驾计划取消</strong>，改背包 / 大巴 / 智利短租。
+      厄瓜多尔后<strong>飞迈阿密</strong>，未陆路穿越达连隘口；<strong>未造访</strong>哥伦比亚、巴拿马、哥斯达黎加、加拿大、阿拉斯加。
+      <br><strong>美国段（YouTube 已核对）：</strong>2023-03~04 从中东飞纽约后<strong>租车游</strong>纽约→科罗拉多/丹佛→沙漠→拉斯维加斯→洛杉矶（约一个月）；与泛美公路北段（育空/阿拉斯加）无关。
+    </div>
+
+    <section class="travel-tips-section" id="travel-tips">
+      <h2>景点与路线贴士 · 摘自张猫猫视频</h2>
+      <p class="tips-intro">
+        以下整理张猫猫在 B 站视频中<strong>对实际走法最有帮助</strong>的叙述：徒步线路、换汇、交通衔接与季节提醒。
+        与时间线表格中的「活动与备注」互为补充；完整上下文见<a href="https://space.bilibili.com/389957251" target="_blank" rel="noopener">B 站主页</a>及<a href="https://space.bilibili.com/389957251/channel/collectiondetail?sid=3866464" target="_blank" rel="noopener">南美篇合集</a>。
+      </p>
+
+      <h3 class="tip-group-title">南极 · 阿根廷 · 乌拉圭</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>27 天南极邮轮 · 德雷克海峡</h4>
+          <span class="when">2023-01 · 乌斯怀亚登船/下船</span>
+          <p>系列《27 天南极之旅》；生日圆梦南极洲。邮轮从乌斯怀亚出发，穿越德雷克海峡抵南极半岛——她美洲段的起笔，也是与后续陆路行程的分界点。</p>
+          <div class="ref">BV1SW4y197aF · 96后农村姑娘生日圆梦南极洲</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌斯怀亚 · 世界尽头</h4>
+          <span class="when">泛美 3 号公路终点 · 帝王蟹</span>
+          <p>《春光乍泄》灯塔打卡；泛美公路最南端标志。当地帝王蟹性价比极高，是火地岛必吃体验之一。</p>
+          <div class="ref">阿根廷篇 · 美洲大陆南面最后一个灯塔</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌拉圭 · 科洛尼亚日归</h4>
+          <span class="when">252 元乘船跨国</span>
+          <p>从阿根廷布宜诺斯艾利斯方向乘船至乌拉圭科洛尼亚，当日往返看日落——低成本「跨国」体验，无需复杂签证手续。</p>
+          <div class="ref">从阿根廷乘船出国，到乌拉圭看日落</div>
+        </article>
+        <article class="tip-card">
+          <h4>阿根廷 · 二手车与海关</h4>
+          <span class="when">2023-07 · 泛美计划受挫</span>
+          <p>乌斯怀亚「贪便宜」买二手车欲泛美北行；海关以临时进口等理由<strong>扣押车辆</strong>并面临罚款。外国人在阿购车需格外注意海关规定与 TIP 手续——她的教训见 <a href="#panam-cancel">自驾取消专题</a>。</p>
+          <div class="ref">BV1bX4y1a7uY · 贪便宜在阿根廷买了辆二手车</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">智利 · 玻利维亚</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>百内国家公园 · O 线重装</h4>
+          <span class="when">7 天 · 约 101 km</span>
+          <p>环 Torres del Paine 的 O 线，三塔、冰川、高原湖泊。需提前预订营地；重装背负与天气窗口是核心挑战——南美徒步代表作之一。</p>
+          <div class="ref">七天挑战百内 O 线 / 六天 101 公里</div>
+        </article>
+        <article class="tip-card">
+          <h4>复活节岛 · 摩艾石像</h4>
+          <span class="when">专机登岛 · 环岛骑行 42 km</span>
+          <p>从圣地亚哥飞专机登岛；摩艾石像群、火山口、海岸线。岛上可租自行车环岛约 42 km——离岛体验，非泛美陆路主线。</p>
+          <div class="ref">出发复活节岛 / 环岛骑行 42 公里</div>
+        </article>
+        <article class="tip-card">
+          <h4>阿塔卡马沙漠 · 间歇泉与盐湖</h4>
+          <span class="when">22 h 大巴 · 观星</span>
+          <p>从圣地亚哥方向乘约 22 小时大巴深入；间歇泉、南部盐湖群观火烈鸟、世界级观星条件。智利北部沙漠段精华。</p>
+          <div class="ref">深入阿塔卡马沙漠南部盐湖群</div>
+        </article>
+        <article class="tip-card">
+          <h4>伊基克 · 滑翔伞</h4>
+          <span class="when">沙漠 + 海洋 · 约 360 元</span>
+          <p>在伊基克可花约 360 元体验滑翔伞，沙漠与太平洋同框；附近有 ZOFIA 自由贸易区可顺路逛。</p>
+          <div class="ref">花360元在伊基克玩滑翔伞</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌尤尼盐湖 · 一日游</h4>
+          <span class="when">天空之镜 · 苏克雷学西语</span>
+          <p>乌尤尼盐湖经典一日游；之后在苏克雷学西班牙语、街头摆摊卖二手衣——慢旅行式停留。拉巴斯女巫市场、女性摔跤、6000 m 级 Huayna Potosí 为玻利维亚段延伸。</p>
+          <div class="ref">在玻利维亚乌尤尼盐湖一日游</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">秘鲁 · 厄瓜多尔</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>印加古道 → 马丘比丘</h4>
+          <span class="when">5 天徒步 · 报团</span>
+          <p>库斯科为基地；5 天徒步印加古道抵马丘比丘（需提前订名额）。彩虹山 5300 m 一日徒步、Huayhuash 8 天高海拔环线为秘鲁段进阶挑战。</p>
+          <div class="ref">BV1ct421g73Z · BV14f421X7Kz</div>
+        </article>
+        <article class="tip-card">
+          <h4>Huayhuash · 8 天高海拔环线</h4>
+          <span class="when">5300 m 级 · 南美顶级徒步</span>
+          <p>秘鲁 Cordillera Huayhuash 大环线，连续多日 4000–5000 m 海拔露营；与百内 O 线同属她南美重装徒步清单。</p>
+          <div class="ref">挑战南美8天高海拔大环线</div>
+        </article>
+        <article class="tip-card">
+          <h4>亚马逊河船运 · 秘鲁→厄瓜多尔</h4>
+          <span class="when">系列《人在囧途》</span>
+          <p>从伊基托斯方向<strong>坐船穿越雨林</strong>入境厄瓜多尔——非泛美公路，而是亚马逊水系慢旅行。之后 4 天 3 晚雨林团、基多赤道纪念碑等。</p>
+          <div class="ref">BV1FCzGY6Ert · 坐船穿越亚马逊去厄瓜多尔</div>
+        </article>
+        <article class="tip-card">
+          <h4>美国 · 2023 租车穷游（YouTube 系列）</h4>
+          <span class="when">2023-03~04 · 纽约 → 丹佛 → 拉斯维加斯 → 洛杉矶</span>
+          <p>自沙特飞纽约后租车约<strong>穷游一个月</strong>：丹佛与粉丝滑雪（遇暴风雪）、西南沙漠 650 km 节油、拉斯维加斯度假村费与海鲜自助、洛杉矶中国城卖艺等——<strong>非泛美纵穿</strong>，与 Mr.T/陈勇的阿拉斯加—墨西哥陆路不同。</p>
+          <div class="ref"><a href="https://www.youtube.com/@zhangmaomao" target="_blank" rel="noopener">YouTube @zhangmaomao</a> · 抵达美洲大陆 / 丹佛滑雪 / 650 km 沙漠 / 拉斯维加斯 / 穷游洛杉矶</div>
+        </article>
+        <article class="tip-card">
+          <h4>迈阿密 · 厄瓜多尔后中转</h4>
+          <span class="when">2024-06 · 飞跳达连</span>
+          <p>厄瓜多尔（钱包相机被盗、加拉帕戈斯计划受挫）后飞<strong>迈阿密</strong>休整「摆烂」——这是<strong>南美→北美/中美</strong>的航空衔接，非泛美陆路北段。另见 2023-05「非洲久居后来美」消费对比（BV1fP41197Jf）。</p>
+          <div class="ref">我在迈阿密摆烂了几天 · 来美国后发现消费落差太大</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">古巴 · 墨西哥 · 中美</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>古巴 · 黑市换汇</h4>
+          <span class="when">哈瓦那 · 中国城龙虾</span>
+          <p>抵达首日即接触黑市换汇——古巴双轨汇率下旅行者常遇话题。特立尼达可三轮去海边、加勒比徒手抓龙虾。</p>
+          <div class="ref">来古巴的第一天，黑市交易 · 古巴实现龙虾自由</div>
+        </article>
+        <article class="tip-card">
+          <h4>墨西哥 · 亡灵节</h4>
+          <span class="when">瓜纳华托 · 《寻梦环游记》</span>
+          <p>参加墨西哥最神奇节日；瓜纳华托彩色山城与亡灵节氛围。同段还有热气球、玛雅金字塔、瓦哈卡办危地马拉签证等。</p>
+          <div class="ref">我参加了墨西哥最神奇的节日</div>
+        </article>
+        <article class="tip-card">
+          <h4>伯利兹 · 大蓝洞</h4>
+          <span class="when">小飞机俯瞰 · 荒岛求生</span>
+          <p>伯利兹城乘小飞机俯瞰<strong>大蓝洞</strong>；之后在偏僻小岛与友人 3 天荒岛求生、潜水抓龙虾——中美段收官。</p>
+          <div class="ref">坐上小飞机去看大蓝洞 · 我在伯利兹实现龙虾自由啦</div>
+        </article>
+      </div>
+    </section>
+
+    <h2 class="phase-title" id="timeline">阶段概览 · 造访时间线</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="south">南美</option>
+        <option value="north">北美</option>
+        <option value="central">中美 / 加勒比</option>
+        <option value="other">其他（南极等）</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、活动…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot other"></span>南极 / 其他</span>
+      <span><span class="dot south"></span>南美</span>
+      <span><span class="dot north"></span>北美</span>
+      <span><span class="dot central"></span>中美 / 加勒比</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>活动与备注</th>
+            <th>造访时间</th>
+            <th>视频发布</th>
+            <th>置信度</th>
+            <th>参考视频</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="pantanal-panel" id="panam-cancel">
+      <h3>2023-07 · 阿根廷购车被扣 · 泛美自驾计划取消</h3>
+      <ul>
+        <li><strong>背景：</strong>2023-07 在乌斯怀亚「贪便宜」购入<strong>二手汽车</strong>，计划沿泛美公路从世界尽头<strong>自驾北行至美国</strong>（BV1bX4y1a7uY 起连载）。</li>
+        <li><strong>转折：</strong>购车后<strong>数日内车辆被阿根廷海关扣押</strong>，面临罚款；外国人在阿购车涉及临时进口（TIP）、海关申报等手续，她的案例成为「贪便宜买车」的反面教材。</li>
+        <li><strong>结果：</strong>被迫<strong>取消乌斯怀亚→美国全程自驾</strong>，交通方式切换为<strong>背包 + 长途大巴 + 智利短租</strong>，继续北上智利及后续国家。</li>
+        <li><strong>与泛美公路关系：</strong>她从未完成陈勇 / Mr.T 式的<strong>陆路纵穿</strong>；厄瓜多尔后亦<strong>飞迈阿密</strong>而非海运穿越达连隘口，故<strong>无哥伦比亚、巴拿马、哥斯达黎加</strong>记录。</li>
+        <li><strong>后续：</strong>2023-07-20 前后从火地岛入境智利，百内 O 线、复活节岛、阿塔卡马等均为<strong>非自驾</strong>方式完成。</li>
+      </ul>
+      <p class="meta">来源：<a href="https://www.bilibili.com/video/BV1bX4y1a7uY" target="_blank" rel="noopener">BV1bX4y1a7uY</a> · 贪便宜在阿根廷买了辆二手车 / 无奈取消从乌斯怀亚自驾去美国的计划</p>
+    </section>
+
+    <section class="photo-section" id="photos">
+      <h2 class="phase-title">张猫猫视频封面 · 精选地点</h2>
+      <p class="subtitle" style="margin-bottom:16px;">
+        共 <strong>11 张</strong> B 站视频封面缩略图，数据来自 <code>张猫猫-photos.js</code>。点击缩略图跳转对应 B 站视频或主页。
+      </p>
+      <div class="toolbar">
+        <label for="photo-region-filter">区域</label>
+        <select id="photo-region-filter">
+          <option value="all">全部</option>
+          <option value="south">南美</option>
+          <option value="north">北美</option>
+          <option value="central">中美 / 加勒比</option>
+          <option value="other">其他（南极等）</option>
+        </select>
+        <input type="search" id="photo-search" placeholder="搜索地点、说明…" />
+      </div>
+      <div class="photo-grid" id="photo-grid"></div>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-10 · 参考：<a href="https://space.bilibili.com/389957251" target="_blank" rel="noopener">B 站张猫猫历险记</a>、<a href="https://www.youtube.com/@zhangmaomao" target="_blank" rel="noopener">YouTube @zhangmaomao</a>（美国段 2023-03~04 已核对）。</p>
+      <p>未覆盖：哥伦比亚、巴拿马、哥斯达黎加、加拿大、阿拉斯加等（厄瓜多尔后飞迈阿密；2023-07 乌斯怀亚购车计划取消，非完整泛美自驾）。</p>
+    </footer>
+  </div>
+
+  <script src="张猫猫-photos.js"></script>
+  <script>
+    const rows = [
+      // 南极
+      { region:"other", country:"南极", place:"德雷克海峡 · 南极半岛", activity:"27 天南极邮轮（乌斯怀亚登船/下船）；系列《27天南极之旅》", visit:"2023-01-05 ~ 2023-02-01", publish:"2023-05-30 ~ 2023-06-01", conf:"mid", bvid:"BV1SW4y197aF", title:"96后农村姑娘生日圆梦南极洲",
+        tip:"乌斯怀亚登船/下船；德雷克海峡约 2 天。邮轮费用较高，需提前预订季（南半球夏季 11–3 月）。" },
+
+      // 美国 · 2023 租车系列（YouTube @zhangmaomao 核对，上传 2023-03~04）
+      { region:"north", country:"美国", place:"纽约 New York", activity:"自沙特飞抵；地铁、广式早茶、跨年、唐人街；青旅生病", visit:"2023-03-30 ~ 2023-04-05", publish:"2023-03-30 ~ 2023-04-05", conf:"high", bvid:"—", title:"抵达美洲大陆 / 纽约早茶 / 跨年 / 唐人街",
+        tip:"<strong>非泛美北段</strong>；开启约一个月美国<strong>租车穷游</strong>。" },
+      { region:"north", country:"美国", place:"科罗拉多 · 丹佛 Denver", activity:"租车遇暴风雪；Jeep 日租 ~2500 元；与粉丝滑雪；米其林答谢", visit:"2023-04-05 ~ 2023-04-14", publish:"2023-04-06 ~ 2023-04-25", conf:"high", bvid:"—", title:"丹佛滑雪 / 暴风雪 / 租吉普",
+        tip:"冬季科罗拉多高速<strong>暴风雪打滑</strong>风险高；粉丝见面+滑雪系列。" },
+      { region:"north", country:"美国", place:"西南沙漠 · 650 km 自驾", activity:"单人单车为省钱穿越沙漠段", visit:"2023-04-15 前后", publish:"2023-04-15", conf:"high", bvid:"—", title:"沙漠里行驶650公里只是为了省钱",
+        tip:"西南沙漠长途；非达顿/66 号公路专题。" },
+      { region:"north", country:"美国", place:"拉斯维加斯 Las Vegas", activity:"五星海鲜自助；度假村费（resort fee）", visit:"2023-04-20 前后", publish:"2023-04-20", conf:"high", bvid:"—", title:"拉斯维加斯海鲜自助 / 度假费",
+        tip:"拉斯维加斯隐藏<strong>度假村费</strong>推高住宿成本。" },
+      { region:"north", country:"美国", place:"洛杉矶 Los Angeles", activity:"五人穷游街头美食；中国城卖艺；$15 能买什么", visit:"2023-04-16 ~ 2023-04-25", publish:"2023-04-16 ~ 2023-04-25", conf:"high", bvid:"—", title:"穷游洛杉矶 / 中国城卖艺 / 舞狮",
+        tip:"洛杉矶中国城消费向记录；约一个月后离美。" },
+      { region:"north", country:"美国", place:"（2023-05 另访）", activity:"非洲久居近一年后访美，消费落差", visit:"2023-05-20 ~ 2023-05-27", publish:"2023-05-27", conf:"high", bvid:"BV1fP41197Jf", title:"来美国后发现消费落差太大",
+        tip:"与 3–4 月租车游为<strong>不同节点</strong>；强调非洲 vs 美国物价对比。" },
+
+      // 阿根廷 + 乌拉圭
+      { region:"south", country:"阿根廷", place:"乌斯怀亚 Ushuaia", activity:"世界尽头；帝王蟹；泛美 3 号公路终点；《春光乍泄》灯塔", visit:"2023-02-01 ~ 2023-02-10", publish:"2023-07 ~ 2023-08", conf:"mid", bvid:"—", title:"美洲大陆南面最后一个灯塔",
+        tip:"泛美公路<strong>最南端打卡</strong>；当地帝王蟹性价比极高，火地岛必吃体验。" },
+      { region:"south", country:"乌拉圭", place:"科洛尼亚 / 对岸口岸（日归）", activity:"花 252 元乘船跨国，看日落", visit:"2023-06-25 ~ 2023-07-05", publish:"2023-07（南美篇前段）", conf:"mid", bvid:"—", title:"从阿根廷乘船出国，到乌拉圭看日落",
+        tip:"布宜诺斯艾利斯方向乘船至科洛尼亚，<strong>当日往返</strong>即可；低成本跨国体验。" },
+      { region:"south", country:"阿根廷", place:"布宜诺斯艾利斯周边 / 巴塔哥尼亞入口", activity:"球迷主题牛排馆、柴火 Asado 烤肉", visit:"2023-06-28 ~ 2023-07-08", publish:"2023-07", conf:"mid", bvid:"—", title:"肉食者之国阿根廷" },
+      { region:"south", country:"阿根廷", place:"乌斯怀亚", activity:"购买二手车，计划泛美公路北上行；7-11 起连载", visit:"2023-07-08 ~ 2023-07-11", publish:"2023-07-11", conf:"high", bvid:"BV1bX4y1a7uY", title:"贪便宜在阿根廷买了辆二手车",
+        tip:"外国人在阿购车需办 TIP 等手续；<strong>贪便宜买车</strong>风险极高——详见 <a href=\"#panam-cancel\">自驾取消专题</a>。" },
+      { region:"south", country:"阿根廷", place:"海关 / 乌斯怀亚", activity:"车辆被海关扣押、面临罚款；取消自驾去美国", visit:"2023-07-11 ~ 2023-07-20", publish:"2023-07（续集）", conf:"high", bvid:"BV1bX4y1a7uY", title:"无奈取消从乌斯怀亚自驾去美国的计划",
+        tip:"车辆被海关扣押后改<strong>背包 + 大巴</strong>；泛美全程自驾梦想在此终结。" },
+
+      // 智利
+      { region:"south", country:"智利", place:"火地岛 → 巴塔哥尼亚入口", activity:"从世界尽头入境智利，当地美食", visit:"2023-07-20 ~ 2023-07-25", publish:"2023-07 ~ 2023-08", conf:"mid", bvid:"—", title:"从世界尽头抵达另一个世界尽头，入境智利" },
+      { region:"south", country:"智利", place:"百内国家公园 Torres del Paine", activity:"7 天 O 线重装徒步（约 101 km）；三塔、冰川", visit:"2023-07-25 ~ 2023-08-05", publish:"2023-08 ~ 2023-09", conf:"mid", bvid:"—", title:"七天挑战百内 O 线 / 六天 101 公里",
+        tip:"O 线约 101 km、7 天；需提前订营地。重装背负 + 巴塔哥尼亚天气是核心挑战。" },
+      { region:"south", country:"智利", place:"蓬塔阿雷纳斯 / 麦哲伦海峡", activity:"原始森林徒步，感受海峡风", visit:"2023-08-05 ~ 2023-08-12", publish:"2023-08 ~ 2023-09", conf:"mid", bvid:"—", title:"徒步智利原始森林，感受麦哲伦海峡的风" },
+      { region:"south", country:"智利", place:"蒙特港 Puerto Montt", activity:"渡轮赴海鲜市场；误入居民岛", visit:"2023-08-12 ~ 2023-08-20", publish:"2023-09", conf:"mid", bvid:"—", title:"在智利蒙特港，乘摆渡船去海鲜市场" },
+      { region:"south", country:"智利", place:"奇洛埃岛 Chiloé", activity:"智利最大岛屿；爬山、小众景点", visit:"2023-08-20 ~ 2023-09-05", publish:"2023-09-11 ~ 2023-09-17", conf:"mid", bvid:"—", title:"来到智利最大岛屿奇洛埃" },
+      { region:"south", country:"智利", place:"圣地亚哥 Santiago", activity:"地铁遇窃；街头艺术；申请玻利维亚签证", visit:"2023-09-05 ~ 2023-09-20", publish:"2023-09 ~ 2023-11", conf:"mid", bvid:"—", title:"抵达智利圣地亚哥 / 申请玻利维亚签证",
+        tip:"可在圣地亚哥办<strong>玻利维亚签证</strong>；地铁注意防盗。" },
+      { region:"south", country:"智利", place:"复活节岛 Easter Island", activity:"飞专机登岛；摩艾石像；环岛骑行 42 km", visit:"2023-09-20 ~ 2023-10-05", publish:"2023-09 ~ 2023-10", conf:"mid", bvid:"—", title:"出发复活节岛 / 环岛骑行 42 公里",
+        tip:"从圣地亚哥飞专机；岛上可<strong>租自行车环岛约 42 km</strong>。离岛体验，非陆路泛美主线。" },
+      { region:"south", country:"智利", place:"瓦尔帕莱索 Valparaíso", activity:"涂鸦之城漫步、街头艺术", visit:"2023-10-05 ~ 2023-10-12", publish:"2023-10", conf:"mid", bvid:"—", title:"在涂鸦之城—瓦尔帕莱索" },
+      { region:"south", country:"智利", place:"阿塔卡马沙漠 Atacama", activity:"22h 大巴；间歇泉；观星；南部盐湖自驾看火烈鸟", visit:"2023-10-12 ~ 2023-10-28", publish:"2023-10-30", conf:"high", bvid:"—", title:"深入阿塔卡马沙漠南部盐湖群",
+        tip:"约 <strong>22 h 大巴</strong>深入；间歇泉、南部盐湖火烈鸟、世界级<strong>观星</strong>条件。" },
+      { region:"south", country:"智利", place:"伊基克 Iquique", activity:"滑翔伞（沙漠+海洋）；ZOFIA 自由贸易区", visit:"2023-10-28 ~ 2023-11-12", publish:"2023-11-13 ~ 2023-11-29", conf:"high", bvid:"—", title:"花360元在伊基克玩滑翔伞",
+        tip:"约 <strong>360 元</strong>体验滑翔伞，沙漠与太平洋同框；附近有 ZOFIA 自由贸易区。" },
+
+      // 玻利维亚
+      { region:"south", country:"玻利维亚", place:"入境 · 拉巴斯 / 高原", activity:"入境；长途旅行经验分享", visit:"2023-11-12 ~ 2023-11-20", publish:"2023-11-30", conf:"high", bvid:"—", title:"抵达新国家玻利维亚" },
+      { region:"south", country:"玻利维亚", place:"乌尤尼 Uyuni", activity:"盐湖一日游", visit:"2023-11-20 ~ 2023-11-28", publish:"2023-12-01", conf:"high", bvid:"—", title:"在玻利维亚乌尤尼盐湖一日游",
+        tip:"经典<strong>天空之镜</strong>一日游；雨季（约 12–2 月）水面反射最佳。" },
+      { region:"south", country:"玻利维亚", place:"苏克雷 Sucre", activity:"学西班牙语；街头摆摊卖二手衣；菜市场", visit:"2023-11-28 ~ 2023-12-15", publish:"2023-12-02 ~ 2023-12-13", conf:"high", bvid:"—", title:"在玻利维亚苏克雷摆摊卖二手衣服",
+        tip:"苏克雷为<strong>学西班牙语</strong>热门城市；她以摆摊卖二手衣慢旅行。" },
+      { region:"south", country:"玻利维亚", place:"拉巴斯 La Paz", activity:"女巫市场；女性摔跤；Huayna Potosí 6000m 级雪山", visit:"2023-12-01 ~ 2023-12-20", publish:"2023-12", conf:"mid", bvid:"—", title:"女巫市场 / 女性摔跤 / 6000米雪山",
+        tip:"女巫市场（Mercado de las Brujas）、女子摔跤表演；Huayna Potosí 为 6000 m 级入门雪山。" },
+      { region:"south", country:"玻利维亚 / 秘鲁", place:"的的喀喀湖 Titicaca", activity:"夜巴抵达；湖景住宿；浮岛民族", visit:"2023-12-15 ~ 2023-12-28", publish:"2023-12 ~ 2024-01", conf:"mid", bvid:"—", title:"深夜抵达的的喀喀湖" },
+
+      // 秘鲁
+      { region:"south", country:"秘鲁", place:"入境 / 海关", activity:"海关盘查（误为「国际红通」）", visit:"2023-12-28 ~ 2024-01-05", publish:"2024-01 ~ 2024-04", conf:"mid", bvid:"—", title:"秘鲁海关经历" },
+      { region:"south", country:"秘鲁", place:"普诺 / 的的喀喀湖", activity:"芦苇浮岛；湖上生活", visit:"2024-01-05 ~ 2024-01-15", publish:"2024-02 ~ 2024-04", conf:"mid", bvid:"—", title:"探秘秘鲁浮岛民族" },
+      { region:"south", country:"秘鲁", place:"库斯科 Cusco", activity:"集市、街头美食；印加文明；古法巧克力", visit:"2024-01-15 ~ 2024-02-15", publish:"2024-05-08", conf:"high", bvid:"BV1ct421g73Z", title:"探索神秘的印加文明",
+        tip:"库斯科为<strong>印加古道 / 马丘比丘</strong>基地；需适应 3400 m 海拔。" },
+      { region:"south", country:"秘鲁", place:"印加古道 → 马丘比丘", activity:"5 天徒步印加古道；马丘比丘（报团/汉服插曲）", visit:"2024-02-15 ~ 2024-03-05", publish:"2024-06-01", conf:"high", bvid:"BV14f421X7Kz", title:"在秘鲁报团出发马丘比丘",
+        tip:"5 天徒步印加古道需<strong>提前订名额</strong>（每日限额）；报团方式完成。" },
+      { region:"south", country:"秘鲁", place:"彩虹山 Vinicunca", activity:"5300m 海拔一日徒步", visit:"2024-03-05 ~ 2024-03-15", publish:"2024-04 ~ 2024-05", conf:"mid", bvid:"—", title:"挑战秘鲁5300米彩虹山",
+        tip:"海拔 <strong>5300 m</strong> 一日徒步；高反风险，建议库斯科适应后再去。" },
+      { region:"south", country:"秘鲁", place:"Huayhuash 环线", activity:"8 天高海拔徒步大环线", visit:"2024-03-15 ~ 2024-04-05", publish:"2024-04 ~ 2024-05", conf:"mid", bvid:"—", title:"挑战南美8天高海拔大环线",
+        tip:"Cordillera Huayhuash <strong>8 天环线</strong>，连续 4000–5000 m 露营——南美顶级重装徒步之一。" },
+      { region:"south", country:"秘鲁", place:"伊基托斯 Iquitos", activity:"贝伦市场；4 天 3 晚亚马逊雨林探险", visit:"2024-04-05 ~ 2024-04-25", publish:"2024-05 ~ 2024-10", conf:"mid", bvid:"—", title:"伊基托斯贝伦市场 / 亚马逊探险",
+        tip:"伊基托斯为<strong>无公路可达</strong>的亚马逊门户；贝伦市场体验独特。" },
+
+      // 厄瓜多尔
+      { region:"south", country:"秘鲁 → 厄瓜多尔", place:"亚马逊河船运", activity:"坐船穿越雨林入境厄瓜多尔（系列《人在囧途》）", visit:"2024-04-25 ~ 2024-05-10", publish:"2024-11-26", conf:"high", bvid:"BV1FCzGY6Ert", title:"坐船穿越亚马逊去厄瓜多尔第一天",
+        tip:"<strong>坐船穿越雨林</strong>入境——非泛美公路，亚马逊水系慢旅行；系列《人在囧途》。" },
+      { region:"south", country:"厄瓜多尔", place:"亚马逊深处", activity:"4 天 3 晚雨林团；原始部落、巫医", visit:"2024-05-10 ~ 2024-05-25", publish:"2024-11 ~ 2024-12", conf:"mid", bvid:"BV1FCzGY6Ert", title:"亚马逊四天三晚探险" },
+      { region:"south", country:"厄瓜多尔", place:"户外基地", activity:"漂流、高空滑索、溪降、攀岩", visit:"2024-05-25 ~ 2024-06-10", publish:"2024-11 ~ 2024-12", conf:"mid", bvid:"—", title:"厄瓜多尔版漂流 / 高空滑索" },
+      { region:"south", country:"厄瓜多尔", place:"基多 Quito", activity:"赤道纪念碑（立鸡蛋）；市区一日游", visit:"2024-06-10 ~ 2024-06-20", publish:"2024-11 ~ 2024-12", conf:"mid", bvid:"—", title:"独自在厄瓜多尔基多一日游",
+        tip:"赤道纪念碑可体验「立鸡蛋」；基多为高原首都，注意适应海拔。" },
+      { region:"south", country:"厄瓜多尔", place:"加拉帕戈斯（计划）", activity:"观蓝脚鲣鸟途中钱包相机被盗，行程受挫", visit:"2024-06-20 ~ 2024-06-25", publish:"2024-11 ~ 2024-12", conf:"low", bvid:"—", title:"钱包手机相机在厄瓜多尔都被偷了",
+        tip:"加拉帕戈斯需另订机票船票；她在赴岛途中<strong>钱包相机被盗</strong>，计划受挫。" },
+
+      // 北美
+      { region:"north", country:"美国", place:"迈阿密 Miami", activity:"厄瓜多尔后中转休整；「摆烂」", visit:"2024-06-25 ~ 2024-07-05", publish:"2024-06 ~ 2024-07", conf:"mid", bvid:"—", title:"我在迈阿密摆烂了几天",
+        tip:"厄瓜多尔后<strong>飞迈阿密</strong>中转——南美→中美/北美的航空衔接，<strong>非泛美陆路</strong>北段。" },
+
+      // 加勒比
+      { region:"central", country:"古巴", place:"哈瓦那 Havana", activity:"黑市换汇；中国城龙虾", visit:"2024-07-05 ~ 2024-07-15", publish:"2024-07 ~ 2024-09", conf:"mid", bvid:"—", title:"来古巴的第一天，黑市交易",
+        tip:"古巴<strong>双轨汇率</strong>下黑市换汇是旅行者常遇话题；首日即接触黑市交易。" },
+      { region:"central", country:"古巴", place:"特立尼达 Trinidad", activity:"三轮去海边；加勒比徒手抓龙虾", visit:"2024-07-15 ~ 2024-07-25", publish:"2024-07 ~ 2024-09", conf:"mid", bvid:"—", title:"古巴实现龙虾自由" },
+
+      // 墨西哥
+      { region:"central", country:"墨西哥", place:"入境城市", activity:"开启背包；早餐被偷护照钱包", visit:"2024-07-25 ~ 2024-08-05", publish:"2024-08 ~ 2024-10", conf:"mid", bvid:"—", title:"抵达墨西哥啦" },
+      { region:"central", country:"墨西哥", place:"瓜纳华托 / 亡灵节相关", activity:"《寻梦环游记》场景；神奇节日", visit:"2024-10-25 ~ 2024-11-05", publish:"2024-10 ~ 2024-11", conf:"mid", bvid:"—", title:"我参加了墨西哥最神奇的节日",
+        tip:"瓜纳华托彩色山城 + <strong>亡灵节</strong>——《寻梦环游记》原型场景；11 月初前后为旺季。" },
+      { region:"central", country:"墨西哥", place:"热气球区域（中部）", activity:"热气球体验", visit:"2024-11-01 ~ 2024-11-08", publish:"2024-10 ~ 2024-11", conf:"mid", bvid:"—", title:"墨西哥的热气球都成了精" },
+      { region:"central", country:"墨西哥", place:"玛雅遗址", activity:"金字塔（对比埃及金字塔）", visit:"2024-11-05 ~ 2024-11-12", publish:"2024-10 ~ 2024-11", conf:"mid", bvid:"—", title:"探索神秘的墨西哥金字塔" },
+      { region:"central", country:"墨西哥", place:"瓦哈卡 Oaxaca", activity:"办危地马拉签证；玛雅桑拿；奇葩市场", visit:"2024-11-08 ~ 2024-11-18", publish:"2024-10 ~ 2024-11", conf:"mid", bvid:"—", title:"在瓦哈卡如何快速获得危地马拉签证",
+        tip:"可在<strong>瓦哈卡快速办危地马拉签证</strong>，为进入中美做准备。" },
+
+      // 危地马拉 + 伯利兹
+      { region:"central", country:"危地马拉", place:"边境 / 境内", activity:"边境发高烧；独自进入「危险国家」叙事", visit:"2024-11-18 ~ 2024-11-25", publish:"2024-11 ~ 2024-12", conf:"mid", bvid:"—", title:"我独自来到危地马拉" },
+      { region:"central", country:"伯利兹", place:"伯利兹城 · 大蓝洞", activity:"小飞机俯瞰大蓝洞", visit:"2024-11-25 ~ 2024-12-02", publish:"2024-11 ~ 2025-01", conf:"mid", bvid:"—", title:"坐上小飞机去看大蓝洞",
+        tip:"伯利兹城乘<strong>小飞机俯瞰大蓝洞</strong>——中美段标志性体验。" },
+      { region:"central", country:"伯利兹", place:"偏僻小岛", activity:"与友人 3 天荒岛求生、潜水抓龙虾", visit:"2024-12-02 ~ 2024-12-10", publish:"2024-12 ~ 2025-01", conf:"mid", bvid:"—", title:"我在伯利兹实现龙虾自由啦" },
+
+      // 年度节点
+      { region:"other", country:"—", place:"年度总结", activity:"《再见2023，从南极流浪到北极》", visit:"2023 全年回顾", publish:"2024-02-10", conf:"high", bvid:"—", title:"再见2023年，从南极流浪到了北极" },
+    ];
+
+    const regionLabel = { south:"南美", north:"北美", central:"中美/加勒比", other:"其他" };
+
+    const COUNTRY_SPECIAL = {
+      "玻利维亚 / 秘鲁": ["bolivia", "peru"],
+      "秘鲁 → 厄瓜多尔": ["peru", "ecuador"],
+    };
+    const COUNTRY_SINGLE = {
+      "南极": "antarctica",
+      "阿根廷": "argentina",
+      "乌拉圭": "uruguay",
+      "智利": "chile",
+      "玻利维亚": "bolivia",
+      "秘鲁": "peru",
+      "厄瓜多尔": "ecuador",
+      "美国": "usa",
+      "古巴": "cuba",
+      "墨西哥": "mexico",
+      "危地马拉": "guatemala",
+      "伯利兹": "belize",
+    };
+
+    function getCountryKeys(country) {
+      if (COUNTRY_SPECIAL[country]) return COUNTRY_SPECIAL[country];
+      if (COUNTRY_SINGLE[country]) return [COUNTRY_SINGLE[country]];
+      return [];
+    }
+
+    function rowMatchesCountry(row, countryKey) {
+      return countryKey && getCountryKeys(row.country).includes(countryKey);
+    }
+
+    let activeCountry = null;
+    const countryAnchorsPlaced = new Set();
+
+    function setActiveCountryTag(key) {
+      document.querySelectorAll(".country-tag").forEach(tag => {
+        tag.classList.toggle("active", key && tag.dataset.country === key);
+      });
+    }
+
+    function clearCountryFilter() {
+      activeCountry = null;
+      setActiveCountryTag(null);
+    }
+
+    function jumpToCountry(key, updateHash = true) {
+      activeCountry = key;
+      document.getElementById("region-filter").value = "all";
+      document.getElementById("search").value = "";
+      setActiveCountryTag(key);
+      renderTable("all", "", key);
+      if (updateHash) history.replaceState(null, "", `#country-${key}`);
+      requestAnimationFrame(() => {
+        document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const row = document.getElementById(`country-${key}`);
+        if (row) row.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function renderTable(filterRegion = "all", q = "", countryKey = activeCountry) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      countryAnchorsPlaced.clear();
+      let i = 0;
+      const query = q.trim().toLowerCase();
+
+      rows.forEach(row => {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (countryKey && !rowMatchesCountry(row, countryKey)) return;
+        const hay = [row.country, row.place, row.activity, row.tip, row.title, row.visit, row.publish].filter(Boolean).join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const tr = document.createElement("tr");
+        if (countryKey) tr.classList.add("country-focus");
+        const keys = getCountryKeys(row.country);
+        for (const k of keys) {
+          if (!countryAnchorsPlaced.has(k)) {
+            tr.id = `country-${k}`;
+            countryAnchorsPlaced.add(k);
+            break;
+          }
+        }
+        const bvidCell = row.bvid && row.bvid !== "—"
+          ? `<a href="https://www.bilibili.com/video/${row.bvid}" target="_blank" rel="noopener">${row.bvid}</a>`
+          : "—";
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td><span class="region ${row.region}">${regionLabel[row.region]}</span></td>
+          <td>${row.country}</td>
+          <td>${row.place}</td>
+          <td>${row.activity}${row.tip ? `<div class="tip-detail">${row.tip}</div>` : ""}</td>
+          <td>${row.visit}</td>
+          <td>${row.publish}</td>
+          <td><span class="conf ${row.conf}">${row.conf === "high" ? "高" : row.conf === "mid" ? "中" : "低"}</span></td>
+          <td>${bvidCell}<br><span class="ref-tag">${row.title || row.ref || ""}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      const tagEl = countryKey ? document.querySelector(`.country-tag[data-country="${countryKey}"]`) : null;
+      const label = countryKey
+        ? `${i} 条 · ${(tagEl?.textContent || countryKey).trim()}`
+        : `${i} 条`;
+      document.getElementById("row-count").textContent = label;
+    }
+
+    function renderBar() {
+      const phases = [
+        { name:"南极邮轮", start:"2023-01-05", end:"2023-02-01", color:"#7ee787" },
+        { name:"阿根廷/乌拉圭", start:"2023-02-01", end:"2023-07-20", color:"#ff7b72" },
+        { name:"智利", start:"2023-07-20", end:"2023-11-12", color:"#ff9f69" },
+        { name:"玻利维亚", start:"2023-11-12", end:"2023-12-28", color:"#ffb86c" },
+        { name:"秘鲁", start:"2023-12-28", end:"2024-04-25", color:"#f0b429" },
+        { name:"厄瓜多尔", start:"2024-04-25", end:"2024-06-25", color:"#d2a8ff" },
+        { name:"美/古/墨/危/伯", start:"2024-06-25", end:"2024-12-10", color:"#79c0ff" },
+      ];
+      const min = new Date("2023-01-01").getTime();
+      const max = new Date("2025-01-01").getTime();
+      const span = max - min;
+      const bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(p => {
+        const s = new Date(p.start).getTime();
+        const e = new Date(p.end).getTime();
+        const left = ((s - min) / span) * 100;
+        const width = Math.max(((e - s) / span) * 100, 1.5);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${p.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="left:${left}%;width:${width}%;background:${p.color}"></div></div>
+        `;
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("region-filter").addEventListener("change", e => {
+      clearCountryFilter();
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", e => {
+      clearCountryFilter();
+      renderTable(document.getElementById("region-filter").value, e.target.value);
+    });
+
+    document.querySelectorAll(".country-tag").forEach(tag => {
+      tag.addEventListener("click", e => {
+        e.preventDefault();
+        const key = tag.dataset.country;
+        if (activeCountry === key) {
+          clearCountryFilter();
+          history.replaceState(null, "", "#timeline");
+          renderTable();
+          return;
+        }
+        jumpToCountry(key);
+      });
+    });
+
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.match(/^#country-([a-z-]+)$/);
+      if (m) jumpToCountry(m[1], false);
+      else if (location.hash === "#timeline" || location.hash === "") clearCountryFilter();
+    });
+
+    function renderPhotos(filterRegion = "all", q = "") {
+      const grid = document.getElementById("photo-grid");
+      if (!grid || typeof photos === "undefined") return;
+      grid.innerHTML = "";
+      let i = 0;
+      const query = q.trim().toLowerCase();
+      photos.forEach(p => {
+        if (filterRegion !== "all" && p.region !== filterRegion) return;
+        const hay = [p.place, p.desc, p.section, regionLabel[p.region] || ""].join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const card = document.createElement("article");
+        card.className = "photo-card";
+        card.innerHTML = `
+          <a class="img-link" href="${p.original}" target="_blank" rel="noopener" title="查看视频">
+            <img src="${p.thumb}" alt="${p.place} · ${p.desc}" loading="lazy" />
+          </a>
+          <div class="photo-body">
+            <div class="photo-place"><span class="region ${p.region}">${regionLabel[p.region]}</span> ${p.place}</div>
+            <div class="photo-desc">${p.desc}</div>
+            <div class="photo-meta">${p.section}</div>
+            <div class="photo-links">
+              <a href="${p.article}" target="_blank" rel="noopener">B 站 · ${p.section}</a>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      if (!i) {
+        grid.innerHTML = '<div class="photo-empty">没有匹配的照片，请调整筛选或搜索词。</div>';
+      }
+      const pc = document.getElementById("photo-count");
+      if (pc) pc.textContent = (filterRegion === "all" && !query) ? photos.length + " 张" : i + " / " + photos.length + " 张";
+    }
+
+    document.getElementById("photo-region-filter")?.addEventListener("change", e => {
+      renderPhotos(e.target.value, document.getElementById("photo-search").value);
+    });
+    document.getElementById("photo-search")?.addEventListener("input", e => {
+      renderPhotos(document.getElementById("photo-region-filter").value, e.target.value);
+    });
+
+    renderBar();
+    renderTable();
+    renderPhotos();
+    const hashCountry = location.hash.match(/^#country-([a-z-]+)$/);
+    if (hashCountry) jumpToCountry(hashCountry[1], false);
+  </script>
+</body>
+</html>

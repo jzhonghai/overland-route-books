@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>泛美公路 · 华人纵穿路书</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #79c0ff;
+      --accent-2: #ff9f43;
+      --border: #334155;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 50%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 64px; }
+    h1 { margin: 0 0 8px; font-size: 1.85rem; }
+    .subtitle { color: var(--muted); margin-bottom: 28px; font-size: 0.95rem; max-width: 720px; }
+    .subtitle a { color: var(--accent); }
+    .grid { display: grid; gap: 14px; }
+    a.card {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    a.card:hover { border-color: var(--accent); background: rgba(121, 192, 255, 0.06); }
+    a.card.featured {
+      border-color: rgba(255, 159, 67, 0.45);
+      background: linear-gradient(135deg, rgba(255, 159, 67, 0.08) 0%, var(--panel) 100%);
+    }
+    a.card.featured:hover { border-color: var(--accent-2); }
+    .card h2 { margin: 0 0 6px; font-size: 1.1rem; color: var(--accent); }
+    a.card.featured h2 { color: var(--accent-2); }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(121, 192, 255, 0.12);
+      color: #b6dcff;
+    }
+    .tag.orange { background: rgba(255, 159, 67, 0.15); color: #ffc896; }
+    footer { margin-top: 36px; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>泛美公路 · 华人纵穿路书</h1>
+    <p class="subtitle">
+      Mr.T、陈勇、张猫猫、大橙子四人美洲路线整理：时间线表格、四人对比、外链视频/原文。
+      数据来自公开游记与 YouTube/B 站视频标题 · <a href="../index.html">← 返回路书总目录</a>
+    </p>
+
+    <div class="grid">
+      <a class="card featured" href="泛美公路三人对比.html">
+        <h2>四人对比表</h2>
+        <p>国家/景点 × Mr.T / 陈勇 / 张猫猫 / 大橙子 · 是否去过 + 一句评价 · 可筛选搜索</p>
+        <span class="tag orange">推荐入口</span>
+        <span class="tag">对比</span>
+      </a>
+      <a class="card" href="Mr.T-泛美公路游记.html">
+        <h2>Mr.T · 泛美公路</h2>
+        <p>2021–2022 · Acura MDX · 17 国 · 费尔班克斯南下 · 美卡论坛原文整理</p>
+        <span class="tag">完整纵穿</span>
+      </a>
+      <a class="card" href="陈勇-泛美公路游记.html">
+        <h2>陈勇 · 勇走天涯</h2>
+        <p>2018–2019 · 哈弗 H5 · 死马镇→乌斯怀亚 · 16 国 + 巴西延伸</p>
+        <span class="tag">完整纵穿</span>
+      </a>
+      <a class="card" href="张猫猫-南北美行程时间线.html">
+        <h2>张猫猫 · 南北美</h2>
+        <p>2023–2024 · 背包/大巴 · 11 国 · 未完成泛美自驾纵穿</p>
+        <span class="tag">部分</span>
+      </a>
+      <a class="card" href="大橙子-泛美公路游记.html">
+        <h2>大橙子 · 绿牌纵穿美洲</h2>
+        <p>2024–2025 · 星途瑶光 C-DM 苏A 绿牌 · 洛杉矶起 · 2025-08 挑战完成</p>
+        <span class="tag orange">绿牌 PHEV</span>
+      </a>
+    </div>
+
+    <footer>
+      <p><a href="../index.html">陆路环球路书总目录</a> ·
+        <a href="https://github.com/jzhonghai/overland-route-books/tree/main/pan-american-route">GitHub 本目录</a></p>
+    </footer>
+  </div>
+</body>
+</html>

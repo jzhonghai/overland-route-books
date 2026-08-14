@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr.T · 泛美公路造访时间线</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #5eb3ff;
+      --accent-2: #7ee787;
+      --warn: #f0b429;
+      --south: #ff7b72;
+      --north: #79c0ff;
+      --central: #d2a8ff;
+      --other: #7ee787;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .subtitle a { color: var(--accent); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .card.highlight {
+      border-color: rgba(126, 231, 135, 0.45);
+      background: linear-gradient(135deg, rgba(126, 231, 135, 0.08) 0%, var(--panel) 100%);
+    }
+    .card.highlight .value { color: var(--accent-2); font-size: 1.35rem; }
+    .hero-highlight {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px 28px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(94, 179, 255, 0.1) 0%, rgba(126, 231, 135, 0.08) 100%);
+      border: 1px solid rgba(94, 179, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero-number {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent-2);
+      letter-spacing: -0.02em;
+    }
+    .hero-unit {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .hero-desc { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 720px; }
+    .hero-desc strong { color: var(--text); }
+    .country-tags {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .country-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .country-tag:hover,
+    .country-tag.active {
+      border-color: rgba(94, 179, 255, 0.55);
+      color: var(--accent);
+      background: rgba(94, 179, 255, 0.12);
+      text-decoration: none;
+    }
+    tbody tr.country-focus { background: rgba(94, 179, 255, 0.1); }
+    tbody tr[id^="country-"] { scroll-margin-top: 88px; }
+    tbody tr:target { background: rgba(126, 231, 135, 0.14); outline: 1px solid rgba(126, 231, 135, 0.35); }
+    .route-map {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .route-map h2 { margin: 0 0 12px; font-size: 1.1rem; color: var(--accent); }
+    .route-map figure { margin: 0; }
+    .route-map img {
+      width: 100%;
+      max-height: 720px;
+      object-fit: contain;
+      background: #0b1017;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .route-map figcaption {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .note {
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6df9b;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .sources a {
+      display: inline-block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .sources a:hover { background: var(--panel-2); text-decoration: underline; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.south { background: var(--south); }
+    .dot.north { background: var(--north); }
+    .dot.central { background: var(--central); }
+    .dot.other { background: var(--other); }
+    .table-wrap {
+      overflow: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; font-size: 0.92rem; }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d; color: var(--muted);
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(94, 179, 255, 0.06); }
+    .region {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .region.south { background: rgba(255, 123, 114, 0.15); color: #ffb4ae; }
+    .region.north { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .region.central { background: rgba(210, 168, 255, 0.15); color: #e2c7ff; }
+    .region.other { background: rgba(126, 231, 135, 0.12); color: #b7f0bd; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(240, 180, 41, 0.15); color: #f6df9b; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .ref-tag { color: var(--muted); font-size: 0.84rem; white-space: nowrap; }
+    .pantanal-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin: 28px 0 8px;
+      box-shadow: var(--shadow);
+    }
+    .pantanal-panel h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--accent-2); }
+    .pantanal-panel ul { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+    .pantanal-panel li { margin-bottom: 6px; }
+    .pantanal-panel .meta { margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+    .tip-detail {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.25);
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    .travel-tips-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px 22px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .travel-tips-section > h2 { margin: 0 0 6px; font-size: 1.15rem; color: var(--accent); }
+    .travel-tips-section > .tips-intro {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 920px;
+    }
+    .tip-group-title {
+      margin: 22px 0 10px;
+      font-size: 0.95rem;
+      color: var(--accent-2);
+      letter-spacing: 0.03em;
+    }
+    .tip-group-title:first-of-type { margin-top: 0; }
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .tip-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 15px;
+    }
+    .tip-card h4 { margin: 0 0 6px; font-size: 0.93rem; color: var(--text); line-height: 1.35; }
+    .tip-card .when {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      color: var(--warn);
+      background: rgba(240, 180, 41, 0.1);
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
+    .tip-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+    .tip-card .ref { margin-top: 8px; font-size: 0.78rem; color: rgba(147, 164, 189, 0.85); }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid; grid-template-columns: 130px 1fr; gap: 12px;
+      align-items: center; font-size: 0.84rem;
+    }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04); border-radius: 999px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+
+    .photo-section { margin-top: 40px; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .photo-card:hover { border-color: rgba(94, 179, 255, 0.45); }
+    .photo-card a.img-link { display: block; line-height: 0; background: #0b1017; }
+    .photo-card img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
+    .photo-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .photo-place { font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
+    .photo-desc { color: var(--muted); font-size: 0.86rem; }
+    .photo-meta { margin-top: auto; padding-top: 8px; font-size: 0.8rem; color: var(--muted); }
+    .photo-links { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 0.82rem; }
+    .photo-empty { color: var(--muted); padding: 24px; text-align: center; grid-column: 1 / -1; }
+
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .hero-highlight { grid-template-columns: 1fr; text-align: center; }
+      .hero-number { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Mr.T · 泛美公路造访时间线</h1>
+      <p class="subtitle">
+        作者：<strong>Mr.T</strong>（美卡论坛 / 美国信用卡指南读者投稿）· 单人单车 · <strong>2008 Acura MDX</strong> · 美国绿卡 ·
+        全程自驾造访 <strong>17 个国家</strong>（美、加 + 拉美 15 国）· 近 10 万公里。
+        2021 年 9 月初从阿拉斯加<strong>费尔班克斯</strong>南下，2022 年 7 月抵乌斯怀亚，之后延伸巴西。
+        数据整理自其 2022-12-17 发表的《<a href="https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/" target="_blank" rel="noopener">泛美公路自驾指南</a>》。
+        <strong>未走死马镇/道顿公路北端</strong>，但此前单独走过 Dempster Highway 抵北冰洋岸。
+      </p>
+    </header>
+
+    <section class="hero-highlight" aria-label="行程亮点">
+      <div>
+        <span class="hero-number">17</span>
+        <span class="hero-unit">个国家</span>
+      </div>
+      <p class="hero-desc">
+        从纽约出发，经加拿大育空/阿拉斯加、墨西哥与中美七国，海运穿越达连隘口后纵穿南美至<strong>乌斯怀亚</strong>，再北上巴西。
+        原文 §2 有陆路入境记录的拉美国家共 <strong>15 个</strong>，加上美国、加拿大合计 <strong>17 国</strong>（不含仅路过的巴拉圭边境区域）。
+      </p>
+      <div class="country-tags" id="country-tags">
+        <a class="country-tag" href="#country-usa" data-country="usa">🇺🇸 美国</a>
+        <a class="country-tag" href="#country-canada" data-country="canada">🇨🇦 加拿大</a>
+        <a class="country-tag" href="#country-mexico" data-country="mexico">🇲🇽 墨西哥</a>
+        <a class="country-tag" href="#country-belize" data-country="belize">🇧🇿 伯利兹</a>
+        <a class="country-tag" href="#country-guatemala" data-country="guatemala">🇬🇹 危地马拉</a>
+        <a class="country-tag" href="#country-el-salvador" data-country="el-salvador">🇸🇻 萨尔瓦多</a>
+        <a class="country-tag" href="#country-honduras" data-country="honduras">🇭🇳 洪都拉斯</a>
+        <a class="country-tag" href="#country-nicaragua" data-country="nicaragua">🇳🇮 尼加拉瓜</a>
+        <a class="country-tag" href="#country-costa-rica" data-country="costa-rica">🇨🇷 哥斯达黎加</a>
+        <a class="country-tag" href="#country-panama" data-country="panama">🇵🇦 巴拿马</a>
+        <a class="country-tag" href="#country-colombia" data-country="colombia">🇨🇴 哥伦比亚</a>
+        <a class="country-tag" href="#country-ecuador" data-country="ecuador">🇪🇨 厄瓜多尔</a>
+        <a class="country-tag" href="#country-peru" data-country="peru">🇵🇪 秘鲁</a>
+        <a class="country-tag" href="#country-bolivia" data-country="bolivia">🇧🇴 玻利维亚</a>
+        <a class="country-tag" href="#country-chile" data-country="chile">🇨🇱 智利</a>
+        <a class="country-tag" href="#country-argentina" data-country="argentina">🇦🇷 阿根廷</a>
+        <a class="country-tag" href="#country-brazil" data-country="brazil">🇧🇷 巴西</a>
+      </div>
+    </section>
+
+    <section class="route-map" id="route-map">
+      <h2>Mr.T 手绘路线图（原文 §1.1）</h2>
+      <figure>
+        <a href="Mr.T-泛美公路游记-assets/photo-71a5dcacd3fd.jpeg" title="查看原图">
+          <img
+            src="Mr.T-泛美公路游记-assets/photo-71a5dcacd3fd.jpeg"
+            alt="Mr.T 泛美公路手绘路线图：纽约—育空/阿拉斯加—墨西哥—中美—达连海运—南美—乌斯怀亚—巴西"
+            loading="eager"
+          />
+        </a>
+        <figcaption>
+          摘自原文《泛美公路自驾指南》§1.1。彩色线条为实际驾车路线：北端含育空/阿拉斯加预备段，南端抵乌斯怀亚后折返进入巴西（圣保罗结束）。
+          巴拿马—哥伦比亚之间无公路，需集装箱海运（达连隘口）。
+        </figcaption>
+      </figure>
+    </section>
+
+    <div class="cards">
+      <div class="card highlight">
+        <div class="label">造访国家</div>
+        <div class="value">17 国</div>
+      </div>
+      <div class="card">
+        <div class="label">纵穿核心段</div>
+        <div class="value">2021-09 ~ 2022-07</div>
+      </div>
+      <div class="card">
+        <div class="label">全程（含纽约/巴西）</div>
+        <div class="value">2021-07 ~ 2022-10+</div>
+      </div>
+      <div class="card">
+        <div class="label">总里程 / 花费</div>
+        <div class="value">~10 万 km · ~$4 万+</div>
+      </div>
+      <div class="card">
+        <div class="label">记录条目</div>
+        <div class="value" id="row-count">—</div>
+      </div>
+      <div class="card">
+        <div class="label">摄影作品</div>
+        <div class="value" id="photo-count">96 张</div>
+      </div>
+    </div>
+
+    <div class="sources">
+      <a href="https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/" target="_blank" rel="noopener">📄 美国信用卡指南（原文）</a>
+      <a href="https://www.uscardforum.com/t/topic/94086" target="_blank" rel="noopener">💬 美卡论坛 · 泛美公路指南</a>
+      <a href="https://www.uscardforum.com/t/topic/102168" target="_blank" rel="noopener">🐊 美卡论坛 · 潘塔纳尔湿地（另文）</a>
+      <a href="#route-map">🗺️ 手绘路线图</a>
+      <a href="#travel-tips">💡 旅行贴士</a>
+      <a href="#timeline">🗺️ 时间线</a>
+      <a href="#pantanal">🐊 潘塔纳尔专题</a>
+      <a href="#photos">📷 摄影作品（96 张 · 本地）</a>
+    </div>
+
+    <div class="note">
+      <strong>时间说明：</strong>
+      带具体月份的边境入境记录（如「2022-02 入境伯利兹」）来自原文<strong>§2 各国出入境情况汇总</strong>，置信度<strong>高</strong>。
+      纽约/育空/景点段为原文<strong>§1.1 路线图</strong>与<strong>§3 景点介绍</strong>的叙述顺序推断，置信度<strong>中</strong>。
+      「原文发表」：泛美指南为 <strong>2022-12-17</strong>；潘塔纳尔专文为 <strong>2022-08-24</strong>。
+      表格「原文章节」列标注出处章节，完整链接见页首来源按钮。达连海运约 <strong>$1,500</strong> 拼箱、交车至取车约两周，见 §1.5。
+      <br><strong>加拿大停留较久（约 2021-08～12）：</strong>非边境受阻，而是原文 §1.1 设计的<strong>泛美南下前北美深度段</strong>——2021 年 8 月边境开放后进育空/阿拉斯加（Dempster、Denali 等季节窗口在 8–9 月）；9 月初 Fairbanks 才是纵穿计时起点，随后回<strong>温哥华朋友处</strong>作基地，边<strong>远程工作</strong>（§1.8）边详走 BC/AB（10 月 3 号公路秋色、12 月观鹰等）；12 月才沿 PCH 进墨西哥。路线本身<strong>两次穿越加拿大</strong>，且北美段车险仍有效、路况好，作者有意慢游。
+      <br><strong>未造访：</strong>加拉帕戈斯群岛、复活节岛等需乘机的离岛景点——Mr.T 全程<strong>单车陆路</strong>为主，厄瓜多尔段走基多附近火山（§3.14），智利段走巴塔哥尼亚/火地岛陆路（§3.18–§3.19），原文均未记录登岛行程。
+    </div>
+
+    <section class="travel-tips-section" id="travel-tips">
+      <h2>景点与路线贴士 · 摘自原文 §3</h2>
+      <p class="tips-intro">
+        以下整理 Mr.T 在《泛美公路自驾指南》中<strong>对实际走法最有帮助</strong>的叙述：最佳季节、推荐方向、沿途小镇/观景点与路况提醒。
+        与时间线表格中的「活动与备注」互为补充；完整上下文见<a href="https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/" target="_blank" rel="noopener">原文</a>。
+      </p>
+
+      <h3 class="tip-group-title">北美 · 加拿大 / 阿拉斯加</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>Dempster Highway · 育空 → 西北地区</h4>
+          <span class="when">8 月底 · 苔原秋色最佳</span>
+          <p>自驾必走：比费尔班克斯向北的道顿公路更能<strong>实抵北冰洋岸</strong>。8 月底苔原红/黄/绿、雪山、蓝天组合极美。全程碎石但路况好；入口至 Eagle Plains 很长无人区，才有加油站与住宿。攻略常说要带两个备胎，作者认为普通轿车也能走。</p>
+          <div class="ref">§3.1</div>
+        </article>
+        <article class="tip-card">
+          <h4>Denali Highway · 阿拉斯加 8 号公路</h4>
+          <span class="when">Labor Day（劳动节）前后 · 窗口极窄</span>
+          <p>对时间要求很紧。作者 4 天内走了两次，第二次颜色明显变暗。前段柏油、后段碎石不难，轿车可通行。</p>
+          <div class="ref">§3.2</div>
+        </article>
+        <article class="tip-card">
+          <h4>Katmai 国家公园观熊</h4>
+          <span class="when">Homer 报团 · 小飞机</span>
+          <p>从 Homer 报团，5 人小飞机<strong>直接降海滩</strong>。棕熊在河流入海口抓鱼，鱼太多懒得理人，可离得很近。</p>
+          <div class="ref">§3.3</div>
+        </article>
+        <article class="tip-card">
+          <h4>Calgary → Vancouver · 3 号公路秋色</h4>
+          <span class="when">10 月初 · 洛基山西侧正当时</span>
+          <p>作者 10 月初走：卡尔加里附近已一片凄凉，但<strong>洛基山西侧那端正是好时候</strong>。从东向西、贴美加边境往温哥华方向开，途经 Creston、Stagleap Provincial Park、Castlegar、Osoyoos 等小镇，秋色都不错。</p>
+          <div class="ref">§3.4</div>
+        </article>
+        <article class="tip-card">
+          <h4>BC 99 号海天公路 · Eagle Run Vista Point</h4>
+          <span class="when">12 月起 · 观白头鹰</span>
+          <p>温哥华北部 99 号常规观鹰点。每年 12 月开始白头鹰不少，挑个好天气一般能看到很多。</p>
+          <div class="ref">§3.5</div>
+        </article>
+        <article class="tip-card">
+          <h4>Banff → Jasper · 冰原大道</h4>
+          <span class="when">经典线 · 作者略述</span>
+          <p>加拿大自驾常识级景观公路，作者标注「算是常识，略」——但仍是 BC/AB 段核心动线之一。</p>
+          <div class="ref">§3.0</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">中美 · 墨西哥与中美洲</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>Baja · Magdalena Bay 观灰鲸</h4>
+          <span class="when">2–3 月 · 产仔季</span>
+          <p>巨大海湾，灰鲸每年 2–3 月来此产仔。四人小船可很近地摸鲸，鲸也爱与人类互动。<strong>约 $450/船/天</strong>，海上 4–5 小时。作者包两天：第一天摸鲸，第二天练熟无人机起降后航拍。小镇偏落后，旅馆饭馆勉强够用，小馆 taco 不错。</p>
+          <div class="ref">§3.6</div>
+        </article>
+        <article class="tip-card">
+          <h4>墨西哥中部古城三角</h4>
+          <span class="when">瓜纳华托 · San Miguel · 莫雷利亚</span>
+          <p>瓜纳华托、San Miguel 更偏旅游，满街游客店铺；<strong>莫雷利亚更生活化</strong>，殖民老城保存完整，像走在欧洲街面。</p>
+          <div class="ref">§3.7</div>
+        </article>
+        <article class="tip-card">
+          <h4>特奥蒂瓦坎金字塔</h4>
+          <span class="when">避开正午 · 不推荐热气球</span>
+          <p>墨西哥城边热门点。作者中午到游人如织；后来发现<strong>早上有热气球</strong>，但建议少坐——不可控、风险高（作者在卡帕多西亚坐过一次即觉不安全，当地隔几年就有事故新闻）。</p>
+          <div class="ref">§3.8</div>
+        </article>
+        <article class="tip-card">
+          <h4>玛雅金字塔群 · 怎么串</h4>
+          <span class="when">Uxmal · Palenque · Tikal · Toniná</span>
+          <p>除奇琴伊察外：Uxmal 圆形金字塔、Palenque 巴加尔大帝陵墓、Tikal 城市群、Toniná 玛雅最后一块纪念碑——逛完基本齐活。<strong>Uxmal 与奇琴伊察可一起</strong>；Tikal 常从伯利兹一日游；Palenque 建议从 Villahermosa 去，Toniná 从 San Cristóbal 去（位置偏、人少）。</p>
+          <div class="ref">§3.9</div>
+        </article>
+        <article class="tip-card">
+          <h4>安提瓜 · 双火山徒步（Fuego）</h4>
+          <span class="when">跟团 1 天去 · 住 1 夜 · 第 2 天回</span>
+          <p>较推荐：危地马拉城坐车到安提古报团即可；也可自带帐篷自助。Fuego 隔一会儿喷一次，<strong>夜间看很震撼</strong>。缺点：住宿差、夜里冷，作者扛相机拍照一度抖到险些失温。</p>
+          <div class="ref">§3.9 安提瓜</div>
+        </article>
+        <article class="tip-card">
+          <h4>Masaya 火山坑 · 马那瓜</h4>
+          <span class="when">傍晚 · 看岩浆</span>
+          <p>马那瓜开车 20 多分钟；停车场修到火山口边，停车即见。推荐<strong>傍晚去</strong>：天暗后清楚看到岩浆流动，光线也适合拍照。</p>
+          <div class="ref">§3.10</div>
+        </article>
+        <article class="tip-card">
+          <h4>圣何塞 → Turrialba 火山 · 东向山路</h4>
+          <span class="when">自驾一日游</span>
+          <p>多数游客报河流团看鳄鱼/鸟/蛙，或躺海滩。若能自驾，作者更推荐从首都向东：蜿蜒山路（部分土路）、成片甘蔗地、彩色农田块、火山背景——值得一日的 road trip。</p>
+          <div class="ref">§3.11</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">南美 · 哥伦比亚至阿根廷</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>麦德林 → 咖啡三角</h4>
+          <span class="when">沿考卡河向南</span>
+          <p>三省交界绵延山区，有点像国内云贵大山。以 Manizales、Pereira、Armenia 为中心，可报咖啡园、品当地咖啡——作者在此才发现咖啡可像茶叶一样沏成<strong>透彻的饮料</strong>。Salento 近 200 年古镇 + Valle del Cocora 高棕榈谷在同一条线。</p>
+          <div class="ref">§3.12</div>
+        </article>
+        <article class="tip-card">
+          <h4>Barichara · Villa de Leyva</h4>
+          <span class="when">历史小镇 · 偏旅游化</span>
+          <p>红白色建筑群保存较完整。若去过国内云南各类古镇，能想象其形态——开发健全，满街饭馆与纪念品店，基本吃旅游饭。</p>
+          <div class="ref">§3.13</div>
+        </article>
+        <article class="tip-card">
+          <h4>基多周边火山 · 三站</h4>
+          <span class="when">除加拉帕戈斯外 · 厄瓜多尔首选陆路</span>
+          <p><strong>Quilotoa</strong> 火山口湖，规模堪比萨尔瓦多圣安娜火山口；<strong>Cotopaxi</strong> 厄第二高峰，车至 ~4600 m 停车场，再爬 200 m 到 4800 m 观景台，基多出发一天来回；<strong>Chimborazo</strong> 最高峰，车至 4800 m 营地，人可再上至 5100 m。气候怪：4600 m 大门处风大站不住，4800 m 反而风和日丽。</p>
+          <div class="ref">§3.14</div>
+        </article>
+        <article class="tip-card">
+          <h4>Lima → Huaraz · 雪山之路</h4>
+          <span class="when">0 → 3000 m · 「南美版川藏线」</span>
+          <p>作者认为南美雪山仅次于 Patagonia。先沿海边 1 号公路北到 Paramonga，走 16 号盘山，经 Conococha 转 3N 北行——雪山一排排，像走川藏线。Huaraz 户外枢纽，规模/海拔类似康定；时间紧可开车去 Laguna Paron、Laguna de Llanganuco，高山湖翠蓝值得一去。</p>
+          <div class="ref">§3.15</div>
+        </article>
+        <article class="tip-card">
+          <h4>Maras 盐田 · Moray 梯田 · 非常规回程</h4>
+          <span class="when">库斯科 / 马丘比丘常规一日游之外</span>
+          <p>常规报团一日可达。作者自驾从梯田出来<strong>没走常规回头路</strong>，继续沿土路翻山到 Pachar，沿乌鲁班巴河公路到 Urubamba——金色麦田与远处雪山呼应，山上景色不错。</p>
+          <div class="ref">§3.16</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌尤尼 → San Pedro de Atacama · 高原穿越</h4>
+          <span class="when">泛美全程最难 · 单人需谨慎</span>
+          <p>出乌尤尼至 San Cristóbal 仍柏油，之后 ~300 km 无人区，土路+沙地；Google 地图极不准，需前人路线截图。大坑巨石限速 &lt;40 km/h，沙地跟车辙。经 Laguna Colorada 火烈鸟、Eduardo Avaroa 雪山湖、Laguna Blanca 小羊驼；全程 4000 m+，难度高于国内阿里线。出境智利后 20 km 从 4000 m 速降至 2000 m，像新藏线。</p>
+          <div class="ref">§3.17</div>
+        </article>
+        <article class="tip-card">
+          <h4>阿根廷 Patagonia · Ruta 40</h4>
+          <span class="when">内乌肯 → 乌斯怀亚 · 冬季作者未徒步</span>
+          <p>范围极大，整体<strong>很平</strong>、车速快；精华在安第斯边境。Bariloche 湖区「小瑞士」；El Chaltén / El Calafate 与智利百内同属顶级徒步区。40 号公路大多柏油，<strong>例外：Gdor. Gregores → El Calafate 间 Lago Cardiel 泥路</strong>——泥潭像溜冰，原驼等野生动物常横穿公路（作者调侃：撞了拖回去让饭馆炖，味道很棒）。</p>
+          <div class="ref">§3.18</div>
+        </article>
+        <article class="tip-card">
+          <h4>火地岛 · 乌斯怀亚</h4>
+          <span class="when">一天两次过关 · 麦哲伦轮渡</span>
+          <p>从阿根廷本土去乌斯怀亚须穿智利：一天内两次海关，四格表格依次盖阿/智海关与移民局章。麦哲伦海峡要轮渡（作者疫情期间等近 1 小时）。冬季冰雪路面需谨慎。过智利再入阿后，沿 Lago Fagnano 走 3 号公路向西进山。乌斯怀亚多为南极出发港；<strong>Tierra del Fuego 国家公园有 3 号公路尽头</strong>可开车打卡。未去复活节岛（需飞，不在陆路线上）。</p>
+          <div class="ref">§3.19</div>
+        </article>
+        <article class="tip-card">
+          <h4>Puerto Madryn · 岸观鲸</h4>
+          <span class="when">不必出海</span>
+          <p>与阿拉斯加、墨西哥等地需坐船不同，<strong>坐岸边即可</strong>——最近时鲸离岸仅 7–8 m。海滨旅游城市，吃住方便；附近 Valdes 半岛可看多种动物。</p>
+          <div class="ref">§3.20</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">巴西延伸</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>Ouro Preto · 欧鲁普雷图</h4>
+          <span class="when">贝洛哈里桑塔南 1 小时</span>
+          <p>作者称<strong>整个南美最震撼的古城</strong>：山谷两侧老房、多座大教堂；有规模的小城，没那么旅游化。</p>
+          <div class="ref">§3.22</div>
+        </article>
+        <article class="tip-card">
+          <h4>里约 → 桑托斯 · BR-101 海岸公路</h4>
+          <span class="when">经 Paraty 世界遗产小镇</span>
+          <p>风景堪比加州 1 号公路，但沿线城市建设远逊。中途 Paraty 为葡萄牙殖民地风格小镇；规模比 Ouro Preto 小、更偏旅游。</p>
+          <div class="ref">§3.23</div>
+        </article>
+      </div>
+    </section>
+
+    <h2 class="phase-title" id="timeline">阶段概览 · 造访时间线</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="north">北美</option>
+        <option value="central">中美洲</option>
+        <option value="south">南美洲</option>
+        <option value="other">准备/延伸</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、活动、章节…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot other"></span>准备 / 巴西延伸</span>
+      <span><span class="dot north"></span>北美</span>
+      <span><span class="dot central"></span>中美洲</span>
+      <span><span class="dot south"></span>南美洲</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>活动与备注</th>
+            <th>造访时间</th>
+            <th>原文发表</th>
+            <th>置信度</th>
+            <th>原文章节</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="pantanal-panel" id="pantanal">
+      <h3>潘塔纳尔湿地 · 另文摘要（2022-08-24）</h3>
+      <ul>
+        <li><strong>位置：</strong>巴西西南部马托格罗索州（北）与南马托格罗索州（南），西接玻利维亚；约 25 万 km²，中心海拔 ~150 m，雨季汇成广阔水泡子。</li>
+        <li><strong>门户城市：</strong>库亚巴 Cuiabá（北线起点）、大坎普 Campo Grande（南线）、Bonito（河漂/岩洞/观鸟小镇）。</li>
+        <li><strong>北线核心：</strong>库亚巴 → 若夫里港 Porto Jofre，沿圣罗伦索河 Safari；路侧早晚可见鳄鱼、美洲豹、水豚、沼泽鹿、大食蚁兽、南美貘等。</li>
+        <li><strong>Bonito：</strong>Buraco das Araras 金刚鹦鹉深坑；Lagoa Misteriosa 极深水潭；河水清澈可浮潜观鱼。</li>
+        <li><strong>南线：</strong>Miranda 沿米兰达河乘船，作者认为不如北线核心。</li>
+        <li><strong>贴士：</strong>Lodge 全包约 $2K/人·4 晚；库亚巴拼团更划算；巴西英语普及率高于其他拉美国家；鳄鱼曾跳起试图咬无人机。</li>
+      </ul>
+      <p class="meta">来源：<a href="https://www.uscardforum.com/t/topic/102168" target="_blank" rel="noopener">美卡论坛 · 抛砖引玉，推荐一个在巴西适合观看野生动物的地方</a></p>
+    </section>
+
+    <section class="photo-section" id="photos">
+      <h2 class="phase-title">Mr.T 摄影作品 · 拍摄地点</h2>
+      <p class="subtitle" style="margin-bottom:16px;">
+        共 <strong>96 张</strong>（泛美指南 69 张 + 潘塔纳尔另文 27 张），均已下载至本地
+        <code>Mr.T-泛美公路游记-assets/</code>，离线可浏览。按原文章节标注<strong>拍摄地</strong>；点击缩略图查看本地原图。
+      </p>
+      <div class="toolbar">
+        <label for="photo-region-filter">区域</label>
+        <select id="photo-region-filter">
+          <option value="all">全部</option>
+          <option value="north">北美</option>
+          <option value="central">中美洲</option>
+          <option value="south">南美洲</option>
+          <option value="other">准备/延伸</option>
+        </select>
+        <input type="search" id="photo-search" placeholder="搜索拍摄地、说明、章节…" />
+      </div>
+      <div class="photo-grid" id="photo-grid"></div>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-10 · 参考：Mr.T《泛美公路自驾指南》（2022-12-17）及《潘塔纳尔湿地》（2022-08-24）。</p>
+      <p>与陈勇差异：Mr.T 从费尔班克斯南下（非死马镇）；持绿卡；单人；达连海运攻略在中文圈最为详尽之一。</p>
+    </footer>
+  </div>
+
+  <script src="Mr.T-photos.js"></script>
+  <script>
+    const SRC = "https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/";
+    const FORUM = "https://www.uscardforum.com/t/topic/94086";
+    const PUBLISH = "2022-12-17";
+    const PANTANAL = "https://www.uscardforum.com/t/topic/102168";
+    const PANTANAL_PUBLISH = "2022-08-24";
+
+    const rows = [
+      // 准备 / 纽约起
+      { region:"other", country:"美国", place:"纽约 → 威斯康辛", activity:"美洲穿越起点；远程工作停留", visit:"2021-07", publish:PUBLISH, conf:"high", ref:"§1.1 路线图" },
+      { region:"north", country:"加拿大/美国", place:"班夫 · 育空 · 阿拉斯加", activity:"2021-08 加边境开放后西穿班夫，直奔育空与阿拉斯加", visit:"2021-08", publish:PUBLISH, conf:"high", ref:"§1.1 路线图" },
+      { region:"north", country:"加拿大", place:"Dempster Highway", activity:"育空→西北地区碎石路，实抵北冰洋岸", visit:"2021-08 ~ 09", publish:PUBLISH, conf:"mid", ref:"§3.1",
+        tip:"8 月底最佳：苔原红/黄/绿 + 雪山 + 蓝天。入口至 Eagle Plains 长无人区才有油/住宿；碎石路况好，轿车可行（攻略常建议双备胎）。" },
+      { region:"north", country:"美国·阿拉斯加", place:"Denali Highway · Katmai", activity:"8 号公路 · Homer 小飞机海滩观熊", visit:"2021-08 ~ 09", publish:PUBLISH, conf:"mid", ref:"§3.2 ~ §3.3",
+        tip:"Denali Hwy：<strong>Labor Day 前后</strong>窗口极窄，作者 4 天内走两次、第二次已明显褪色。Katmai：Homer 5 人小飞机降海滩，棕熊在河口抓鱼，可很近。" },
+      { region:"north", country:"美国·阿拉斯加", place:"费尔班克斯 Fairbanks", activity:"2021-09 从 Fairbanks 正式南下（泛美纵穿计时起点）", visit:"2021-09 初", publish:PUBLISH, conf:"high", ref:"§1.1 · 开篇" },
+      { region:"north", country:"加拿大", place:"温哥华 · BC/AB 省", activity:"Fairbanks 南下至温哥华友处；以温哥华为中心详走 BC/AB 公路", visit:"2021-09 ~ 11", publish:PUBLISH, conf:"high", ref:"§1.1 路线图",
+        tip:"停留较久：<strong>远程工作基地</strong>（§1.8）+ 等 10 月秋色 / 12 月观鹰等季节窗口；非泛美主线赶进度，而是 BC/AB 慢游。" },
+      { region:"north", country:"加拿大", place:"Calgary → Vancouver 3号公路", activity:"洛基山西侧秋色 · Creston / Castlegar / Osoyoos", visit:"2021-10", publish:PUBLISH, conf:"mid", ref:"§3.4",
+        tip:"10 月初：卡尔加里附近已凄凉，<strong>洛基山西侧正当时</strong>。贴美加边境自东向西往温哥华，经 Creston、Stagleap Provincial Park、Castlegar、Osoyoos，秋色都不错。" },
+      { region:"north", country:"加拿大", place:"BC 99 号 · Eagle Run", activity:"海天公路观白头鹰", visit:"2021-11 ~ 12", publish:PUBLISH, conf:"mid", ref:"§3.5",
+        tip:"Eagle Run Vista Point 为常规观鹰点；<strong>12 月起</strong>白头鹰很多，好天气一般能见到不少。" },
+      { region:"north", country:"加拿大", place:"Banff → Jasper 冰原大道", activity:"经典景观公路", visit:"2021 秋", publish:PUBLISH, conf:"mid", ref:"§3.0 冰原大道",
+        tip:"作者称「常识级」景观线，略述但仍是 BC/AB 核心动线。" },
+      { region:"north", country:"美国 → 墨西哥", place:"西海岸 1 号公路 PCH", activity:"2021-12 沿 PCH 南下进入墨西哥", visit:"2021-12", publish:PUBLISH, conf:"high", ref:"§1.1 路线图" },
+
+      // 墨西哥
+      { region:"central", country:"墨西哥", place:"蒂华纳 Tijuana", activity:"入关未办 FFM 入境卡，折返海关补办（约 1h）", visit:"2021-12", publish:PUBLISH, conf:"high", ref:"§2.1 墨西哥" },
+      { region:"central", country:"墨西哥", place:"Baja · La Paz", activity:"南下才发现需 TIP；La Paz 海路边境补办；押金 ~$400+", visit:"2021-12 ~ 2022-01", publish:PUBLISH, conf:"high", ref:"§2.1 墨西哥" },
+      { region:"central", country:"墨西哥", place:"Baja · Magdalena Bay", activity:"灰鲸产仔 · 四人小船近距互动", visit:"2022-01 ~ 02", publish:PUBLISH, conf:"mid", ref:"§3.6 观鲸",
+        tip:"<strong>2–3 月</strong>灰鲸进湾产仔；$450/船/天，海上 4–5 h，可摸鲸。小镇落后、旅馆少，小馆 taco 当食堂。" },
+      { region:"central", country:"墨西哥", place:"中部古城三角", activity:"瓜纳华托 · San Miguel · 莫雷利亚", visit:"2022-01 ~ 02", publish:PUBLISH, conf:"mid", ref:"§3.7",
+        tip:"前两者更旅游；<strong>莫雷利亚更生活化</strong>，殖民老城完整，像欧洲街面。" },
+      { region:"central", country:"墨西哥", place:"特奥蒂瓦坎", activity:"墨西哥城边金字塔", visit:"2022-01 ~ 02", publish:PUBLISH, conf:"mid", ref:"§3.8",
+        tip:"中午极挤；早上虽有热气球但<strong>不建议坐</strong>（不可控，卡帕多西亚等地隔几年就有事故）。" },
+      { region:"central", country:"墨西哥", place:"奇琴伊察 · Uxmal · Palenque", activity:"玛雅遗址群 · Toniná", visit:"2022-01 ~ 02", publish:PUBLISH, conf:"mid", ref:"§3.9 玛雅金字塔",
+        tip:"Uxmal+奇琴可一起；Tikal 常伯利兹一日游；Palenque 从 Villahermosa、Toniná 从 San Cristóbal 去（偏、人少）。" },
+      { region:"central", country:"墨西哥", place:"西部 Baja → 东部坎昆", activity:"在墨停留 2 个月+，几乎走遍全国；数十次检查站未遇索贿", visit:"2021-12 ~ 2022-02", publish:PUBLISH, conf:"high", ref:"§1.9 · §2.1" },
+
+      // 中美洲（边境日期来自 §2）
+      { region:"central", country:"伯利兹", place:"陆路口岸", activity:"绿卡免签；PCR $50；TIP 免费；需政府认可旅行保险", visit:"2022-02 入境", publish:PUBLISH, conf:"high", ref:"§2.2 伯利兹" },
+      { region:"central", country:"危地马拉", place:"陆路口岸 · 安提瓜", activity:"签证 · 安提瓜双火山徒步", visit:"2022-02 入境", publish:PUBLISH, conf:"high", ref:"§2.3 · §3.10",
+        tip:"危城报团：1 天去、住 1 夜、第 2 天回；Fuego 隔阵喷发，<strong>夜间震撼</strong>。夜里冷，作者拍照险些失温。" },
+      { region:"central", country:"危地马拉", place:"蒂卡尔 Tikal", activity:"玛雅城市群", visit:"2022-02", publish:PUBLISH, conf:"mid", ref:"§3.9 Tikal",
+        tip:"一般从伯利兹<strong>一日游</strong>最方便。" },
+      { region:"central", country:"萨尔瓦多", place:"陆路口岸", activity:"绿卡免签；TIP 与停留天数衔接计算", visit:"2022-03 入境", publish:PUBLISH, conf:"high", ref:"§2.4 萨尔瓦多" },
+      { region:"central", country:"洪都拉斯", place:"陆路口岸", activity:"大货车排长队，小车逆行到最前；被索 $30「PCR」", visit:"2022-03 入境", publish:PUBLISH, conf:"high", ref:"§2.5 洪都拉斯" },
+      { region:"central", country:"尼加拉瓜", place:"陆路口岸 · 马那瓜", activity:"边境办签 · Masaya 火山", visit:"2022-03 入境", publish:PUBLISH, conf:"high", ref:"§2.6 · §3.11 Masaya",
+        tip:"边境：X 光 2–3 h/车，无人机没收，办 TIP 共 8 h。<strong>Masaya</strong> 距马那瓜 20 min，<strong>傍晚</strong>看岩浆与拍照最佳。" },
+      { region:"central", country:"哥斯达黎加", place:"陆路口岸", activity:"绿卡 30 天；强制保险 $42；预检小条出境必留", visit:"2022-03 入境", publish:PUBLISH, conf:"high", ref:"§2.7 哥斯达黎加" },
+      { region:"central", country:"哥斯达黎加", place:"圣何塞 → Turrialba 火山", activity:"东向山路一日游", visit:"2022-03", publish:PUBLISH, conf:"mid", ref:"§3.12 哥斯达黎加",
+        tip:"蜿蜒山路（部分土路）、甘蔗地、彩色农田、火山背景——比典型河流团/海滩躺更有意思。" },
+      { region:"central", country:"巴拿马", place:"陆路口岸", activity:"清晨过关；保险 $25/月；TIP 信息一字不能错；曾超速罚 $50", visit:"2022-03 底入境", publish:PUBLISH, conf:"high", ref:"§2.8 巴拿马" },
+
+      // 达连 + 哥伦比亚
+      { region:"central", country:"巴拿马 → 哥伦比亚", place:"达连隘口 Darién Gap", activity:"集装箱拼箱 ~$1,500；与两摩旅合装；交车→取车约 2 周；飞波哥大等待", visit:"2022-03 底 ~ 04", publish:PUBLISH, conf:"high", ref:"§1.5 · §2.9" },
+      { region:"south", country:"哥伦比亚", place:"波哥大 · 麦德林", activity:"等船期间租车麦德林环线；SOAT 次日凌晨生效", visit:"2022-03 ~ 04", publish:PUBLISH, conf:"high", ref:"§2.9 哥伦比亚" },
+      { region:"south", country:"哥伦比亚", place:"卡塔赫纳 Cartagena", activity:"海运取车；海关要求长袖长裤；清关极慢需预留整天", visit:"2022-03 底 ~ 04", publish:PUBLISH, conf:"high", ref:"§2.9 哥伦比亚" },
+      { region:"south", country:"哥伦比亚", place:"咖啡三角 · Salento", activity:"Manizales / Pereira / Armenia · Cocora 棕榈谷", visit:"2022-04", publish:PUBLISH, conf:"mid", ref:"§3.13 咖啡三角",
+        tip:"沿考卡河向南，像云贵大山。咖啡可沏成<strong>透彻饮料</strong>；Salento 古镇 + Cocora 高棕榈谷同线。" },
+      { region:"south", country:"哥伦比亚", place:"Barichara · Villa de Leyva", activity:"红白色历史小镇", visit:"2022-04", publish:PUBLISH, conf:"mid", ref:"§3.14 历史小镇",
+        tip:"保存完整但偏旅游——若去过云南古镇，形态类似，满街饭馆与纪念品。" },
+
+      // 厄瓜多尔 ~ 阿根廷
+      { region:"south", country:"厄瓜多尔", place:"Ipiales 口岸", activity:"绿卡 90 天；美元流通；移民局排队约 1h", visit:"2022-04 入境", publish:PUBLISH, conf:"high", ref:"§2.10 厄瓜多尔" },
+      { region:"south", country:"厄瓜多尔", place:"基多周边火山", activity:"Quilotoa · Cotopaxi · Chimborazo", visit:"2022-04", publish:PUBLISH, conf:"mid", ref:"§3.15 厄瓜多尔",
+        tip:"除飞岛加拉帕戈斯外首选陆路：Quilotoa 火山口湖；Cotopaxi 车至 4600 m 再爬 200 m；Chimborazo 车至 4800 m 营地。4600 m 风大、4800 m 反而晴好。" },
+      { region:"south", country:"秘鲁", place:"Huaquillas 口岸", activity:"绿卡免签 180 天；口岸曾不认绿卡需官网说明；交强险 $15/月", visit:"2022-05 入境", publish:PUBLISH, conf:"high", ref:"§2.11 秘鲁" },
+      { region:"south", country:"秘鲁", place:"Huaraz · 雪山之路", activity:"Lima 北上 · 16 号 · 3N 雪山线", visit:"2022-05", publish:PUBLISH, conf:"mid", ref:"§3.16 Huaraz",
+        tip:"0→3000 m：Paramonga 转 16 号盘山，Conococha 北行 3N，<strong>像川藏线</strong>。Huaraz≈康定；Laguna Paron / Llanganuco 翠蓝湖值得一去。" },
+      { region:"south", country:"秘鲁", place:"库斯科 · 马丘比丘", activity:"Maras 盐田 · Moray 梯田", visit:"2022-05 ~ 06", publish:PUBLISH, conf:"mid", ref:"§3.16 马丘比丘",
+        tip:"常规一日游可达。作者另走土路翻山至 Pachar → Urubamba，金色麦田配雪山，比回头路好看。" },
+      { region:"south", country:"玻利维亚", place:"Puno 办签 · Khasani 口岸", activity:"签证 $30；Khasani 过境最快（约 30min）", visit:"2022-05 入境", publish:PUBLISH, conf:"high", ref:"§2.12 玻利维亚" },
+      { region:"south", country:"玻利维亚", place:"乌尤尼 → 智利 San Pedro", activity:"300+ km 无人土路（全程最难）", visit:"2022-05 ~ 06", publish:PUBLISH, conf:"mid", ref:"§3.17 乌尤尼穿越",
+        tip:"Google 地图不准，需路线截图；Laguna Colorada、Eduardo Avaroa、Laguna Blanca；4000 m+，难度 &gt; 阿里线，<strong>单人较冒险</strong>。出境后 20 km 速降至 San Pedro。" },
+      { region:"south", country:"智利", place:"Hito Cajón 口岸", activity:"海拔 4400+；海关大卸八块查车；需 PDI 小条", visit:"2022-06 入境", publish:PUBLISH, conf:"high", ref:"§2.13 智利" },
+      { region:"south", country:"阿根廷", place:"Antofagasta 领事馆", activity:"美绿卡需办签证（不如美签好用）；前纽约领馆官员办签", visit:"2022-06", publish:PUBLISH, conf:"high", ref:"§2.14 阿根廷" },
+      { region:"south", country:"阿根廷", place:"巴塔哥尼亚 Ruta 40", activity:"Bariloche · El Chaltén / Calafate", visit:"2022-06 ~ 07", publish:PUBLISH, conf:"mid", ref:"§3.18 Patagonia",
+        tip:"精华在安第斯边境；Bariloche「小瑞士」。<strong>例外烂路</strong>：Gregores → El Calafate 间 Lago Cardiel 泥路像溜冰；原驼常横穿公路。" },
+      { region:"south", country:"阿根廷/智利", place:"火地岛 · 乌斯怀亚", activity:"穿智利两次 · 麦哲伦轮渡 · Ruta 3 终点", visit:"2022-07", publish:PUBLISH, conf:"high", ref:"§1.1 · §3.19 乌斯怀亚",
+        tip:"一天两次过关（四格章）；轮渡可能久等。Tierra del Fuego 国家公园有 <strong>3 号公路尽头</strong>。冬季冰雪路谨慎。未去复活节岛（需飞）。" },
+      { region:"south", country:"阿根廷", place:"Puerto Madryn", activity:"岸观鲸 · 距岸 7–8 m", visit:"2022-07 前后", publish:PUBLISH, conf:"mid", ref:"§3.20 观鲸",
+        tip:"不必出海，坐岸边即可；海滨城市吃住方便，Valdes 半岛可看多种动物。" },
+
+      // 巴西延伸
+      { region:"other", country:"巴西", place:"伊瓜苏港 · 口岸", activity:"2022-08 入境；领事馆 3 工作日办签（仅给 1 年）；车辆 TIP 需填出境方式", visit:"2022-08 入境", publish:PUBLISH, conf:"high", ref:"§2.15 巴西" },
+      { region:"other", country:"巴西", place:"潘塔纳尔 Pantanal", activity:"西南部 ~25 万 km² 湿地；碗状地形；作者 2022-08-24 专文详述", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文 · 概览" },
+      { region:"other", country:"巴西", place:"库亚巴 Cuiabá", activity:"北马托格罗索州首府；北线 Safari 起点；Holiday Inn", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文 · 北线" },
+      { region:"other", country:"巴西", place:"大坎普 Campo Grande", activity:"南马托格罗索州首府；南线枢纽；城中多中餐馆", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文" },
+      { region:"other", country:"巴西", place:"Bonito", activity:"河漂、岩洞探险、观鸟；Lagoa Misteriosa 深潭", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文 · Bonito" },
+      { region:"other", country:"巴西", place:"Buraco das Araras", activity:"天然深坑；金刚鹦鹉筑巢；观鸟绝佳", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文 · 观鸟" },
+      { region:"other", country:"巴西", place:"Porto Jofre", activity:"北线核心；圣罗伦索河 Safari；鳄鱼、美洲豹、水豚、大食蚁兽", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"high", ref:"潘塔纳尔另文 · Safari" },
+      { region:"other", country:"巴西", place:"Miranda", activity:"南线；沿米兰达河乘船（非核心）", visit:"2022-08 ~ 09", publish:PANTANAL_PUBLISH, conf:"mid", ref:"潘塔纳尔另文 · 南线" },
+      { region:"other", country:"巴西", place:"Ouro Preto", activity:"南美最震撼古城之一", visit:"2022-08 ~ 09", publish:PUBLISH, conf:"mid", ref:"§3.22 Ouro Preto",
+        tip:"贝洛哈里桑塔南 1 h；山谷老房 + 大教堂，有规模、<strong>不太旅游化</strong>。" },
+      { region:"other", country:"巴西", place:"里约 → 桑托斯 BR-101", activity:"海岸公路 · Paraty", visit:"2022-09 ~ 10", publish:PUBLISH, conf:"mid", ref:"§3.23 BR-101",
+        tip:"风景堪比加州 1 号，沿线城建远逊；Paraty 世界遗产小镇比 Ouro Preto 小、更偏旅游。" },
+      { region:"other", country:"巴西/巴拉圭", place:"交界区域", activity:"乌斯怀亚后掉头北上", visit:"2022-07 ~ 08", publish:PUBLISH, conf:"mid", ref:"§1.1 路线图" },
+      { region:"other", country:"巴西", place:"圣保罗 São Paulo", activity:"巴西穿行近 2 月；海运价涨超车费；MDX 留修车店；飞回美国", visit:"2022-10 前后", publish:PUBLISH, conf:"high", ref:"后记 · §1.2 车" },
+
+      // 车辆 / 实用
+      { region:"other", country:"—", place:"2008 Acura MDX", activity:"墨西哥山路全车断电换电瓶；智利换胎；全程加 Regular 汽油", visit:"2021-07 ~ 2022-10", publish:PUBLISH, conf:"high", ref:"§1.2 车 · 后记" },
+      { region:"other", country:"—", place:"花费与治安", activity:"油 ~$0.1/km；住宿 ~$40/天；拉美 300+ 天无暴力/偷窃", visit:"全程", publish:PUBLISH, conf:"high", ref:"§1.6 ~ §1.10" },
+    ];
+
+    const regionLabel = { south:"南美", north:"北美", central:"中美", other:"准备/延伸" };
+
+    const COUNTRY_SPECIAL = {
+      "加拿大/美国": ["canada", "usa"],
+      "美国 → 墨西哥": ["usa"],
+      "巴拿马 → 哥伦比亚": ["panama", "colombia"],
+      "阿根廷/智利": ["argentina", "chile"],
+      "巴西/巴拉圭": ["brazil"],
+    };
+    const COUNTRY_SINGLE = {
+      "美国": "usa",
+      "美国·阿拉斯加": "usa",
+      "加拿大": "canada",
+      "墨西哥": "mexico",
+      "伯利兹": "belize",
+      "危地马拉": "guatemala",
+      "萨尔瓦多": "el-salvador",
+      "洪都拉斯": "honduras",
+      "尼加拉瓜": "nicaragua",
+      "哥斯达黎加": "costa-rica",
+      "巴拿马": "panama",
+      "哥伦比亚": "colombia",
+      "厄瓜多尔": "ecuador",
+      "秘鲁": "peru",
+      "玻利维亚": "bolivia",
+      "智利": "chile",
+      "阿根廷": "argentina",
+      "巴西": "brazil",
+    };
+
+    function getCountryKeys(country) {
+      if (COUNTRY_SPECIAL[country]) return COUNTRY_SPECIAL[country];
+      if (COUNTRY_SINGLE[country]) return [COUNTRY_SINGLE[country]];
+      return [];
+    }
+
+    function rowMatchesCountry(row, countryKey) {
+      return countryKey && getCountryKeys(row.country).includes(countryKey);
+    }
+
+    let activeCountry = null;
+    const countryAnchorsPlaced = new Set();
+
+    function setActiveCountryTag(key) {
+      document.querySelectorAll(".country-tag").forEach(tag => {
+        tag.classList.toggle("active", key && tag.dataset.country === key);
+      });
+    }
+
+    function clearCountryFilter() {
+      activeCountry = null;
+      setActiveCountryTag(null);
+    }
+
+    function jumpToCountry(key, updateHash = true) {
+      activeCountry = key;
+      document.getElementById("region-filter").value = "all";
+      document.getElementById("search").value = "";
+      setActiveCountryTag(key);
+      renderTable("all", "", key);
+      if (updateHash) history.replaceState(null, "", `#country-${key}`);
+      requestAnimationFrame(() => {
+        document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const row = document.getElementById(`country-${key}`);
+        if (row) row.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function renderTable(filterRegion = "all", q = "", countryKey = activeCountry) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      countryAnchorsPlaced.clear();
+      let i = 0;
+      const query = q.trim().toLowerCase();
+
+      rows.forEach(row => {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (countryKey && !rowMatchesCountry(row, countryKey)) return;
+        const hay = [row.country, row.place, row.activity, row.tip, row.ref, row.visit, row.publish].filter(Boolean).join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const tr = document.createElement("tr");
+        if (countryKey) tr.classList.add("country-focus");
+        const keys = getCountryKeys(row.country);
+        for (const k of keys) {
+          if (!countryAnchorsPlaced.has(k)) {
+            tr.id = `country-${k}`;
+            countryAnchorsPlaced.add(k);
+            break;
+          }
+        }
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td><span class="region ${row.region}">${regionLabel[row.region]}</span></td>
+          <td>${row.country}</td>
+          <td>${row.place}</td>
+          <td>${row.activity}${row.tip ? `<div class="tip-detail">${row.tip}</div>` : ""}</td>
+          <td>${row.visit}</td>
+          <td>${row.publish}</td>
+          <td><span class="conf ${row.conf}">${row.conf === "high" ? "高" : "中"}</span></td>
+          <td><span class="ref-tag">${row.ref || "—"}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      const tagEl = countryKey ? document.querySelector(`.country-tag[data-country="${countryKey}"]`) : null;
+      const label = countryKey
+        ? `${i} 条 · ${(tagEl?.textContent || countryKey).trim()}`
+        : `${i} 条`;
+      document.getElementById("row-count").textContent = label;
+    }
+
+    function renderBar() {
+      const phases = [
+        { name:"纽约/育空/AK", start:"2021-07-01", end:"2021-08-31", color:"#79c0ff" },
+        { name:"Fairbanks→温哥华", start:"2021-09-01", end:"2021-11-30", color:"#5eb3ff" },
+        { name:"墨西哥", start:"2021-12-01", end:"2022-02-15", color:"#d2a8ff" },
+        { name:"中美七国", start:"2022-02-16", end:"2022-03-25", color:"#c4a8ff" },
+        { name:"海运/哥伦比亚", start:"2022-03-26", end:"2022-04-15", color:"#f0b429" },
+        { name:"厄秘玻智阿", start:"2022-04-16", end:"2022-07-15", color:"#ff7b72" },
+        { name:"巴西延伸", start:"2022-07-16", end:"2022-10-31", color:"#7ee787" },
+      ];
+      const min = new Date("2021-07-01").getTime();
+      const max = new Date("2022-11-01").getTime();
+      const span = max - min;
+      const bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(p => {
+        const s = new Date(p.start).getTime();
+        const e = new Date(p.end).getTime();
+        const left = ((s - min) / span) * 100;
+        const width = Math.max(((e - s) / span) * 100, 1.5);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${p.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="left:${left}%;width:${width}%;background:${p.color}"></div></div>
+        `;
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("region-filter").addEventListener("change", e => {
+      clearCountryFilter();
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", e => {
+      clearCountryFilter();
+      renderTable(document.getElementById("region-filter").value, e.target.value);
+    });
+
+    document.querySelectorAll(".country-tag").forEach(tag => {
+      tag.addEventListener("click", e => {
+        e.preventDefault();
+        const key = tag.dataset.country;
+        if (activeCountry === key) {
+          clearCountryFilter();
+          history.replaceState(null, "", "#timeline");
+          renderTable();
+          return;
+        }
+        jumpToCountry(key);
+      });
+    });
+
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.match(/^#country-([a-z-]+)$/);
+      if (m) jumpToCountry(m[1], false);
+      else if (location.hash === "#timeline" || location.hash === "") clearCountryFilter();
+    });
+
+
+    function renderPhotos(filterRegion = "all", q = "") {
+      const grid = document.getElementById("photo-grid");
+      if (!grid || typeof photos === "undefined") return;
+      grid.innerHTML = "";
+      let i = 0;
+      const query = q.trim().toLowerCase();
+      photos.forEach(p => {
+        if (filterRegion !== "all" && p.region !== filterRegion) return;
+        const hay = [p.place, p.desc, p.section, regionLabel[p.region] || ""].join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const card = document.createElement("article");
+        card.className = "photo-card";
+        const secShort = p.section.replace(/^\d+\.\d+\s*/, "").slice(0, 40);
+        const artLabel = (p.source === "pantanal") ? "潘塔纳尔另文" : "泛美指南";
+        card.innerHTML = `
+          <a class="img-link" href="${p.original}" title="查看原图">
+            <img src="${p.thumb}" alt="${p.place} · ${p.desc}" loading="lazy" />
+          </a>
+          <div class="photo-body">
+            <div class="photo-place"><span class="region ${p.region}">${regionLabel[p.region]}</span> ${p.place}</div>
+            <div class="photo-desc">${p.desc}</div>
+            <div class="photo-meta">${p.section}</div>
+            <div class="photo-links">
+              <a href="${p.article}" target="_blank" rel="noopener">${artLabel} · ${secShort}</a>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      if (!i) {
+        grid.innerHTML = '<div class="photo-empty">没有匹配的照片，请调整筛选或搜索词。</div>';
+      }
+      const pc = document.getElementById("photo-count");
+      if (pc) pc.textContent = (filterRegion === "all" && !query) ? photos.length + " 张" : i + " / " + photos.length + " 张";
+    }
+
+    document.getElementById("photo-region-filter")?.addEventListener("change", e => {
+      renderPhotos(e.target.value, document.getElementById("photo-search").value);
+    });
+    document.getElementById("photo-search")?.addEventListener("input", e => {
+      renderPhotos(document.getElementById("photo-region-filter").value, e.target.value);
+    });
+
+    renderBar();
+    renderTable();
+    renderPhotos();
+    const hashCountry = location.hash.match(/^#country-([a-z-]+)$/);
+    if (hashCountry) jumpToCountry(hashCountry[1], false);
+  </script>
+</body>
+</html>

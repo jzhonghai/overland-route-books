@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>泛美公路 · Mr.T / 陈勇 / 张猫猫 / 大橙子 对比</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #5eb3ff;
+      --accent-2: #7ee787;
+      --warn: #f0b429;
+      --no: #ff7b72;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --mrt: #5eb3ff;
+      --chen: #ffd166;
+      --cat: #d2a8ff;
+      --orange: #ff9f43;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1480px; margin: 0 auto; padding: 32px 20px 64px; }
+    h1 { margin: 0 0 8px; font-size: 1.85rem; }
+    .subtitle { color: var(--muted); font-size: 0.96rem; max-width: 960px; margin-bottom: 20px; }
+    .subtitle a { color: var(--accent); }
+    .sources {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+    }
+    .sources a {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 999px; padding: 6px 14px; font-size: 0.88rem;
+      color: var(--accent); text-decoration: none;
+    }
+    .sources a:hover { background: var(--panel-2); text-decoration: underline; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      font-size: 0.88rem; color: var(--muted);
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 220px; flex: 1; }
+    .stats { color: var(--muted); font-size: 0.88rem; margin-bottom: 12px; }
+    .note {
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px; color: #f6df9b;
+      margin-bottom: 22px; font-size: 0.92rem;
+    }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      max-height: 85vh;
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      min-width: 1180px; font-size: 0.9rem;
+    }
+    thead th {
+      position: sticky; top: 0; z-index: 3;
+      background: #1f2a3d; color: var(--muted);
+      text-align: left; padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    thead th.col-spot {
+      position: sticky; left: 0; z-index: 4;
+      min-width: 240px; background: #1a2438;
+    }
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+      vertical-align: top;
+    }
+    tbody td.col-spot {
+      position: sticky; left: 0; z-index: 1;
+      background: var(--panel);
+      font-weight: 500;
+      min-width: 240px;
+      border-right: 1px solid rgba(51, 65, 85, 0.45);
+    }
+    tbody tr:hover td { background: rgba(94, 179, 255, 0.05); }
+    tbody tr:hover td.col-spot { background: #1e2a3d; }
+    tbody tr.country-row td {
+      background: rgba(255, 255, 255, 0.03);
+      font-weight: 600;
+      color: var(--accent-2);
+      border-top: 1px solid rgba(126, 231, 135, 0.15);
+    }
+    tbody tr.country-row td.col-spot { background: #1c2838; }
+    .spot-sub { display: block; font-weight: 400; color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+    .head-mrt { color: var(--mrt); }
+    .head-chen { color: var(--chen); }
+    .head-cat { color: var(--cat); }
+    .head-orange { color: var(--orange); }
+    .visit {
+      display: inline-block;
+      font-size: 0.78rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px;
+      margin-bottom: 6px;
+    }
+    .visit.yes { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .visit.no { background: rgba(255, 123, 114, 0.12); color: #ffb4ae; }
+    .visit.part { background: rgba(240, 180, 41, 0.12); color: #f6df9b; }
+    .visit.na { background: rgba(147, 164, 189, 0.1); color: var(--muted); }
+    .eval {
+      margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5;
+    }
+    .eval strong { color: #c5d4e8; font-weight: 600; }
+    a.visit-link {
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    a.visit-link:hover .visit { filter: brightness(1.12); }
+    a.visit-link .visit { cursor: pointer; }
+    .ref-link {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.78rem;
+      text-decoration: none;
+      opacity: 0.85;
+    }
+    a.ref-link:hover { text-decoration: underline; opacity: 1; }
+    a.ref-link.mrt { color: var(--mrt); }
+    a.ref-link.chen { color: var(--chen); }
+    a.ref-link.cat { color: var(--cat); }
+    a.ref-link.orange { color: var(--orange); }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    @media (max-width: 720px) {
+      h1 { font-size: 1.4rem; }
+      .table-wrap { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>泛美公路 · 四人对比</h1>
+      <p class="subtitle">
+        左列为<strong>国家 / 景点</strong>，右四列分别为 <strong>Mr.T</strong>（2021–2022 · 单人 · Acura MDX · 17 国纵穿+巴西）、
+        <strong>陈勇</strong>（2018–2019 · 三人 · 哈弗 H5 · 16 国纵穿+延伸）、
+        <strong>张猫猫</strong>（2023–2024 · 背包/大巴/短租 · 11 国 · <em>未完成泛美纵穿</em>；YouTube 已核对）、
+        <strong>大橙子</strong>（2024–2025 · 单人 · 苏A 绿牌星途瑶光 C-DM · 15 国南行纵穿 · <em>2025-08 宣布完成</em>；YouTube/B站 已核对）。
+        「是否去过」+ 一句<strong>评价</strong>均摘自各人游记/视频要点。
+      </p>
+    </header>
+
+    <div class="sources">
+      <a href="Mr.T-泛美公路游记.html">📄 Mr.T 本地时间线</a>
+      <a href="https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/" target="_blank" rel="noopener">📄 Mr.T 原文（_uscreditcardguide_）</a>
+      <a href="https://www.uscardforum.com/t/topic/94086" target="_blank" rel="noopener">💬 Mr.T 美卡论坛</a>
+      <a href="陈勇-泛美公路游记.html">📄 陈勇 本地时间线</a>
+      <a href="张猫猫-南北美行程时间线.html">📄 张猫猫 本地时间线</a>
+      <a href="https://www.youtube.com/@zhangmaomao" target="_blank" rel="noopener">▶️ 张猫猫 YouTube</a>
+      <a href="https://space.bilibili.com/389957251" target="_blank" rel="noopener">📺 张猫猫 B 站</a>
+      <a href="大橙子-泛美公路游记.html">📄 大橙子 本地时间线</a>
+      <a href="https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu" target="_blank" rel="noopener">▶️ 大橙子 美洲季合集</a>
+      <a href="https://space.bilibili.com/1708965" target="_blank" rel="noopener">📺 大橙子 B 站</a>
+    </div>
+
+    <div class="legend">
+      <span><span class="visit yes">✓ 去过</span> 可点击跳转<strong>外部原文/视频</strong>（陈勇为公众号，无外链）</span>
+      <span><span class="visit part">~ 部分</span> 途经/未深度/计划未成</span>
+      <span><span class="visit no">✗ 未去</span> 无记录</span>
+      <span><span class="visit na">—</span> 不适用</span>
+    </div>
+
+    <div class="note">
+      <strong>对比说明：</strong>Mr.T 与陈勇为<strong>完整陆路纵穿</strong>（含阿拉斯加/加拿大北段 + 达连海运）。
+      <strong>大橙子</strong>为<strong>南行纵穿</strong>（美国西海岸起，无加拿大/阿拉斯加），2025-08 宣布完成，绿牌 PHEV 全程自驾 + 古巴绕路 + 达连海运。
+      张猫猫在 YouTube 有 2023-03~04 美国租车游及 2024 迈阿密/古巴/墨西哥等，但<strong>未走</strong>加拿大/阿拉斯加泛美北段，2023-07 乌斯怀亚购车失败后取消纵穿自驾。
+      「南极→北极」年度片指<strong>挪威北极圈</strong>，非育空/死马镇。Mr.T 链至<a href="https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/" target="_blank" rel="noopener">美国信用卡指南原文</a>；张猫猫/大橙子链至 YouTube / B 站；<strong>陈勇为公众号，不提供外链</strong>。
+    </div>
+
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="north">北美</option>
+        <option value="central">中美 / 加勒比</option>
+        <option value="south">南美</option>
+        <option value="other">其他 / 延伸</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、景点、评价…" />
+    </div>
+    <p class="stats" id="stats">—</p>
+
+    <div class="table-wrap">
+      <table id="cmp-table">
+        <thead>
+          <tr>
+            <th class="col-spot">国家 / 景点</th>
+            <th class="head-mrt">Mr.T</th>
+            <th class="head-chen">陈勇</th>
+            <th class="head-cat">张猫猫</th>
+            <th class="head-orange">大橙子</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <footer>
+      <p>生成日期：2026-08-11 · 数据来自四份时间线 / 视频标题；张猫猫、大橙子北美/美洲段已对照 YouTube。</p>
+      <p>纵穿完成度：Mr.T ≈ 陈勇 ≈ 大橙子（均抵乌斯怀亚方向）＞ 张猫猫（南美+部分中美+美国多点游，无泛美北段/完整自驾纵穿）。</p>
+    </footer>
+  </div>
+
+  <script>
+    const EXT = {
+      mrt: {
+        guide: "https://www.uscreditcardguide.com/fanmeigongluzijiazhinan/",
+        forum: "https://www.uscardforum.com/t/topic/94086",
+        pantanal: "https://www.uscardforum.com/t/topic/102168"
+      },
+      cat: {
+        yt: "https://www.youtube.com/@zhangmaomao",
+        bili: "https://space.bilibili.com/389957251",
+        biliSouth: "https://space.bilibili.com/389957251/channel/collectiondetail?sid=3866464",
+        antarctica: "https://www.bilibili.com/video/BV1SW4y197aF",
+        panamCancel: "https://www.bilibili.com/video/BV1bX4y1a7uY",
+        amazon: "https://www.bilibili.com/video/BV1FCzGY6Ert",
+        machu: "https://www.bilibili.com/video/BV14f421X7Kz/",
+        inca: "https://www.bilibili.com/video/BV1ct421g73Z/",
+        usAfterAfrica: "https://www.bilibili.com/video/BV1fP41197Jf",
+        miami: "https://www.youtube.com/watch?v=nXiWv7bfppA"
+      },
+      orange: {
+        playlist: "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu",
+        yt: "https://www.youtube.com/channel/UCy1ZDneqqCdYbde3ekXZmqA",
+        bili: "https://space.bilibili.com/1708965",
+        worldEnd: "https://www.youtube.com/watch?v=oSS_294YVZY",
+        complete: "https://www.youtube.com/watch?v=oSS_294YVZY",
+        cuba: "https://www.youtube.com/watch?v=aPhKAlBnERY",
+        uyuni: "https://www.youtube.com/watch?v=Qrn9xvLF-Ww",
+        prep: "https://www.youtube.com/watch?v=HCiqdog45LU",
+        cost: "https://www.youtube.com/watch?v=8N3Al5-E9p0"
+      }
+    };
+    const Y = (note, href) => ({ v: "yes", note, href });
+    const P = (note, href) => ({ v: "part", note, href });
+    const N = (note) => ({ v: "no", note: note || "无记录" });
+    const NA = (note) => ({ v: "na", note: note || "—" });
+
+    const rows = [
+      // —— 概览 ——
+      { type:"country", region:"other", spot:"📊 纵穿完成度", sub:"是否走完泛美主线至乌斯怀亚",
+        mrt: Y("<strong>完整纵穿</strong>；Fairbanks 南下，2022-07 抵乌斯怀亚，后延伸巴西"),
+        chen: Y("<strong>完整纵穿</strong>；死马镇南下，2019-02-16 抵乌斯怀亚，后延伸 21 国"),
+        cat: P("<strong>未完成</strong>；2023-07 购车被扣，取消乌斯怀亚→美国自驾；背包+大巴") ,
+        orange: Y("<strong>美洲段完成</strong>；2025-08-12 宣布挑战完成；2025-06-22 冲向世界尽头", "https://www.youtube.com/watch?v=oSS_294YVZY")},
+      { type:"country", region:"other", spot:"🚗 交通方式", sub:"美洲段主要移动方式",
+        mrt: Y("单人单车自驾；达连集装箱 ~$1,500"),
+        chen: Y("三人自驾国产哈弗；达连拼箱海运"),
+        cat: Y("背包/大巴/智利短租；<strong>无完整自驾纵穿</strong>") ,
+        orange: Y("单人单车 · <strong>苏A 绿牌 PHEV</strong> 星途瑶光 C-DM；达连巴拿马海运", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"country", region:"other", spot:"🧊 南极", sub:"德雷克海峡邮轮",
+        mrt: N(), chen: N(),
+        cat: Y("<strong>27 天南极邮轮</strong>；乌斯怀亚登船，系列代表作") ,
+        orange: N("目标南极；美洲季为陆路纵穿")},
+      { type:"country", region:"other", spot:"🧭 北极（挪威）", sub:"非阿拉斯加/加拿大",
+        links: { cat: "https://www.youtube.com/watch?v=a6BIHJKGSnQ" },
+        mrt: N(), chen: N(),
+        cat: Y("年度片《从南极流浪到北极》；2025 与 Yooupi <strong>挪威北极圈</strong>探海帝王蟹") ,
+        orange: N()},
+
+      // —— 北美 ——
+      { type:"country", region:"north", spot:"🇺🇸 美国", sub:"国家层面是否到访", countryKey:"usa",
+        mrt: Y("纽约起 + 阿拉斯加 + 本土 PCH/66 号/黄石等"),
+        chen: Y("旧金山提车 + 阿拉斯加 + 本土 1 号/66 号/黄石"),
+        cat: Y("<strong>多次到访</strong>：2023-03~04 租车游（NY/丹佛/拉斯维加斯/洛杉矶）；2023-05 消费对比；2024-06 迈阿密；<strong>非泛美纵穿</strong>") ,
+        orange: Y("2024-09~11 西海岸：洛杉矶清关、硅谷、拉斯维加斯；<strong>非阿拉斯加/育空北段</strong>", "https://www.youtube.com/watch?v=HCiqdog45LU")},
+      { type:"spot", region:"north", spot:"美国租车自驾 · 2023", sub:"纽约 → 丹佛 → 沙漠 → 拉斯维加斯 → 洛杉矶", countryKey:"usa",
+        links: { cat: "https://www.youtube.com/watch?v=EsTLNtobIRY" },
+        mrt: N("纵穿路线不同"),
+        chen: N("纵穿路线不同"),
+        cat: Y("YouTube 系列：约<strong>穷游一个月</strong>；650 km 沙漠段为省钱；暴风雪打滑、度假村费、中国城 $15 等") ,
+        orange: N("路线不同")},
+      { type:"spot", region:"north", spot:"纽约 New York", sub:"唐人街 · 跨年 · 早茶", countryKey:"usa",
+        links: { cat: "https://www.youtube.com/watch?v=zhi0qnVVxPc" },
+        mrt: P("起点城市"),
+        chen: N(),
+        cat: Y("地铁差点出不来；2 小时地铁只为广式早茶；<strong>跨年体验极差</strong>；唐人街像国内二线") ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"丹佛 / 科罗拉多滑雪", sub:"美国西部", countryKey:"usa",
+        links: { cat: "https://www.youtube.com/watch?v=445nBr6oIoU" },
+        mrt: N(), chen: N(),
+        cat: Y("租 Jeep 日租 ~2500 元；与粉丝相约滑雪；遇<strong>暴风雪</strong>有人受伤；$300 米其林答谢粉丝") ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"拉斯维加斯 Las Vegas", sub:"美国西南", countryKey:"usa",
+        links: { cat: "https://www.youtube.com/watch?v=0dnqoqY1yeE" },
+        mrt: N(), chen: N(),
+        cat: Y("五星海鲜自助能否吃回本；<strong>度假村费</strong>让住宿贵到住不起") ,
+        orange: Y("开绿牌逛赌城；买做饭装备", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"north", spot:"洛杉矶 Los Angeles", sub:"中国城 · 街头美食", countryKey:"usa",
+        links: { cat: "https://www.youtube.com/watch?v=AIEo1_V5RQ4" },
+        mrt: P("PCH 段"),
+        chen: P("1 号公路"),
+        cat: Y("五人穷游夜市；与墨西哥女生<strong>中国城卖艺</strong>；偶遇舞狮") ,
+        orange: Y("<strong>2024-09-30 美洲季首站</strong>；海运清关后启程", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"north", spot:"迈阿密 Miami", sub:"2024 厄瓜多尔后中转", countryKey:"usa",
+        mrt: N(), chen: N(),
+        cat: Y("厄瓜多尔后飞迈阿密「摆烂」；再飞古巴——<strong>飞跳达连</strong>，非陆路") ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"死马镇 / 普拉德霍湾", sub:"泛美公路最北端", countryKey:"usa",
+        mrt: N("北端从<strong>费尔班克斯</strong>计时，未走死马镇；但走过 Dempster 抵北冰洋岸"),
+        chen: Y("<strong>抵最北端</strong>；自死马镇计 ~43,391 km 至乌斯怀亚"),
+        cat: N() ,
+        orange: N("未走泛美最北端；通稿提芝加哥，视频从 LA 起")},
+      { type:"spot", region:"north", spot:"Dempster Highway", sub:"育空 → 北冰洋岸", countryKey:"canada",
+        mrt: Y("<strong>8 月底必走</strong>；苔原红/黄/绿绝美；碎石路轿车可行"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"道顿公路 Dalton", sub:"阿拉斯加「死亡公路」", countryKey:"usa",
+        mrt: N(), chen: Y("秋季黄叶；连接死马镇；安克雷奇换挡风玻璃"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"Denali 国家公园", sub:"阿拉斯加观熊", countryKey:"usa",
+        mrt: Y("Denali Hwy <strong>Labor Day 前后</strong>窗口极窄；Katmai Homer 小飞机降海滩观熊"),
+        chen: Y("<strong>园区巴士</strong>观灰熊驯鹿；私车不可进园"),
+        cat: N() ,
+        orange: N()},
+      { type:"country", region:"north", spot:"🇨🇦 加拿大", sub:"国家层面", countryKey:"canada",
+        mrt: Y("育空/BC/AB 慢游约 4 个月；温哥华作基地远程工作"),
+        chen: Y("育空 + 冰原大道南下"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"冰原大道 Banff–Jasper", sub:"落基山经典", countryKey:"canada",
+        mrt: Y("常识级景观线，BC/AB 核心动线"),
+        chen: Y("班夫—贾斯珀；「小瑞士」级"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"3 号公路秋色", sub:"Calgary → Vancouver", countryKey:"canada",
+        mrt: Y("<strong>10 月初</strong>洛基山西侧正当时；Creston、Osoyoos 等小镇值得停"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"黄石国家公园", sub:"美国 Wyoming", countryKey:"usa",
+        mrt: N("未单独强调；走 66 号/PCH 段"),
+        chen: Y("黑熊追人视频<strong>抖音 614 万+</strong>；北美传播最广片段"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"north", spot:"66 号公路 / 加州 1 号", sub:"美国经典公路", countryKey:"usa",
+        mrt: P("PCH 南下入墨西哥"),
+        chen: Y("66 号怀旧 + 1 号海岸；西南部红岩"),
+        cat: N() ,
+        orange: P("美国段为西海岸/高速南下，非经典 66/PCH 纵穿")},
+
+      // —— 墨西哥 ——
+      { type:"country", region:"central", spot:"🇲🇽 墨西哥", sub:"国家层面", countryKey:"mexico",
+        mrt: Y("停留 2 个月+，几乎走遍；数十次检查站未遇索贿"),
+        chen: Y("奇瓦瓦→瓜纳华托→奇琴伊察→亡灵节→南部"),
+        cat: Y("背包；亡灵节、瓜纳华托、瓦哈卡、金字塔") ,
+        orange: Y("2024-11 陆路入境；墨西哥城/金字塔/亡灵节/坎昆；多次被警察拦停", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"central", spot:"Baja 玛格达莱纳湾观鲸", sub:"2–3 月灰鲸", countryKey:"mexico",
+        mrt: Y("<strong>$450/船/天</strong>；四人小船可摸鲸，值"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"spot", region:"central", spot:"特奥蒂瓦坎 / 奇琴伊察", sub:"金字塔", countryKey:"mexico",
+        mrt: Y("特奥蒂瓦坎<strong>不建议热气球</strong>；Uxmal+奇琴可串"),
+        chen: Y("太阳/月亮金字塔；库库尔坎"),
+        cat: Y("金字塔；亡灵节场景像《寻梦环游记》") ,
+        orange: Y("特奥蒂瓦坎保鲜膜梗；玛雅金字塔", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"central", spot:"瓜纳华托 / 亡灵节", sub:"中部古城", countryKey:"mexico",
+        mrt: Y("莫雷利亚更生活化；瓜纳华托偏旅游"),
+        chen: Y("瓜纳华托 + 亡灵节 + 粉色湖"),
+        cat: Y("<strong>亡灵节必体验</strong>；瓜纳华托场景还原") ,
+        orange: Y("亡灵节万步暴走墨西哥城", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+
+      // —— 中美 ——
+      { type:"country", region:"central", spot:"🇧🇿 伯利兹", sub:"国家层面", countryKey:"belize",
+        mrt: Y("PCR $50；TIP 免费"),
+        chen: Y("大蓝洞潜水 ~40 m"),
+        cat: Y("小飞机俯瞰大蓝洞；荒岛龙虾") ,
+        orange: Y("<strong>第42国</strong>；入境波折", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"central", spot:"大蓝洞", sub:"伯利兹", countryKey:"belize",
+        mrt: N(), chen: Y("潜水下潜，值得"),
+        cat: Y("飞机俯瞰；与潜水体验不同") ,
+        orange: N()},
+      { type:"country", region:"central", spot:"🇬🇹 危地马拉", sub:"国家层面", countryKey:"guatemala",
+        mrt: Y("墨西哥城预约签证；安提瓜双火山"),
+        chen: Y("蒂卡尔 + 安提瓜 + 帕卡亚火山"),
+        cat: P("陆路入境；未深度记蒂卡尔") ,
+        orange: Y("警察盘查+车辆八大报错；学西语、玛雅家庭、看火山", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"central", spot:"蒂卡尔 Tikal", sub:"玛雅遗址", countryKey:"guatemala",
+        mrt: Y("伯利兹一日游最方便"),
+        chen: Y("玛雅金字塔群"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"central", spot:"安提瓜 / 帕卡亚 / Fuego", sub:"火山", countryKey:"guatemala",
+        mrt: Y("Fuego <strong>夜间喷发震撼</strong>；夜里冷险些失温"),
+        chen: Y("帕卡亚近距看熔岩"),
+        cat: N() ,
+        orange: Y("<strong>火山喷发</strong>；危地马拉首都修车", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"country", region:"central", spot:"🇸🇻 萨尔瓦多", sub:"国家层面", countryKey:"el-salvador",
+        mrt: Y("绿卡免签；TIP 天数衔接"),
+        chen: Y("首都；巧遇骑行狂人"),
+        cat: N() ,
+        orange: Y("<strong>第44国</strong>", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"country", region:"central", spot:"🇭🇳 洪都拉斯", sub:"国家层面", countryKey:"honduras",
+        mrt: Y("小车逆行过关；被索 $30"),
+        chen: Y("特古西加尔巴「危险」；科潘遗址"),
+        cat: N() ,
+        orange: Y("「谋杀率全球第一」国家；警察搜钱", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"country", region:"central", spot:"🇳🇮 尼加拉瓜", sub:"国家层面", countryKey:"nicaragua",
+        mrt: Y("边境 $50 办签；无人机没收；办 TIP 8h"),
+        chen: Y("马萨亚火山口"),
+        cat: N() ,
+        orange: Y("<strong>海关没收无人机</strong>；多次警察拦停", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"central", spot:"Masaya 马萨亚火山", sub:"尼加拉瓜", countryKey:"nicaragua",
+        mrt: Y("<strong>傍晚看岩浆</strong>；距马那瓜 20 min"),
+        chen: P("火山口观览"),
+        cat: N() ,
+        orange: N()},
+      { type:"country", region:"central", spot:"🇨🇷 哥斯达黎加", sub:"国家层面", countryKey:"costa-rica",
+        mrt: Y("强制保险 $42；东部火山公路值得一日"),
+        chen: Y("蝴蝶园青蛙馆 + 东向公路"),
+        cat: N() ,
+        orange: N("视频标题未单列；可能途经未成片")},
+      { type:"country", region:"central", spot:"🇵🇦 巴拿马", sub:"国家层面", countryKey:"panama",
+        mrt: Y("清晨过关；TIP 一字不能错"),
+        chen: Y("圣诞办海运；圣洛伦佐堡"),
+        cat: N() ,
+        orange: Y("进巴拿马城；办理海运手续", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"country", region:"central", spot:"🇨🇺 古巴", sub:"国家层面", countryKey:"cuba",
+        mrt: N(), chen: N(),
+        cat: Y("哈瓦那黑市换汇；特立尼达抓龙虾，<strong>龙虾自由</strong>") ,
+        orange: Y("<strong>第41国绕路</strong>；哈瓦那深度游后回墨西哥接车", "https://www.youtube.com/watch?v=aPhKAlBnERY")},
+      { type:"spot", region:"central", spot:"达连隘口 Darién Gap", sub:"巴拿马→哥伦比亚海运",
+        mrt: Y("集装箱拼箱 ~$1,500；交车→取车约 2 周；攻略极详"),
+        chen: Y("圣诞办证波折；拼箱；9 步清关出港"),
+        cat: N("<strong>飞跳</strong>厄瓜多尔→迈阿密，未陆路穿越") ,
+        orange: Y("<strong>2025-04 巴拿马装船</strong>；2025-05 抵哥伦比亚", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+
+      // —— 南美 ——
+      { type:"country", region:"south", spot:"🇨🇴 哥伦比亚", sub:"国家层面", countryKey:"colombia",
+        mrt: Y("卡塔赫纳取车；咖啡三角 Salento/Cocora"),
+        chen: Y("海运登陆卡塔赫纳；波哥大麦德林"),
+        cat: N() ,
+        orange: Y("<strong>绿牌首抵南美</strong>；拦路收费、治安惊险", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"south", spot:"咖啡三角 / Salento", sub:"哥伦比亚", countryKey:"colombia",
+        mrt: Y("沿考卡河向南；咖啡可沏成透彻饮料"),
+        chen: Y("咖啡三角 + 山谷教堂"),
+        cat: N() ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇪🇨 厄瓜多尔", sub:"国家层面", countryKey:"ecuador",
+        mrt: Y("美元流通；基多周边火山陆路"),
+        chen: Y("基多赤道纪念碑 + 昆卡"),
+        cat: Y("亚马逊船运入境；基多赤道；户外漂流") ,
+        orange: Y("<strong>第50国</strong>；赤道/高原段", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"south", spot:"基多火山 Quilotoa/Cotopaxi", sub:"厄瓜多尔陆路", countryKey:"ecuador",
+        mrt: Y("<strong>除加拉帕戈斯外首选</strong>；4600 m 风大、4800 m 反而晴"),
+        chen: P("赤道纪念碑为主"),
+        cat: P("基多一日游；火山深度不如 Mr.T") ,
+        orange: P("「离太阳最近」高原段；深度不如 Mr.T")},
+      { type:"spot", region:"south", spot:"加拉帕戈斯群岛", sub:"需飞岛", countryKey:"ecuador",
+        mrt: N("原文明确未去"),
+        chen: N(),
+        cat: P("计划观蓝脚鲣鸟途中<strong>被盗</strong>，未成") ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇵🇪 秘鲁", sub:"国家层面", countryKey:"peru",
+        mrt: Y("Huaraz 雪山之路 + 马丘比丘"),
+        chen: Y("纳斯卡 + 库斯科 + 马丘比丘"),
+        cat: Y("库斯科 + 印加古道 + Huayhuash + 亚马逊") ,
+        orange: Y("<strong>第51国</strong>；一集超浓缩穿越", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"south", spot:"Huaraz / 雪山之路", sub:"秘鲁", countryKey:"peru",
+        mrt: Y("<strong>南美版川藏线</strong>；仅次于 Patagonia 的雪山"),
+        chen: N(),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"马丘比丘", sub:"秘鲁", countryKey:"peru",
+        mrt: Y("Maras 盐田 + 非常规土路回程更美"),
+        chen: Y("印加文明核心"),
+        cat: Y("<strong>5 天印加古道</strong> + 报团；比想象更神奇") ,
+        orange: N("秘鲁段为浓缩过境")},
+      { type:"spot", region:"south", spot:"Huayhuash 环线", sub:"秘鲁徒步", countryKey:"peru",
+        mrt: N(), chen: N(),
+        cat: Y("<strong>8 天高海拔大环线</strong>；南美徒步代表作") ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"纳斯卡地线", sub:"秘鲁", countryKey:"peru",
+        mrt: N(), chen: Y("海岸公路 + 地线"),
+        cat: N() ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇧🇴 玻利维亚", sub:"国家层面", countryKey:"bolivia",
+        mrt: Y("Khasani 过境最快；乌尤尼→San Pedro 自驾穿越"),
+        chen: Y("Yungas 死亡公路 + 乌尤尼"),
+        cat: Y("乌尤尼一日游 + 苏克雷 + 拉巴斯") ,
+        orange: Y("<strong>第52国</strong>；乌尤尼三探+陷车", "https://www.youtube.com/watch?v=Qrn9xvLF-Ww")},
+      { type:"spot", region:"south", spot:"乌尤尼盐沼", sub:"玻利维亚", countryKey:"bolivia",
+        mrt: Y("<strong>全程最难</strong> 300 km 无人土路；单人较冒险；Laguna Colorada 等绝美"),
+        chen: Y("天空之镜"),
+        cat: Y("一日游；深度不如 Mr.T 自驾穿越") ,
+        orange: Y("<strong>三探天空之镜</strong>；战车陷盐湖", "https://www.youtube.com/watch?v=Qrn9xvLF-Ww")},
+      { type:"spot", region:"south", spot:"Yungas 死亡公路", sub:"玻利维亚", countryKey:"bolivia",
+        mrt: N(), chen: Y("窗外十字架印象深刻"),
+        cat: N() ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇨🇱 智利", sub:"国家层面", countryKey:"chile",
+        mrt: Y("Hito Cajón 4400 m；海关大卸八块"),
+        chen: Y("阿塔卡马/瓦尔帕莱索；穿智利去乌斯怀亚"),
+        cat: Y("停留最久：百内→复活节岛→阿塔卡马→伊基克") ,
+        orange: N("美洲季视频无智利；通稿误提")},
+      { type:"spot", region:"south", spot:"百内 Torres del Paine", sub:"智利巴塔哥尼亚", countryKey:"chile",
+        mrt: P("冬季未徒步；推荐 Scott 游记"),
+        chen: P("巴塔哥尼亚方向"),
+        cat: Y("<strong>7 天 O 线 101 km</strong>；三塔冰川，强烈推荐") ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"复活节岛", sub:"智利飞岛", countryKey:"chile",
+        mrt: N("明确未去"),
+        chen: N(),
+        cat: Y("专机登岛；<strong>摩艾 + 42 km 环岛</strong>，独特体验") ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"阿塔卡马沙漠", sub:"智利", countryKey:"chile",
+        links: { cat: "https://www.youtube.com/watch?v=he8f1b4ku1U" },
+        mrt: N(), chen: P("方向提及"),
+        cat: Y("22h 大巴值得；间歇泉、观星、盐湖火烈鸟") ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇦🇷 阿根廷", sub:"国家层面", countryKey:"argentina",
+        mrt: Y("Ruta 40 巴塔哥尼亚；需办签证（绿卡）"),
+        chen: Y("Ruta 40；2019-02-16 抵乌斯怀亚"),
+        cat: Y("乌斯怀亚 + 布宜诺斯艾利斯；购车失败") ,
+        orange: Y("最后一站；街头 100RMB 挑战等", "https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu")},
+      { type:"spot", region:"south", spot:"巴塔哥尼亚 Ruta 40", sub:"阿根廷", countryKey:"argentina",
+        mrt: Y("Bariloche 小瑞士；<strong>Lago Cardiel 泥路</strong>像溜冰"),
+        chen: Y("纵穿火地岛；40 号公路"),
+        cat: P("火地岛入口；无完整 Ruta 40 自驾") ,
+        orange: P("经玻利维亚入阿根廷南下；非完整 Ruta 40 纪录片式")},
+      { type:"spot", region:"south", spot:"乌斯怀亚 / 火地岛", sub:"泛美南端终点", countryKey:"argentina",
+        mrt: Y("穿智利两次 + 麦哲伦轮渡；<strong>3 号公路尽头</strong>"),
+        chen: Y("200 天 50,300 km 里程碑；展国旗"),
+        cat: Y("帝王蟹 + 灯塔；<strong>27 天南极登船点</strong>") ,
+        orange: Y("<strong>2025-06-22 世界尽头</strong>；2025-08 宣布挑战完成", "https://www.youtube.com/watch?v=oSS_294YVZY")},
+      { type:"spot", region:"south", spot:"Puerto Madryn 岸观鲸", sub:"阿根廷", countryKey:"argentina",
+        mrt: Y("不必出海；鲸离岸 7–8 m"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇺🇾 乌拉圭", sub:"国家层面", countryKey:"uruguay",
+        mrt: N(), chen: Y("邱伊口岸；延伸段"),
+        cat: Y("252 元乘船日归；看日落") ,
+        orange: N()},
+      { type:"country", region:"south", spot:"🇧🇷 巴西", sub:"国家层面", countryKey:"brazil",
+        mrt: Y("潘塔纳尔 + Ouro Preto + BR-101；延伸 2 月"),
+        chen: Y("里约 + 圣保罗海运回国；延伸 21 国之一"),
+        cat: N() ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"潘塔纳尔 Pantanal", sub:"巴西湿地", countryKey:"brazil",
+        mrt: Y("<strong>不虚此行</strong>；北线 Porto Jofre Safari 看美洲豹"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"spot", region:"south", spot:"Ouro Preto 欧鲁普雷图", sub:"巴西古城", countryKey:"brazil",
+        mrt: Y("<strong>整个南美最震撼古城</strong>之一"),
+        chen: N(), cat: N() ,
+        orange: N()},
+      { type:"country", region:"other", spot:"🇬🇾 圭亚那等三国", sub:"延伸段",
+        mrt: N(), chen: Y("圭亚那/苏里南/法属圭亚那北上"),
+        cat: N() ,
+        orange: N()},
+    ];
+
+    const PERSON_LABEL = { mrt: "Mr.T 原文", cat: "张猫猫 视频", orange: "大橙子 视频" };
+
+    function resolveHref(person, row, cell) {
+      if (person === "chen") return null;
+      if (cell.href && cell.href.startsWith("http")) return cell.href;
+      const explicit = row.links?.[person];
+      if (explicit && explicit.startsWith("http")) return explicit;
+
+      if (person === "mrt") {
+        if (row.spot?.includes("潘塔纳尔")) return EXT.mrt.pantanal;
+        return EXT.mrt.guide;
+      }
+
+      if (person === "cat") {
+        const s = row.spot || "";
+        if (s.includes("南极")) return EXT.cat.antarctica;
+        if (s.includes("纵穿完成")) return EXT.cat.panamCancel;
+        if (s.includes("迈阿密")) return EXT.cat.miami;
+        if (s.includes("亚马逊")) return EXT.cat.amazon;
+        if (s.includes("马丘比丘")) return EXT.cat.machu;
+        if (row.region === "north") return EXT.cat.yt;
+        if (row.region === "central") return EXT.cat.yt;
+        if (row.region === "south") return EXT.cat.biliSouth;
+        return EXT.cat.bili;
+      }
+
+      if (person === "orange") {
+        const s = row.spot || "";
+        if (s.includes("乌斯怀亚") || s.includes("纵穿完成")) return EXT.orange.worldEnd;
+        if (s.includes("古巴")) return EXT.orange.cuba;
+        if (s.includes("乌尤尼") || s.includes("玻利维亚")) return EXT.orange.uyuni;
+        if (s.includes("达连")) return EXT.orange.playlist;
+        if (s.includes("美国") && row.region === "north") return EXT.orange.prep;
+        return EXT.orange.playlist;
+      }
+      return null;
+    }
+
+    function attachLinks() {
+      rows.forEach(row => {
+        ["mrt", "cat", "orange"].forEach(who => {
+          const cell = row[who];
+          if (cell && (cell.v === "yes" || cell.v === "part")) {
+            cell._href = resolveHref(who, row, cell);
+          }
+        });
+      });
+    }
+
+    const visitLabel = { yes: "✓ 去过", no: "✗ 未去", part: "~ 部分", na: "—" };
+
+    function renderCell(cell, person) {
+      if (!cell) return `<span class="visit na">—</span><p class="eval">—</p>`;
+      const badge = `<span class="visit ${cell.v}">${visitLabel[cell.v]}</span>`;
+      let badgeBlock = badge;
+      let refLine = "";
+      if ((cell.v === "yes" || cell.v === "part") && cell._href) {
+        badgeBlock = `<a class="visit-link ${person}" href="${cell._href}" target="_blank" rel="noopener" title="${PERSON_LABEL[person]}">${badge}</a>`;
+        refLine = `<a class="ref-link ${person}" href="${cell._href}" target="_blank" rel="noopener">→ ${PERSON_LABEL[person]}</a>`;
+      }
+      return `${badgeBlock}<p class="eval">${cell.note}</p>${refLine}`;
+    }
+
+    function renderTable(filterRegion = "all", q = "") {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      const query = q.trim().toLowerCase();
+      let n = 0;
+      rows.forEach(row => {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        const hay = [row.spot, row.sub, row.mrt?.note, row.chen?.note, row.cat?.note, row.orange?.note].filter(Boolean).join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        n++;
+        const tr = document.createElement("tr");
+        if (row.type === "country") tr.className = "country-row";
+        tr.innerHTML = `
+          <td class="col-spot">${row.spot}${row.sub ? `<span class="spot-sub">${row.sub}</span>` : ""}</td>
+          <td>${renderCell(row.mrt, "mrt")}</td>
+          <td>${renderCell(row.chen, "chen")}</td>
+          <td>${renderCell(row.cat, "cat")}</td>
+          <td>${renderCell(row.orange, "orange")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.getElementById("stats").textContent = n + " 行（含国家概览与景点）";
+    }
+
+    attachLinks();
+    document.getElementById("region-filter").addEventListener("change", e => {
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", e => {
+      renderTable(document.getElementById("region-filter").value, e.target.value);
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

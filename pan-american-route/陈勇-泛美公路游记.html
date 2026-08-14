@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>陈勇 · 泛美公路造访时间线</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #5eb3ff;
+      --accent-2: #7ee787;
+      --warn: #f0b429;
+      --south: #ff7b72;
+      --north: #79c0ff;
+      --central: #d2a8ff;
+      --other: #7ee787;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .subtitle a { color: var(--accent); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .card.highlight {
+      border-color: rgba(126, 231, 135, 0.45);
+      background: linear-gradient(135deg, rgba(126, 231, 135, 0.08) 0%, var(--panel) 100%);
+    }
+    .card.highlight .value { color: var(--accent-2); font-size: 1.35rem; }
+    .hero-highlight {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px 28px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(94, 179, 255, 0.1) 0%, rgba(126, 231, 135, 0.08) 100%);
+      border: 1px solid rgba(94, 179, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero-number {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent-2);
+      letter-spacing: -0.02em;
+    }
+    .hero-unit {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .hero-desc { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 720px; }
+    .hero-desc strong { color: var(--text); }
+    .country-tags {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .country-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .country-tag:hover,
+    .country-tag.active {
+      border-color: rgba(94, 179, 255, 0.55);
+      color: var(--accent);
+      background: rgba(94, 179, 255, 0.12);
+      text-decoration: none;
+    }
+    tbody tr.country-focus { background: rgba(94, 179, 255, 0.1); }
+    tbody tr[id^="country-"] { scroll-margin-top: 88px; }
+    tbody tr:target { background: rgba(126, 231, 135, 0.14); outline: 1px solid rgba(126, 231, 135, 0.35); }
+    .route-map {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .route-map h2 { margin: 0 0 12px; font-size: 1.1rem; color: var(--accent); }
+    .route-map figure { margin: 0; }
+    .route-map img {
+      width: 100%;
+      max-height: 720px;
+      object-fit: contain;
+      background: #0b1017;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .route-map figcaption {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .route-schematic {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .route-schematic strong { color: var(--text); }
+    .note {
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6df9b;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .sources a {
+      display: inline-block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .sources a:hover { background: var(--panel-2); text-decoration: underline; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+    }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 18px; font-size: 0.88rem; color: var(--muted);
+    }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+    .dot.south { background: var(--south); }
+    .dot.north { background: var(--north); }
+    .dot.central { background: var(--central); }
+    .dot.other { background: var(--other); }
+    .table-wrap {
+      overflow: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; font-size: 0.92rem; }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d; color: var(--muted);
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(94, 179, 255, 0.06); }
+    .region {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .region.south { background: rgba(255, 123, 114, 0.15); color: #ffb4ae; }
+    .region.north { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .region.central { background: rgba(210, 168, 255, 0.15); color: #e2c7ff; }
+    .region.other { background: rgba(126, 231, 135, 0.12); color: #b7f0bd; }
+    .conf {
+      font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(240, 180, 41, 0.15); color: #f6df9b; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .ref-tag { color: var(--muted); font-size: 0.84rem; white-space: nowrap; }
+    .pantanal-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin: 28px 0 8px;
+      box-shadow: var(--shadow);
+    }
+    .pantanal-panel h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--accent-2); }
+    .pantanal-panel ul { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+    .pantanal-panel li { margin-bottom: 6px; }
+    .pantanal-panel .meta { margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+    .tip-detail {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.25);
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    .travel-tips-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px 22px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .travel-tips-section > h2 { margin: 0 0 6px; font-size: 1.15rem; color: var(--accent); }
+    .travel-tips-section > .tips-intro {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 920px;
+    }
+    .tip-group-title {
+      margin: 22px 0 10px;
+      font-size: 0.95rem;
+      color: var(--accent-2);
+      letter-spacing: 0.03em;
+    }
+    .tip-group-title:first-of-type { margin-top: 0; }
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .tip-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 15px;
+    }
+    .tip-card h4 { margin: 0 0 6px; font-size: 0.93rem; color: var(--text); line-height: 1.35; }
+    .tip-card .when {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      color: var(--warn);
+      background: rgba(240, 180, 41, 0.1);
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
+    .tip-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+    .tip-card .ref { margin-top: 8px; font-size: 0.78rem; color: rgba(147, 164, 189, 0.85); }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent); }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row {
+      display: grid; grid-template-columns: 130px 1fr; gap: 12px;
+      align-items: center; font-size: 0.84rem;
+    }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04); border-radius: 999px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+
+    .photo-section { margin-top: 40px; }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .photo-card:hover { border-color: rgba(94, 179, 255, 0.45); }
+    .photo-card a.img-link { display: block; line-height: 0; background: #0b1017; }
+    .photo-card img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
+    .photo-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .photo-place { font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
+    .photo-desc { color: var(--muted); font-size: 0.86rem; }
+    .photo-meta { margin-top: auto; padding-top: 8px; font-size: 0.8rem; color: var(--muted); }
+    .photo-links { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 0.82rem; }
+    .photo-empty { color: var(--muted); padding: 24px; text-align: center; grid-column: 1 / -1; }
+
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .hero-highlight { grid-template-columns: 1fr; text-align: center; }
+      .hero-number { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>陈勇 · 泛美公路造访时间线</h1>
+      <p class="subtitle">
+        作者：<strong>陈勇</strong>（网名<strong>麦克陈猛</strong>，1974—，四川宜宾）· 同伴 <strong>刘录华、夏婧</strong>（乌斯怀亚后陈勇单人继续）·
+        国产长城哈弗 H5 · 车牌 <strong>川Q·JD678</strong>（「小哈」）· 中国大陆<strong>首台完整穿越五大洲的自主品牌汽车</strong>。
+        2018-08-25 旧金山提车，北抵阿拉斯加<strong>死马镇/普拉德霍湾</strong>（非费尔班克斯为北端计时点），2019-02-16/17 抵乌斯怀亚；
+        泛美主线 <strong>16 国</strong>、200 天 <strong>50,300 km</strong>；延伸乌拉圭/巴西/圭亚那/苏里南/法属圭亚那后美洲合计 <strong>67,302 km</strong>、<strong>21</strong> 个美洲国家/地区。
+        数据整理自官网「<a href="http://www.mkyzty.com/" target="_blank" rel="noopener">人在旅途，勇走天涯</a>」及新华社/人民日报等公开报道。
+      </p>
+    </header>
+
+    <section class="hero-highlight" aria-label="行程亮点">
+      <div>
+        <span class="hero-number">16</span>
+        <span class="hero-unit">个国家</span>
+      </div>
+      <p class="hero-desc">
+        从旧金山提车北上阿拉斯加<strong>死马镇</strong>（泛美北端），再南下经加拿大/美国本土、墨西哥与中美七国，集装箱海运穿越达连隘口后纵穿南美至<strong>乌斯怀亚</strong>。
+        乌斯怀亚之后单人延伸乌拉圭、巴西及圭亚那三国，车辆自圣保罗/桑托斯港海运回国。
+      </p>
+      <div class="country-tags" id="country-tags">
+        <a class="country-tag" href="#country-usa" data-country="usa">🇺🇸 美国</a>
+        <a class="country-tag" href="#country-canada" data-country="canada">🇨🇦 加拿大</a>
+        <a class="country-tag" href="#country-mexico" data-country="mexico">🇲🇽 墨西哥</a>
+        <a class="country-tag" href="#country-belize" data-country="belize">🇧🇿 伯利兹</a>
+        <a class="country-tag" href="#country-guatemala" data-country="guatemala">🇬🇹 危地马拉</a>
+        <a class="country-tag" href="#country-el-salvador" data-country="el-salvador">🇸🇻 萨尔瓦多</a>
+        <a class="country-tag" href="#country-honduras" data-country="honduras">🇭🇳 洪都拉斯</a>
+        <a class="country-tag" href="#country-nicaragua" data-country="nicaragua">🇳🇮 尼加拉瓜</a>
+        <a class="country-tag" href="#country-costa-rica" data-country="costa-rica">🇨🇷 哥斯达黎加</a>
+        <a class="country-tag" href="#country-panama" data-country="panama">🇵🇦 巴拿马</a>
+        <a class="country-tag" href="#country-colombia" data-country="colombia">🇨🇴 哥伦比亚</a>
+        <a class="country-tag" href="#country-ecuador" data-country="ecuador">🇪🇨 厄瓜多尔</a>
+        <a class="country-tag" href="#country-peru" data-country="peru">🇵🇪 秘鲁</a>
+        <a class="country-tag" href="#country-bolivia" data-country="bolivia">🇧🇴 玻利维亚</a>
+        <a class="country-tag" href="#country-chile" data-country="chile">🇨🇱 智利</a>
+        <a class="country-tag" href="#country-argentina" data-country="argentina">🇦🇷 阿根廷</a>
+      </div>
+    </section>
+
+    <section class="route-map" id="route-map">
+      <h2>泛美公路南端终点 · 乌斯怀亚</h2>
+      <figure>
+        <a href="陈勇-泛美公路游记-assets/ushuaia-sign.jpg" title="查看原图">
+          <img
+            src="陈勇-泛美公路游记-assets/ushuaia-sign.jpg"
+            alt="乌斯怀亚火地岛国家公园 · 阿根廷3号公路尽头 · 泛美公路最南端"
+            loading="eager"
+          />
+        </a>
+        <figcaption>
+          2019-02-16/17 川Q·JD678 抵火地岛国家公园 · 阿根廷 3 号公路终点。自死马镇起约 43,391 km，自旧金山提车计 200 天 50,300 km。
+        </figcaption>
+      </figure>
+      <div class="route-schematic">
+        <strong>路线示意（北→南）：</strong>
+        旧金山提车 → 美西北上 → 阿拉斯加费尔班克斯 → <strong>死马镇/普拉德霍湾</strong>（泛美北端）→ 道顿公路南下 → 加拿大育空/BC · 冰原大道 →
+        美国本土（1 号公路、66 号公路、黄石等）→ 墨西哥 → 伯利兹→危地马拉→萨尔瓦多→洪都拉斯→尼加拉瓜→哥斯达黎加→巴拿马 →
+        <strong>达连隘口集装箱海运</strong>（亚维萨中断，卡塔赫纳登陆）→ 哥伦比亚→厄瓜多尔→秘鲁→玻利维亚→智利→阿根廷 → <strong>乌斯怀亚</strong> →
+        延伸：乌拉圭→巴西→圭亚那/苏里南/法属圭亚那→圣保罗海运回国。
+      </div>
+    </section>
+
+    <div class="cards">
+      <div class="card highlight">
+        <div class="label">泛美主线国家</div>
+        <div class="value">16 国</div>
+      </div>
+      <div class="card">
+        <div class="label">纵穿核心段（至乌斯怀亚）</div>
+        <div class="value">200 天 · 50,300 km</div>
+      </div>
+      <div class="card">
+        <div class="label">美洲延伸（含巴西等）</div>
+        <div class="value">9 个月+ · 67,302 km</div>
+      </div>
+      <div class="card">
+        <div class="label">北端 / 南端</div>
+        <div class="value">死马镇 → 乌斯怀亚</div>
+      </div>
+      <div class="card">
+        <div class="label">记录条目</div>
+        <div class="value" id="row-count">—</div>
+      </div>
+      <div class="card">
+        <div class="label">摄影作品</div>
+        <div class="value" id="photo-count">15 张</div>
+      </div>
+    </div>
+
+    <div class="sources">
+      <a href="http://www.mkyzty.com/" target="_blank" rel="noopener">📄 人在旅途，勇走天涯（官网）</a>
+      <a href="#route-map">🗺️ 乌斯怀亚终点</a>
+      <a href="#travel-tips">💡 旅行贴士</a>
+      <a href="#timeline">🗺️ 时间线</a>
+      <a href="#darien">🚢 达连海运专题</a>
+      <a href="#photos">📷 摄影作品（15 张 · 本地）</a>
+    </div>
+
+    <div class="note">
+      <strong>时间说明：</strong>
+      带具体日期的节点（如 <strong>2018-08-02</strong> 宜宾飞美、<strong>2018-08-25</strong> 旧金山提车、<strong>2018-11-19</strong> 墨西哥入境、<strong>2019-02-16/17</strong> 抵乌斯怀亚）来自官网游记自述或新华社/人民日报等媒体报道，置信度<strong>高</strong>。
+      其余「造访时间」主要依据官网游记<strong>发表日期</strong>与文中叙述顺序推算（游记常滞后数日至数月发表），置信度<strong>中</strong>。
+      「原文发表」列标注对应游记篇目在官网的大致发表时间；完整上下文见页首来源链接。
+      <br><strong>与 Mr.T 差异：</strong>陈勇北端为<strong>死马镇/普拉德霍湾</strong>（道顿公路北端），非费尔班克斯；国产哈弗 H5 + 中国车牌；三人同行至乌斯怀亚后单人延伸；达连海运经历圣诞假期办证波折。
+      <br><strong>延伸段 21 国：</strong>泛美主线 16 国 + 乌拉圭、巴西、圭亚那、苏里南、法属圭亚那（不计入上方 16 国标签）。
+    </div>
+
+    <section class="travel-tips-section" id="travel-tips">
+      <h2>景点与路线贴士 · 摘自陈勇游记</h2>
+      <p class="tips-intro">
+        以下整理陈勇在官网游记中对<strong>实际走法最有帮助</strong>的叙述：经典公路、季节窗口、边境/海运手续与路况提醒。
+        与时间线表格中的「活动与备注」互为补充；完整上下文见<a href="http://www.mkyzty.com/" target="_blank" rel="noopener">官网</a>。
+      </p>
+
+      <h3 class="tip-group-title">北美 · 阿拉斯加 / 加拿大 / 美国</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>阿拉斯加道顿公路 · Dalton Highway</h4>
+          <span class="when">9 月北上 · 泛美北段「死亡公路」</span>
+          <p>连接费尔班克斯与<strong>死马镇/普拉德霍湾</strong>（泛美公路最北端）。秋季黄叶与苔原景色；碎石路但哈弗 H5 可通行。陈勇自死马镇南下计约 43,391 km 至乌斯怀亚。</p>
+          <div class="ref">二、北美段 · 经典公路清单</div>
+        </article>
+        <article class="tip-card">
+          <h4>迪纳利国家公园 · Denali</h4>
+          <span class="when">园区巴士 · 观熊驯鹿</span>
+          <p>私人车辆进园受限，陈勇乘<strong>园区巴士</strong>深入，近距离看灰熊、驯鹿等野生动物——阿拉斯加段核心体验之一。</p>
+          <div class="ref">二、北美段</div>
+        </article>
+        <article class="tip-card">
+          <h4>加拿大冰原大道 · Icefields Parkway</h4>
+          <span class="when">班夫 → 贾斯珀</span>
+          <p>落基山经典景观公路，陈勇南下加拿大 BC/育空段后与美国本土段衔接的标志性路线之一。</p>
+          <div class="ref">二、北美段 · 九、经典公路清单</div>
+        </article>
+        <article class="tip-card">
+          <h4>加州 1 号公路 · 66 号公路</h4>
+          <span class="when">美国本土南线/怀旧线</span>
+          <p>洛杉矶、旧金山湾区之后走<strong>1 号公路</strong>海岸线与<strong>Route 66</strong>，串联拱门/峡谷地/圆顶礁、羚羊谷、布莱斯峡谷等西南部地标。</p>
+          <div class="ref">二、北美段</div>
+        </article>
+        <article class="tip-card">
+          <h4>黄石国家公园</h4>
+          <span class="when">2018-11-05 游记</span>
+          <p>大棱镜温泉等地标；陈勇拍摄<strong>黑熊追人</strong>视频在抖音播放超 <strong>614 万</strong>次——北美段传播最广的片段之一。</p>
+          <div class="ref">二、北美段</div>
+        </article>
+        <article class="tip-card">
+          <h4>塔尔基特纳 · 安克雷奇换玻璃</h4>
+          <span class="when">阿拉斯加露营/维修</span>
+          <p>塔尔基特纳露营；安克雷奇更换前挡风玻璃——道顿公路碎石对国产 SUV 的真实考验。</p>
+          <div class="ref">二、北美段</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">墨西哥与中美洲</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>墨西哥 TIP · 车辆临时进口</h4>
+          <span class="when">2018-11-19 图森口岸入境</span>
+          <p>经阿瓜普列塔入境，办理 <strong>TIP</strong>、保险与押金；南部离境时押金退回。在墨停留约两月，走遍奇瓦瓦、瓜纳华托、墨西哥城、奇琴伊察、帕伦克、亡灵节、粉色湖等。</p>
+          <div class="ref">三、墨西哥</div>
+        </article>
+        <article class="tip-card">
+          <h4>特奥蒂瓦坎 · 奇琴伊察</h4>
+          <span class="when">太阳/月亮金字塔 · 库库尔坎</span>
+          <p>墨西哥城边特奥蒂瓦坎与尤卡坦奇琴伊察为玛雅/特奥蒂瓦坎文明代表；帕伦克等南部遗址与亡灵节、梅里达/坎佩切一线同段完成。</p>
+          <div class="ref">三、墨西哥</div>
+        </article>
+        <article class="tip-card">
+          <h4>伯利兹大蓝洞 · 潜水</h4>
+          <span class="when">下潜约 40 m</span>
+          <p>伯利兹城、库克尔岛；大蓝洞潜水为中美段亮点——需潜水资质与安排，非纯陆路景点。</p>
+          <div class="ref">四、中美洲 · 《进入伯利兹》</div>
+        </article>
+        <article class="tip-card">
+          <h4>危地马拉 · 蒂卡尔与帕卡亚火山</h4>
+          <span class="when">玛雅遗址 · 熔岩</span>
+          <p><strong>蒂卡尔</strong>金字塔群、安提瓜古城、阿蒂特兰湖；<strong>帕卡亚火山</strong>可近距观看熔岩流动。</p>
+          <div class="ref">四、中美洲 · 《蒂卡尔金字塔》</div>
+        </article>
+        <article class="tip-card">
+          <h4>洪都拉斯科潘 · 尼加拉瓜马萨亚</h4>
+          <span class="when">玛雅 · 火山口</span>
+          <p>特古西加尔巴（游记称「危险城市」）、<strong>科潘</strong>玛雅遗址、罗阿坦岛；尼加拉瓜马那瓜与<strong>马萨亚火山口</strong>。</p>
+          <div class="ref">四、中美洲</div>
+        </article>
+        <article class="tip-card">
+          <h4>哥斯达黎加 · 蝴蝶园与东部火山公路</h4>
+          <span class="when">生态小馆 · 自驾东线</span>
+          <p>蝴蝶园、青蛙馆；东部火山公路为自驾爱好者的一日线——陈勇偏好多走公路而非典型海滩躺。</p>
+          <div class="ref">四、中美洲 · 《蝴蝶园、青蛙馆》</div>
+        </article>
+      </div>
+
+      <h3 class="tip-group-title">达连隘口 · 南美</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>巴拿马达连海运 · 拼箱</h4>
+          <span class="when">2018-12 圣诞前后 · 约两周</span>
+          <p>泛美公路在亚维萨中断；集装箱海运至卡塔赫纳，与荷/瑞/美等国自驾者<strong>拼箱</strong>省费。首家中远货代无法办哥伦比亚清关，改科隆货代；圣诞 Police Certificate 排队；装船前断电瓶、海关盖章。</p>
+          <div class="ref">五、达连隘口 · 《一波三折的巴拿马海运》</div>
+        </article>
+        <article class="tip-card">
+          <h4>卡塔赫纳清关 · 9 步出港</h4>
+          <span class="when">2019-01 上旬到港后</span>
+          <p>下午 4 点开车出港——《小哈踏上南美大地》。二手车进口限制使货代选择至关重要。</p>
+          <div class="ref">五、达连隘口</div>
+        </article>
+        <article class="tip-card">
+          <h4>秘鲁纳斯卡 · 马丘比丘</h4>
+          <span class="when">海岸公路 · 印加核心</span>
+          <p>纳斯卡地线、伊卡绿洲、库斯科与<strong>马丘比丘</strong>为秘鲁段主轴；陈勇以陆路+徒步方式完成印加文明核心探访。</p>
+          <div class="ref">六、南美洲</div>
+        </article>
+        <article class="tip-card">
+          <h4>玻利维亚死亡公路 · Yungas Road</h4>
+          <span class="when">窗外十字架 · 盐沼</span>
+          <p><strong>Yungas Road</strong> 以险著称，路侧十字架令人印象深刻；之后<strong>乌尤尼盐沼</strong>「天空之镜」为南美段标志景观。</p>
+          <div class="ref">六、南美洲 · 九、经典公路清单</div>
+        </article>
+        <article class="tip-card">
+          <h4>阿根廷 40 号公路 · 火地岛</h4>
+          <span class="when">巴塔哥尼亚 · Ruta 3 终点</span>
+          <p><strong>Ruta 40</strong> 纵穿巴塔哥尼亚；火地岛国家公园内<strong>3 号公路尽头</strong>为泛美公路最南端打卡点。智利百内/巴塔哥尼亚与阿根廷段多次出入边境。</p>
+          <div class="ref">六、南美洲 · 七、世界尽头</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌斯怀亚 · 世界尽头</h4>
+          <span class="when">2019-02-16/17 · 200 天里程碑</span>
+          <p>世界尽头小邮局寄明信片（与死马镇所寄南北呼应）；展五星红旗合影「This is Made in China」。同伴刘录华、夏婧乘机离开，陈勇因港口海运需<strong>独自继续</strong>。</p>
+          <div class="ref">七、世界尽头</div>
+        </article>
+        <article class="tip-card">
+          <h4>延伸段 · 里约总领馆</h4>
+          <span class="when">2019-03-05</span>
+          <p>单人驾车经乌拉圭（邱伊口岸）入巴西；里约拜访中国驻里约总领馆及巴西和统会（中国侨网报道）。后继续北上圭亚那、苏里南、法属圭亚那，再返巴西圣保罗/桑托斯港海运回国。</p>
+          <div class="ref">八、延伸段</div>
+        </article>
+      </div>
+    </section>
+
+    <h2 class="phase-title" id="timeline">阶段概览 · 造访时间线</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="north">北美</option>
+        <option value="central">中美洲</option>
+        <option value="south">南美洲</option>
+        <option value="other">准备/延伸</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、活动、章节…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot other"></span>准备 / 巴西延伸</span>
+      <span><span class="dot north"></span>北美</span>
+      <span><span class="dot central"></span>中美洲</span>
+      <span><span class="dot south"></span>南美洲</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>活动与备注</th>
+            <th>造访时间</th>
+            <th>原文发表</th>
+            <th>置信度</th>
+            <th>原文章节</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <section class="pantanal-panel" id="darien">
+      <h3>达连隘口 · 巴拿马—哥伦比亚海运专题</h3>
+      <ul>
+        <li><strong>断点：</strong>泛美公路在巴拿马<strong>亚维萨 Yaviza</strong> 中断；巴拿马—哥伦比亚之间约 80—160 km 丛林<strong>无公路</strong>（达连 Gap），车辆必须海运绕开。</li>
+        <li><strong>方案：</strong>陈勇团队将「小哈」<strong>集装箱海运</strong>至哥伦比亚<strong>卡塔赫纳</strong>，与荷兰、瑞士、美国等国自驾者<strong>拼箱</strong>以节省费用。</li>
+        <li><strong>货代波折：</strong>首家中远货代无法办理哥伦比亚清关（<strong>二手车进口限制</strong>），改找科隆当地货代才办成。</li>
+        <li><strong>手续：</strong>警察局开具 Police Certificate；2018-12-24 圣诞放假，12-26 清晨排队取号；装船前<strong>断开电瓶</strong>；海关为车辆盖章。</li>
+        <li><strong>航程：</strong>海上运输约<strong>两周</strong>；2019-01 上旬到港后卡塔赫纳港口<strong>9 步清关</strong>，下午 4 点开车出港（《小哈踏上南美大地》）。</li>
+        <li><strong>时间窗口：</strong>圣诞假期办证「一波三折」——与 Mr.T 达连攻略可对照阅读，陈勇侧更强调节假日行政停摆与货代选择。</li>
+      </ul>
+      <p class="meta">来源：<a href="http://www.mkyzty.com/" target="_blank" rel="noopener">人在旅途，勇走天涯</a> · 《一波三折的巴拿马海运》等篇</p>
+    </section>
+
+    <section class="photo-section" id="photos">
+      <h2 class="phase-title">陈勇摄影作品 · 拍摄地点</h2>
+      <p class="subtitle" style="margin-bottom:16px;">
+        共 <strong>15 张</strong>，均已下载至本地
+        <code>陈勇-泛美公路游记-assets/</code>，离线可浏览。按游记章节标注<strong>拍摄地</strong>；点击缩略图查看本地原图。
+      </p>
+      <div class="toolbar">
+        <label for="photo-region-filter">区域</label>
+        <select id="photo-region-filter">
+          <option value="all">全部</option>
+          <option value="north">北美</option>
+          <option value="central">中美洲</option>
+          <option value="south">南美洲</option>
+          <option value="other">准备/延伸</option>
+        </select>
+        <input type="search" id="photo-search" placeholder="搜索拍摄地、说明、章节…" />
+      </div>
+      <div class="photo-grid" id="photo-grid"></div>
+    </section>
+
+    <footer>
+      <p>生成日期：2026-08-10 · 参考：陈勇官网「人在旅途，勇走天涯」（<a href="http://www.mkyzty.com/" target="_blank" rel="noopener">mkyzty.com</a>）及新华社/人民日报/中国侨网等公开报道。</p>
+      <p>与 Mr.T 差异：陈勇从<strong>死马镇</strong>为泛美北端（非费尔班克斯）；国产哈弗 H5 + 川Q 牌照；三人至乌斯怀亚后单人延伸 5 国；美洲合计 67,302 km。</p>
+    </footer>
+  </div>
+
+  <script src="陈勇-photos.js"></script>
+  <script>
+    const SRC = "http://www.mkyzty.com/";
+
+    const rows = [
+      // 一、行前与启运
+      { region:"other", country:"中国", place:"四川宜宾 · 浙江宁波", activity:"2018-01 起规划美洲路线与预算；朋友圈邀约同伴；车辆从宁波海运至旧金山", visit:"2018-01 ~ 07", publish:"—", conf:"high", ref:"一、行前与启运" },
+      { region:"other", country:"美国", place:"旧金山", activity:"2018-07 车辆到港；2018-08-02 陈勇与同伴自宜宾飞抵美国（旅程计时起点）", visit:"2018-07 ~ 08-02", publish:"—", conf:"high", ref:"一、行前与启运" },
+      { region:"other", country:"美国", place:"旧金山 · 金门大桥", activity:"2018-08-25 提车「小哈」川Q·JD678，正式开启美洲自驾", visit:"2018-08-25", publish:"—", conf:"high", ref:"一、行前与启运",
+        tip:"中国大陆<strong>首台完整穿越五大洲的自主品牌汽车</strong>；哈弗 H5 自美国西岸启运。" },
+      { region:"other", country:"—", place:"长城哈弗 H5 · 川Q·JD678", activity:"国产 SUV 全程泛美 + 延伸；道顿碎石、死亡公路、高原盐沼均完成", visit:"2018-08-25 ~ 2019-05", publish:"—", conf:"high", ref:"一、行前与启运 · 车辆" },
+
+      // 二、北美段 — 北上阿拉斯加
+      { region:"north", country:"美国", place:"旧金山 → 西雅图方向", activity:"2018-09-10：纳帕酒庄 → 火山口湖 → 波特兰 → 西雅图 → 温哥华方向，北上阿拉斯加", visit:"2018-09", publish:"2018-09 ~ 10", conf:"mid", ref:"二、北美段" },
+      { region:"north", country:"美国·阿拉斯加", place:"费尔班克斯 · 死马镇/普拉德霍湾", activity:"抵泛美公路<strong>最北端</strong>死马镇（Prudhoe Bay），非费尔班克斯为北端计时点", visit:"2018-09 ~ 10", publish:"2018-09 ~ 10", conf:"high", ref:"二、北美段",
+        tip:"与 Mr.T 不同：陈勇实抵<strong>北冰洋岸死马镇</strong>，自此处南下计约 43,391 km 至乌斯怀亚。" },
+      { region:"north", country:"美国·阿拉斯加", place:"道顿公路 Dalton Highway", activity:"泛美北段「死亡公路」；秋季黄叶；塔尔基特纳露营", visit:"2018-09 ~ 10", publish:"2018-09 ~ 10", conf:"mid", ref:"二、北美段 · 经典公路",
+        tip:"连接死马镇与费尔班克斯；碎石路；哈弗 H5 可通行；安克雷奇曾换前挡风玻璃。" },
+      { region:"north", country:"美国·阿拉斯加", place:"迪纳利 Denali 国家公园", activity:"乘园区巴士观灰熊、驯鹿", visit:"2018-09 ~ 10", publish:"2018-09 ~ 10", conf:"mid", ref:"二、北美段",
+        tip:"私人车进园受限，<strong>园区巴士</strong>为最佳观熊方式。" },
+      { region:"north", country:"美国·阿拉斯加", place:"安克雷奇", activity:"更换前挡风玻璃（道顿碎石损伤）", visit:"2018-09 ~ 10", publish:"2018-09 ~ 10", conf:"mid", ref:"二、北美段" },
+      { region:"north", country:"加拿大", place:"育空 · BC · 冰原大道", activity:"班夫—贾斯珀 Icefields Parkway；南下进入美国本土", visit:"2018-10", publish:"2018-10 ~ 11", conf:"mid", ref:"二、北美段 · 经典公路",
+        tip:"落基山经典景观线，陈勇加拿大段核心动线之一。" },
+
+      // 美国本土南线
+      { region:"north", country:"美国", place:"洛杉矶 · 加州 1 号公路", activity:"海岸公路；旧金山湾区", visit:"2018-10 ~ 11", publish:"2018-10 ~ 11", conf:"mid", ref:"二、北美段 · 经典公路" },
+      { region:"north", country:"美国", place:"66 号公路 Route 66", activity:"怀旧公路段；西南部拱门/峡谷地/圆顶礁", visit:"2018-10 ~ 11", publish:"2018-10 ~ 11", conf:"mid", ref:"二、北美段 · 经典公路" },
+      { region:"north", country:"美国", place:"羚羊谷 · 布莱斯峡谷", activity:"犹他/亚利桑那红岩地貌", visit:"2018-10 ~ 11", publish:"2018-10 ~ 11", conf:"mid", ref:"二、北美段" },
+      { region:"north", country:"美国", place:"黄石国家公园", activity:"2018-11-05 游记：黑熊追人视频抖音播放 614.8 万+", visit:"2018-11-05", publish:"2018-11-05", conf:"high", ref:"二、北美段",
+        tip:"大棱镜温泉等地标；北美段传播最广的视频片段之一。" },
+
+      // 三、墨西哥
+      { region:"central", country:"墨西哥", place:"阿瓜普列塔 Agua Prieta", activity:"2018-11-19 经图森口岸入境；办理 TIP、保险、押金", visit:"2018-11-19 入境", publish:"2018-11 ~ 12", conf:"high", ref:"三、墨西哥",
+        tip:"车辆临时进口 <strong>TIP</strong> + 押金；离境时押金退回。" },
+      { region:"central", country:"墨西哥", place:"奇瓦瓦 · 托雷翁 · 瓜纳华托", activity:"北部与中部的殖民古城", visit:"2018-11 ~ 12", publish:"2018-11 ~ 12", conf:"mid", ref:"三、墨西哥" },
+      { region:"central", country:"墨西哥", place:"墨西哥城 · 特奥蒂瓦坎", activity:"太阳/月亮金字塔", visit:"2018-12", publish:"2018-12", conf:"mid", ref:"三、墨西哥" },
+      { region:"central", country:"墨西哥", place:"奇琴伊察 · 帕伦克", activity:"库库尔坎金字塔；南部玛雅遗址", visit:"2018-12 ~ 2019-01", publish:"2018-12 ~ 2019-01", conf:"mid", ref:"三、墨西哥" },
+      { region:"central", country:"墨西哥", place:"梅里达 · 坎佩切 · 圣克里斯托瓦尔", activity:"亡灵节 · 粉色湖等南部尤卡坦/恰帕斯", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"三、墨西哥" },
+      { region:"central", country:"墨西哥", place:"出境 → 伯利兹", activity:"2019-01 离开墨西哥；车辆押金出境时退回", visit:"2019-01 出境", publish:"2019-01", conf:"mid", ref:"三、墨西哥" },
+
+      // 四、中美洲七国
+      { region:"central", country:"伯利兹", place:"伯利兹城 · 大蓝洞", activity:"潜水下潜约 40 m；库克尔岛", visit:"2018-12 ~ 2019-01", publish:"2019-01-24", conf:"mid", ref:"四、中美洲 · 《进入伯利兹》",
+        tip:"大蓝洞需潜水安排；非纯陆路景点。" },
+      { region:"central", country:"危地马拉", place:"蒂卡尔 Tikal", activity:"玛雅金字塔群", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲 · 《蒂卡尔金字塔》" },
+      { region:"central", country:"危地马拉", place:"安提瓜 · 阿蒂特兰湖", activity:"殖民古城；高原湖", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲" },
+      { region:"central", country:"危地马拉", place:"帕卡亚火山", activity:"近距观看熔岩", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲",
+        tip:"可徒步至熔岩流附近——中美段火山体验代表。" },
+      { region:"central", country:"萨尔瓦多", place:"圣萨尔瓦多", activity:"首都；巧遇骑行狂人", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲 · 《萨尔瓦多首都》" },
+      { region:"central", country:"洪都拉斯", place:"特古西加尔巴 · 科潘", activity:"首都（游记称危险城市）；科潘玛雅遗址；罗阿坦岛", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲 · 《危险城市特古西加尔巴》" },
+      { region:"central", country:"尼加拉瓜", place:"马那瓜 · 马萨亚火山", activity:"火山口观览", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲" },
+      { region:"central", country:"哥斯达黎加", place:"蝴蝶园 · 青蛙馆", activity:"生态小馆；东部火山公路自驾", visit:"2018-12 ~ 2019-01", publish:"2019-01", conf:"mid", ref:"四、中美洲 · 《蝴蝶园、青蛙馆》" },
+      { region:"central", country:"巴拿马", place:"巴拿马城 · 科隆", activity:"圣洛伦佐堡；圣诞假期办理海运手续", visit:"2018-12 下旬", publish:"2018-12 ~ 2019-01", conf:"mid", ref:"四、中美洲 · 《一波三折的巴拿马海运》" },
+
+      // 五、达连隘口
+      { region:"central", country:"巴拿马 → 哥伦比亚", place:"达连隘口 Darién Gap", activity:"亚维萨公路中断；集装箱拼箱海运至卡塔赫纳；约两周", visit:"2018-12 ~ 2019-01", publish:"2018-12 ~ 2019-01", conf:"high", ref:"五、达连隘口",
+        tip:"首家中远货代无法办哥伦比亚清关，改科隆货代；12-26 清晨 Police Certificate 排队；装船前断电瓶。" },
+      { region:"south", country:"哥伦比亚", place:"卡塔赫纳 Cartagena", activity:"2019-01 上旬到港；9 步清关；下午 4 点出港——《小哈踏上南美大地》", visit:"2019-01 上旬", publish:"2019-01", conf:"high", ref:"五、达连隘口 · 六、南美洲" },
+      { region:"south", country:"哥伦比亚", place:"圣费利佩城堡 · 波哥大 · 麦德林", activity:"古城；咖啡三角；山谷教堂", visit:"2019-01", publish:"2019-01 ~ 02", conf:"mid", ref:"六、南美洲" },
+
+      // 六、南美洲
+      { region:"south", country:"厄瓜多尔", place:"基多 · 赤道纪念碑 · 昆卡", activity:"首都与赤道打卡；南部古城", visit:"2019-01", publish:"2019-01 ~ 02", conf:"mid", ref:"六、南美洲" },
+      { region:"south", country:"秘鲁", place:"海岸公路 · 纳斯卡", activity:"纳斯卡地线；伊卡绿洲", visit:"2019-01 ~ 02", publish:"2019-01 ~ 02", conf:"mid", ref:"六、南美洲" },
+      { region:"south", country:"秘鲁", place:"库斯科 · 马丘比丘", activity:"印加文明核心", visit:"2019-01 ~ 02", publish:"2019-01 ~ 02", conf:"mid", ref:"六、南美洲" },
+      { region:"south", country:"玻利维亚", place:"Yungas Road 死亡公路", activity:"窗外十字架印象深刻；最险公路段之一", visit:"2019-02", publish:"2019-02", conf:"mid", ref:"六、南美洲 · 经典公路",
+        tip:"<strong>Yungas Road</strong> 与阿拉斯加道顿公路同为陈勇「死亡公路」清单条目。" },
+      { region:"south", country:"玻利维亚", place:"乌尤尼盐沼", activity:"天空之镜", visit:"2019-02", publish:"2019-02", conf:"mid", ref:"六、南美洲" },
+      { region:"south", country:"智利", place:"阿塔卡马 · 瓦尔帕莱索", activity:"多次出入阿/智边境；百内/巴塔哥尼亚方向", visit:"2019-02", publish:"2019-02", conf:"mid", ref:"六、南美洲" },
+      { region:"south", country:"阿根廷", place:"Ruta 40 巴塔哥尼亚", activity:"内乌肯以南纵穿；火地岛方向", visit:"2019-02", publish:"2019-02", conf:"mid", ref:"六、南美洲 · 经典公路" },
+      { region:"south", country:"阿根廷", place:"乌斯怀亚 · 火地岛国家公园", activity:"2019-02-16/17 抵阿根廷 3 号公路终点——泛美公路最南端", visit:"2019-02-16/17", publish:"2019-02", conf:"high", ref:"七、世界尽头",
+        tip:"200 天 50,300 km（自旧金山提车）；自死马镇 43,391 km。世界尽头邮局寄明信片；展国旗合影。" },
+
+      // 七、世界尽头细节
+      { region:"south", country:"阿根廷", place:"乌斯怀亚", activity:"同伴刘录华、夏婧乘机离开；陈勇因海运需独自继续", visit:"2019-02-17 后", publish:"2019-02 ~ 03", conf:"high", ref:"七、世界尽头" },
+
+      // 八、延伸段
+      { region:"other", country:"乌拉圭", place:"邱伊口岸", activity:"单人驾车入境", visit:"2019-02 ~ 03", publish:"2019-03", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"巴西", place:"阿雷格里港 · 库里提巴", activity:"巴西南部城市穿行", visit:"2019-02 ~ 03", publish:"2019-03", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"巴西", place:"里约热内卢", activity:"2019-03-05 拜访中国驻里约总领馆及巴西和统会", visit:"2019-03-05", publish:"2019-03", conf:"high", ref:"八、延伸段" },
+      { region:"other", country:"巴西", place:"圣保罗", activity:"城市停留；筹备海运", visit:"2019-03 ~ 05", publish:"2019-04 ~ 05", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"圭亚那", place:"乔治敦方向", activity:"延伸段北上", visit:"2019-03 ~ 04", publish:"2019-04", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"苏里南", place:"帕拉马里博方向", activity:"延伸段", visit:"2019-03 ~ 04", publish:"2019-04", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"法属圭亚那", place:"卡宴方向", activity:"延伸段；再返巴西", visit:"2019-04", publish:"2019-04 ~ 05", conf:"mid", ref:"八、延伸段" },
+      { region:"other", country:"巴西", place:"桑托斯港 · 海运回国", activity:"车辆海运回中国；美洲段合计 67,302 km、21 个美洲国家/地区", visit:"2019-05", publish:"2019-05", conf:"mid", ref:"八、延伸段 · 总结" },
+
+      // 汇总
+      { region:"other", country:"—", place:"里程汇总", activity:"泛美主线至乌斯怀亚：200 天 50,300 km；美洲含延伸：67,302 km", visit:"2018-08-25 ~ 2019-05", publish:"—", conf:"high", ref:"七、世界尽头 · 八、延伸段" },
+      { region:"other", country:"—", place:"同行者", activity:"刘录华、夏婧全程至乌斯怀亚；之后陈勇单人", visit:"全程", publish:"—", conf:"high", ref:"七、世界尽头" },
+    ];
+
+    const regionLabel = { south:"南美", north:"北美", central:"中美", other:"准备/延伸" };
+
+    const COUNTRY_SPECIAL = {
+      "加拿大/美国": ["canada", "usa"],
+      "美国 → 墨西哥": ["usa", "mexico"],
+      "巴拿马 → 哥伦比亚": ["panama", "colombia"],
+      "阿根廷/智利": ["argentina", "chile"],
+    };
+    const COUNTRY_SINGLE = {
+      "中国": "other-cn",
+      "美国": "usa",
+      "美国·阿拉斯加": "usa",
+      "加拿大": "canada",
+      "墨西哥": "mexico",
+      "伯利兹": "belize",
+      "危地马拉": "guatemala",
+      "萨尔瓦多": "el-salvador",
+      "洪都拉斯": "honduras",
+      "尼加拉瓜": "nicaragua",
+      "哥斯达黎加": "costa-rica",
+      "巴拿马": "panama",
+      "哥伦比亚": "colombia",
+      "厄瓜多尔": "ecuador",
+      "秘鲁": "peru",
+      "玻利维亚": "bolivia",
+      "智利": "chile",
+      "阿根廷": "argentina",
+      "乌拉圭": "uruguay",
+      "巴西": "brazil",
+      "圭亚那": "guyana",
+      "苏里南": "suriname",
+      "法属圭亚那": "french-guiana",
+    };
+
+    function getCountryKeys(country) {
+      if (COUNTRY_SPECIAL[country]) return COUNTRY_SPECIAL[country];
+      if (COUNTRY_SINGLE[country]) return [COUNTRY_SINGLE[country]];
+      return [];
+    }
+
+    function rowMatchesCountry(row, countryKey) {
+      return countryKey && getCountryKeys(row.country).includes(countryKey);
+    }
+
+    let activeCountry = null;
+    const countryAnchorsPlaced = new Set();
+
+    function setActiveCountryTag(key) {
+      document.querySelectorAll(".country-tag").forEach(tag => {
+        tag.classList.toggle("active", key && tag.dataset.country === key);
+      });
+    }
+
+    function clearCountryFilter() {
+      activeCountry = null;
+      setActiveCountryTag(null);
+    }
+
+    function jumpToCountry(key, updateHash = true) {
+      activeCountry = key;
+      document.getElementById("region-filter").value = "all";
+      document.getElementById("search").value = "";
+      setActiveCountryTag(key);
+      renderTable("all", "", key);
+      if (updateHash) history.replaceState(null, "", `#country-${key}`);
+      requestAnimationFrame(() => {
+        document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const row = document.getElementById(`country-${key}`);
+        if (row) row.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function renderTable(filterRegion = "all", q = "", countryKey = activeCountry) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      countryAnchorsPlaced.clear();
+      let i = 0;
+      const query = q.trim().toLowerCase();
+
+      rows.forEach(row => {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (countryKey && !rowMatchesCountry(row, countryKey)) return;
+        const hay = [row.country, row.place, row.activity, row.tip, row.ref, row.visit, row.publish].filter(Boolean).join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const tr = document.createElement("tr");
+        if (countryKey) tr.classList.add("country-focus");
+        const keys = getCountryKeys(row.country);
+        for (const k of keys) {
+          if (!countryAnchorsPlaced.has(k)) {
+            tr.id = `country-${k}`;
+            countryAnchorsPlaced.add(k);
+            break;
+          }
+        }
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td><span class="region ${row.region}">${regionLabel[row.region]}</span></td>
+          <td>${row.country}</td>
+          <td>${row.place}</td>
+          <td>${row.activity}${row.tip ? `<div class="tip-detail">${row.tip}</div>` : ""}</td>
+          <td>${row.visit}</td>
+          <td>${row.publish}</td>
+          <td><span class="conf ${row.conf}">${row.conf === "high" ? "高" : "中"}</span></td>
+          <td><span class="ref-tag">${row.ref || "—"}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      const tagEl = countryKey ? document.querySelector(`.country-tag[data-country="${countryKey}"]`) : null;
+      const label = countryKey
+        ? `${i} 条 · ${(tagEl?.textContent || countryKey).trim()}`
+        : `${i} 条`;
+      document.getElementById("row-count").textContent = label;
+    }
+
+    function renderBar() {
+      const phases = [
+        { name:"准备·海运", start:"2018-01-01", end:"2018-08-24", color:"#7ee787" },
+        { name:"阿拉斯加/加拿大", start:"2018-08-25", end:"2018-10-31", color:"#5eb3ff" },
+        { name:"美国本土", start:"2018-11-01", end:"2018-11-18", color:"#79c0ff" },
+        { name:"墨西哥", start:"2018-11-19", end:"2019-01-20", color:"#d2a8ff" },
+        { name:"中美洲", start:"2018-12-01", end:"2018-12-24", color:"#c4a8ff" },
+        { name:"巴拿马海运", start:"2018-12-24", end:"2019-01-10", color:"#f0b429" },
+        { name:"南美→乌斯怀亚", start:"2019-01-10", end:"2019-02-16", color:"#ff7b72" },
+        { name:"巴西延伸", start:"2019-02-17", end:"2019-05-31", color:"#7ee787" },
+      ];
+      const min = new Date("2018-01-01").getTime();
+      const max = new Date("2019-06-01").getTime();
+      const span = max - min;
+      const bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(p => {
+        const s = new Date(p.start).getTime();
+        const e = new Date(p.end).getTime();
+        const left = ((s - min) / span) * 100;
+        const width = Math.max(((e - s) / span) * 100, 1.5);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${p.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="left:${left}%;width:${width}%;background:${p.color}"></div></div>
+        `;
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("region-filter").addEventListener("change", e => {
+      clearCountryFilter();
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", e => {
+      clearCountryFilter();
+      renderTable(document.getElementById("region-filter").value, e.target.value);
+    });
+
+    document.querySelectorAll(".country-tag").forEach(tag => {
+      tag.addEventListener("click", e => {
+        e.preventDefault();
+        const key = tag.dataset.country;
+        if (activeCountry === key) {
+          clearCountryFilter();
+          history.replaceState(null, "", "#timeline");
+          renderTable();
+          return;
+        }
+        jumpToCountry(key);
+      });
+    });
+
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.match(/^#country-([a-z-]+)$/);
+      if (m) jumpToCountry(m[1], false);
+      else if (location.hash === "#timeline" || location.hash === "") clearCountryFilter();
+    });
+
+    function renderPhotos(filterRegion = "all", q = "") {
+      const grid = document.getElementById("photo-grid");
+      if (!grid || typeof photos === "undefined") return;
+      grid.innerHTML = "";
+      let i = 0;
+      const query = q.trim().toLowerCase();
+      photos.forEach(p => {
+        if (filterRegion !== "all" && p.region !== filterRegion) return;
+        const hay = [p.place, p.desc, p.section, regionLabel[p.region] || ""].join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const card = document.createElement("article");
+        card.className = "photo-card";
+        const secShort = p.section.replace(/^[一二三四五六七八九十]+、/, "").slice(0, 40);
+        card.innerHTML = `
+          <a class="img-link" href="${p.original}" title="查看原图">
+            <img src="${p.thumb}" alt="${p.place} · ${p.desc}" loading="lazy" />
+          </a>
+          <div class="photo-body">
+            <div class="photo-place"><span class="region ${p.region}">${regionLabel[p.region]}</span> ${p.place}</div>
+            <div class="photo-desc">${p.desc}</div>
+            <div class="photo-meta">${p.section}</div>
+            <div class="photo-links">
+              <a href="${p.article}" target="_blank" rel="noopener">官网 · ${secShort}</a>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      if (!i) {
+        grid.innerHTML = '<div class="photo-empty">没有匹配的照片，请调整筛选或搜索词。</div>';
+      }
+      const pc = document.getElementById("photo-count");
+      if (pc) pc.textContent = (filterRegion === "all" && !query) ? photos.length + " 张" : i + " / " + photos.length + " 张";
+    }
+
+    document.getElementById("photo-region-filter")?.addEventListener("change", e => {
+      renderPhotos(e.target.value, document.getElementById("photo-search").value);
+    });
+    document.getElementById("photo-search")?.addEventListener("input", e => {
+      renderPhotos(document.getElementById("photo-region-filter").value, e.target.value);
+    });
+
+    renderBar();
+    renderTable();
+    renderPhotos();
+    const hashCountry = location.hash.match(/^#country-([a-z-]+)$/);
+    if (hashCountry) jumpToCountry(hashCountry[1], false);
+  </script>
+</body>
+</html>

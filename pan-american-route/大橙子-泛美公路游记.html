@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>大橙子 · 美洲纵穿时间线</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --panel-2: #243044;
+      --text: #e8eef7;
+      --muted: #93a4bd;
+      --accent: #5eb3ff;
+      --accent-2: #ff9f43;
+      --warn: #f0b429;
+      --south: #ff7b72;
+      --north: #79c0ff;
+      --central: #d2a8ff;
+      --other: #7ee787;
+      --border: #334155;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0b1017 0%, #121826 40%, #0f1419 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; letter-spacing: 0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 920px; }
+    .subtitle a { color: var(--accent); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 24px 0 28px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .card .label { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; }
+    .card .value { margin-top: 6px; font-size: 1.15rem; font-weight: 600; }
+    .card.highlight {
+      border-color: rgba(255, 159, 67, 0.45);
+      background: linear-gradient(135deg, rgba(255, 159, 67, 0.1) 0%, var(--panel) 100%);
+    }
+    .card.highlight .value { color: var(--accent-2); font-size: 1.35rem; }
+    .hero-highlight {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px 28px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(255, 159, 67, 0.12) 0%, rgba(94, 179, 255, 0.08) 100%);
+      border: 1px solid rgba(255, 159, 67, 0.35);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero-number {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent-2);
+      letter-spacing: -0.02em;
+    }
+    .hero-unit { display: block; margin-top: 6px; font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .hero-desc { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 720px; }
+    .hero-desc strong { color: var(--text); }
+    .country-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+    .country-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .country-tag:hover, .country-tag.active {
+      border-color: rgba(255, 159, 67, 0.55);
+      color: var(--accent-2);
+      background: rgba(255, 159, 67, 0.12);
+      text-decoration: none;
+    }
+    tbody tr.country-focus { background: rgba(255, 159, 67, 0.08); }
+    tbody tr[id^="country-"] { scroll-margin-top: 88px; }
+    tbody tr:target { background: rgba(255, 159, 67, 0.12); outline: 1px solid rgba(255, 159, 67, 0.35); }
+    .route-map {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .route-map h2 { margin: 0 0 12px; font-size: 1.1rem; color: var(--accent-2); }
+    .route-schematic { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+    .route-schematic strong { color: var(--text); }
+    .route-flow {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 159, 67, 0.25);
+      border-radius: 8px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #c5d4e8;
+      overflow-x: auto;
+    }
+    .note {
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: #f6df9b;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .sources { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .sources a {
+      display: inline-block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .sources a:hover { background: var(--panel-2); text-decoration: underline; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .toolbar label { color: var(--muted); font-size: 0.9rem; }
+    select, input[type="search"] {
+      background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.92rem;
+    }
+    input[type="search"] { min-width: 240px; flex: 1; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; font-size: 0.88rem; color: var(--muted); }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot.south { background: var(--south); }
+    .dot.north { background: var(--north); }
+    .dot.central { background: var(--central); }
+    .dot.other { background: var(--other); }
+    .table-wrap {
+      overflow: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; font-size: 0.92rem; }
+    thead th {
+      position: sticky; top: 0; background: #1f2a3d; color: var(--muted);
+      text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+      white-space: nowrap; z-index: 1;
+    }
+    tbody td { padding: 12px 14px; border-bottom: 1px solid rgba(51, 65, 85, 0.65); vertical-align: top; }
+    tbody tr:hover { background: rgba(255, 159, 67, 0.05); }
+    .region {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+    .region.south { background: rgba(255, 123, 114, 0.15); color: #ffb4ae; }
+    .region.north { background: rgba(121, 192, 255, 0.15); color: #b6dcff; }
+    .region.central { background: rgba(210, 168, 255, 0.15); color: #e2c7ff; }
+    .region.other { background: rgba(126, 231, 135, 0.12); color: #b7f0bd; }
+    .conf { font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+    .conf.high { background: rgba(126, 231, 135, 0.15); color: #9cf0a4; }
+    .conf.mid { background: rgba(240, 180, 41, 0.15); color: #f6df9b; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .ref-tag { color: var(--muted); font-size: 0.84rem; white-space: nowrap; }
+    .tip-detail {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.25);
+      color: var(--muted); font-size: 0.86rem; line-height: 1.55;
+    }
+    .travel-tips-section {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px 22px;
+      margin-bottom: 28px; box-shadow: var(--shadow);
+    }
+    .travel-tips-section > h2 { margin: 0 0 6px; font-size: 1.15rem; color: var(--accent-2); }
+    .travel-tips-section > .tips-intro { margin: 0 0 18px; color: var(--muted); font-size: 0.92rem; max-width: 920px; }
+    .tip-group-title { margin: 22px 0 10px; font-size: 0.95rem; color: var(--accent-2); }
+    .tip-group-title:first-of-type { margin-top: 0; }
+    .tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+    .tip-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px; padding: 14px 15px;
+    }
+    .tip-card h4 { margin: 0 0 6px; font-size: 0.93rem; color: var(--text); line-height: 1.35; }
+    .tip-card .when {
+      display: inline-block; margin-bottom: 8px; font-size: 0.78rem; color: var(--warn);
+      background: rgba(240, 180, 41, 0.1); border-radius: 999px; padding: 2px 9px;
+    }
+    .tip-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+    .tip-card .ref { margin-top: 8px; font-size: 0.78rem; color: rgba(147, 164, 189, 0.85); }
+    .pantanal-panel {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+      margin: 28px 0 8px; box-shadow: var(--shadow);
+    }
+    .pantanal-panel h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--accent-2); }
+    .pantanal-panel ul { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+    .pantanal-panel li { margin-bottom: 6px; }
+    .phase-title { margin: 34px 0 12px; font-size: 1.15rem; color: var(--accent-2); }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+    .timeline-bar { display: grid; gap: 8px; margin: 18px 0 28px; }
+    .bar-row { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; font-size: 0.84rem; }
+    .bar-track {
+      position: relative; height: 22px;
+      background: rgba(255,255,255,0.04); border-radius: 999px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; opacity: 0.9; }
+    @media (max-width: 720px) {
+      h1 { font-size: 1.45rem; }
+      .bar-row { grid-template-columns: 1fr; }
+      .hero-highlight { grid-template-columns: 1fr; text-align: center; }
+      .hero-number { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>大橙子 · 美洲纵穿时间线</h1>
+      <p class="subtitle">
+        博主：<strong>大橙子闯地球</strong>（<a href="https://space.bilibili.com/1708965" target="_blank" rel="noopener">B 站</a> ·
+        <a href="https://www.youtube.com/channel/UCy1ZDneqqCdYbde3ekXZmqA" target="_blank" rel="noopener">YouTube</a>）·
+        单人单车 · <strong>苏A 绿牌</strong> 星途瑶光 C-DM（PHEV）· 2024–2025 美洲季。
+        数据整理自 YouTube playlist「<a href="https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu" target="_blank" rel="noopener">第三季：穿越美洲之开车去南极</a>」视频标题与发布日期。
+        <strong>南行纵穿</strong>（美国西海岸起，无加拿大/阿拉斯加）；2025-08-12 宣布<strong>挑战完成</strong>。
+      </p>
+    </header>
+
+    <section class="hero-highlight" aria-label="行程亮点">
+      <div>
+        <span class="hero-number">15</span>
+        <span class="hero-unit">国 · 美洲段</span>
+      </div>
+      <p class="hero-desc">
+        「全球首台纵穿美洲的纯血中国绿牌车」——车从上海海运至<strong>洛杉矶</strong>清关后，经墨西哥、古巴绕路、中美六国、巴拿马海运，
+        纵穿哥伦比亚至阿根廷「世界尽头」。美洲季视频计数至<strong>第52国玻利维亚</strong>后进入阿根廷；全程环球约 <strong>54 国 / 20 万 km</strong>（2025 汇总片）。
+      </p>
+      <div class="country-tags" id="country-tags">
+        <a class="country-tag" href="#country-usa" data-country="usa">🇺🇸 美国</a>
+        <a class="country-tag" href="#country-mexico" data-country="mexico">🇲🇽 墨西哥</a>
+        <a class="country-tag" href="#country-cuba" data-country="cuba">🇨🇺 古巴</a>
+        <a class="country-tag" href="#country-belize" data-country="belize">🇧🇿 伯利兹</a>
+        <a class="country-tag" href="#country-guatemala" data-country="guatemala">🇬🇹 危地马拉</a>
+        <a class="country-tag" href="#country-el-salvador" data-country="el-salvador">🇸🇻 萨尔瓦多</a>
+        <a class="country-tag" href="#country-honduras" data-country="honduras">🇭🇳 洪都拉斯</a>
+        <a class="country-tag" href="#country-nicaragua" data-country="nicaragua">🇳🇮 尼加拉瓜</a>
+        <a class="country-tag" href="#country-panama" data-country="panama">🇵🇦 巴拿马</a>
+        <a class="country-tag" href="#country-colombia" data-country="colombia">🇨🇴 哥伦比亚</a>
+        <a class="country-tag" href="#country-ecuador" data-country="ecuador">🇪🇨 厄瓜多尔</a>
+        <a class="country-tag" href="#country-peru" data-country="peru">🇵🇪 秘鲁</a>
+        <a class="country-tag" href="#country-bolivia" data-country="bolivia">🇧🇴 玻利维亚</a>
+        <a class="country-tag" href="#country-argentina" data-country="argentina">🇦🇷 阿根廷</a>
+      </div>
+    </section>
+
+    <section class="route-map" id="route-map">
+      <h2>路线示意 · 南行纵穿（非阿拉斯加北端）</h2>
+      <div class="route-schematic">
+        <strong>与 Mr.T / 陈勇 的差异：</strong>不走加拿大/阿拉斯加/死马镇；易车通稿写「芝加哥出发、经智利/巴拉圭」，但视频记录为<strong>洛杉矶落地</strong> + 安第斯西线（无智利/巴西延伸）。
+        <br><strong>古巴绕路：</strong>车留墨西哥侧，人飞古巴深度游后返回接车继续陆路。
+      </div>
+      <div class="route-flow">
+上海海运绿牌车 → 洛杉矶清关 → 硅谷/拉斯维加斯
+  → 墨西哥（陆路）→ 古巴绕路 → 回墨西哥
+  → 伯利兹(42) → 危地马拉 → 萨尔瓦多(44) → 洪都拉斯 → 尼加拉瓜 → 巴拿马
+  ═══ 达连海运装船 ═══
+  → 哥伦比亚 → 厄瓜多尔(50) → 秘鲁(51) → 玻利维亚(52)/乌尤尼
+  → 阿根廷 / 世界尽头 → 车辆海运回国 → 2025-10 回中国
+      </div>
+    </section>
+
+    <div class="cards">
+      <div class="card highlight">
+        <div class="label">美洲段国家</div>
+        <div class="value">15 国</div>
+      </div>
+      <div class="card">
+        <div class="label">美洲季跨度</div>
+        <div class="value">2024-09 ~ 2025-10</div>
+      </div>
+      <div class="card">
+        <div class="label">车辆</div>
+        <div class="value">星途瑶光 C-DM</div>
+      </div>
+      <div class="card">
+        <div class="label">完成声明</div>
+        <div class="value">2025-08-12</div>
+      </div>
+      <div class="card">
+        <div class="label">记录条目</div>
+        <div class="value" id="row-count">—</div>
+      </div>
+    </div>
+
+    <div class="sources">
+      <a href="https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu" target="_blank" rel="noopener">▶️ YouTube 美洲季合集</a>
+      <a href="https://space.bilibili.com/1708965" target="_blank" rel="noopener">📺 B 站主页</a>
+      <a href="泛美公路三人对比.html">📊 四人对比表</a>
+      <a href="#route-map">🗺️ 路线示意</a>
+      <a href="#travel-tips">💡 旅行贴士</a>
+      <a href="#timeline">📅 时间线</a>
+      <a href="#darien">🚢 达连海运</a>
+    </div>
+
+    <div class="note">
+      <strong>时间说明：</strong>「造访时间」由视频<strong>发布日期 + 标题/country 计数</strong>反推，非官方行程表；剪辑可能滞后数周。
+      「视频发布」为 YouTube 确认日期（高置信）。
+      <br><strong>未确认/未走：</strong>加拿大、阿拉斯加、哥斯达黎加（标题未单列）、智利、巴拉圭、巴西（通稿提及但美洲季视频无记录）。
+      <br><strong>起点说明：</strong>2024-09-30 视频「第一站洛杉矶」；通稿「芝加哥」与视频不符，以视频为准。
+    </div>
+
+    <section class="travel-tips-section" id="travel-tips">
+      <h2>美洲段要点 · 摘自视频</h2>
+      <p class="tips-intro">
+        整理对走线最有用的信息：绿牌车海关、车辆故障、达连海运与治安。完整上下文见
+        <a href="https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu" target="_blank" rel="noopener">美洲季 playlist</a>。
+      </p>
+      <h3 class="tip-group-title">车辆 · 美国 · 墨西哥</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>上海海运绿牌车赴美</h4>
+          <span class="when">2024 · 筹备约 6 个月</span>
+          <p>中国绿牌 PHEV 走海运赴美清关流程复杂；洛杉矶等车清关期间拍摄当地华人/特斯拉对比等内容。美洲季前已用星途凌云完成欧亚非约 9.2 万 km。</p>
+          <div class="ref">折腾6个月，美洲穿越之旅正式开始</div>
+        </article>
+        <article class="tip-card">
+          <h4>墨西哥 TIP · 黑警 · 奇瑞保养</h4>
+          <span class="when">2024-11 入境</span>
+          <p>陆路入境攻略、多次警察拦停/「过五关斩六将」；墨西哥城亡灵节、金字塔；坎昆黑警；在奇瑞 4S 保养引发围观——绿牌+中国品牌在拉美关注度极高。</p>
+          <div class="ref">朝墨西哥出发 · 墨西哥奇瑞店保养</div>
+        </article>
+      </div>
+      <h3 class="tip-group-title">古巴绕路 · 中美洲</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>古巴第41国 · 返回墨西哥接车</h4>
+          <span class="when">2024-12</span>
+          <p>深度哈瓦那（3 美元一天挑战、雪茄、奥巴马餐厅等）；结束后「离开古巴返回墨西哥，接上战车继续穿越」——主线为陆路，古巴为非常规绕路。</p>
+          <div class="ref"><a href="https://www.youtube.com/watch?v=aPhKAlBnERY" target="_blank" rel="noopener">古巴 3 美元一天</a></div>
+        </article>
+        <article class="tip-card">
+          <h4>危地马拉 · 八大报错 · 学西语</h4>
+          <span class="when">2024-12 ~ 2025-01</span>
+          <p>入境警察盘查 + 车辆疯狂报错；在玛雅家庭学西班牙语、看火山喷发；首都尝试修车。萨尔瓦多为视频计数<strong>第44国</strong>。</p>
+          <div class="ref">悲剧啊!刚进危地马拉 · 自驾去第44国萨尔瓦多</div>
+        </article>
+        <article class="tip-card">
+          <h4>尼加拉瓜海关 · 无人机</h4>
+          <span class="when">2025-01</span>
+          <p>海关没收无人机；多次警察拦停。洪都拉斯段视频称「谋杀率全球第一」国家，警察搜钱等治安内容突出。</p>
+          <div class="ref">损失惨重！尼加拉瓜海关被整哭了</div>
+        </article>
+      </div>
+      <h3 class="tip-group-title">达连 · 南美</h3>
+      <div class="tip-grid">
+        <article class="tip-card">
+          <h4>巴拿马海运 · 抵哥伦比亚</h4>
+          <span class="when">2025-04 ~ 05</span>
+          <p>2025-04-18「即将巴拿马海运装船」；5 月「里程碑达成！全球首台中国绿牌抵达南美洲」。哥伦比亚段拦路收费、治安惊险内容密集。</p>
+          <div class="ref">巴拿马装船 · 抵达南美洲里程碑</div>
+        </article>
+        <article class="tip-card">
+          <h4>乌尤尼 · 陷车 · 世界尽头</h4>
+          <span class="when">2025-06</span>
+          <p>第51国秘鲁（超浓缩一集）、第52国玻利维亚；三探天空之镜、战车陷盐湖。2025-06-22「冲向世界尽头！穿越美洲最后一站」；08-12「挑战完成」。</p>
+          <div class="ref"><a href="https://www.youtube.com/watch?v=oSS_294YVZY" target="_blank" rel="noopener">冲向世界尽头</a> · <a href="https://www.youtube.com/watch?v=Qrn9xvLF-Ww" target="_blank" rel="noopener">天空之镜</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="pantanal-panel" id="darien">
+      <h3>达连隘口 · 巴拿马—哥伦比亚海运</h3>
+      <ul>
+        <li><strong>与 Mr.T / 陈勇相同：</strong>泛美公路在巴拿马中断，车辆必须<strong>集装箱海运</strong>至哥伦比亚，无法陆路穿丛林。</li>
+        <li><strong>时间线：</strong>2025-04 在巴拿马办理装船手续（视频含警察局办证波折）；2025-05 绿牌车登陆哥伦比亚，开启南美段。</li>
+        <li><strong>与张猫猫不同：</strong>张猫猫厄瓜多尔后飞迈阿密，未经历达连陆路+海运衔接；大橙子为<strong>完整驾车+海运</strong>纵穿。</li>
+      </ul>
+    </section>
+
+    <h2 class="phase-title" id="timeline">阶段概览 · 造访时间线</h2>
+    <div class="timeline-bar" id="timeline-bar"></div>
+
+    <div class="toolbar">
+      <label for="region-filter">区域</label>
+      <select id="region-filter">
+        <option value="all">全部</option>
+        <option value="north">北美</option>
+        <option value="central">中美 / 加勒比</option>
+        <option value="south">南美洲</option>
+        <option value="other">准备 / 收尾</option>
+      </select>
+      <input type="search" id="search" placeholder="搜索国家、城市、活动…" />
+    </div>
+
+    <div class="legend">
+      <span><span class="dot other"></span>准备 / 回国</span>
+      <span><span class="dot north"></span>北美</span>
+      <span><span class="dot central"></span>中美 / 加勒比</span>
+      <span><span class="dot south"></span>南美洲</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>区域</th>
+            <th>国家/地区</th>
+            <th>城市 / 地点</th>
+            <th>活动与备注</th>
+            <th>造访时间</th>
+            <th>视频发布</th>
+            <th>置信度</th>
+            <th>视频/章节</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <footer>
+      <p>生成日期：2026-08-11 · 来源：<a href="https://www.youtube.com/playlist?list=PLmSbGw9PMsKT-tsN3Q1j3pUcCgekSYMyu" target="_blank" rel="noopener">大橙子闯地球 · 第三季 playlist</a>（约 130+ 集）。</p>
+      <p>对比：<a href="泛美公路三人对比.html">泛美公路四人对比表</a> · Mr.T / 陈勇 / 张猫猫 / 大橙子。</p>
+    </footer>
+  </div>
+
+  <script>
+    const rows = [
+      { region:"other", country:"中国", place:"上海 → 美国", activity:"2024 筹备约 6 个月：绿牌车海运赴美；流程意外频发", visit:"2024-03 ~ 09", publish:"2024-09-24", conf:"high", ref:"史上第一辆登陆美洲的绿牌" },
+      { region:"other", country:"—", place:"星途瑶光 C-DM · 苏A 绿牌", activity:"全球首台纵穿美洲的中国绿牌 PHEV；美洲季主车", visit:"2024-09 ~ 2025-10", publish:"—", conf:"high", ref:"车辆",
+        tip:"易车通稿 2024-11 称「芝加哥出发」；视频实际为<strong>洛杉矶清关后启程</strong>。" },
+
+      { region:"north", country:"美国", place:"洛杉矶", activity:"2024-09-30 美洲穿越正式开始；海运清关、首站", visit:"2024-09 ~ 10", publish:"2024-09-30", conf:"high", ref:"折腾6个月，第一站洛杉矶" },
+      { region:"north", country:"美国", place:"洛杉矶 · 长滩", activity:"市中心、地铁、看航母；绿牌回头率极高", visit:"2024-10", publish:"2024-10", conf:"mid", ref:"洛杉矶系列" },
+      { region:"north", country:"美国", place:"硅谷 · 旧金山湾区", activity:"拜访法拉第未来/贾跃亭；对比特斯拉赛博皮卡、氢能源；苏A 绿牌引围观", visit:"2024-10", publish:"2024-10", conf:"mid", ref:"硅谷系列" },
+      { region:"north", country:"美国", place:"拉斯维加斯", activity:"开绿牌逛赌城；买做饭装备；美式截停/套路", visit:"2024-10 ~ 11", publish:"2024-10 ~ 11", conf:"mid", ref:"拉斯维加斯" },
+      { region:"north", country:"美国", place:"美国高速 · 保险", activity:"绿牌上美国高速；初期买不到小额保险等麻烦", visit:"2024-10", publish:"2024-10", conf:"mid", ref:"美国保险/截停" },
+
+      { region:"central", country:"墨西哥", place:"美墨边境 · 陆路入境", activity:"2024-11-06 单人单车朝墨西哥出发；海关入境攻略", visit:"2024-11", publish:"2024-11-06", conf:"high", ref:"朝墨西哥出发" },
+      { region:"central", country:"墨西哥", place:"瓜纳华托 · 墨西哥城", activity:"亡灵节万步暴走；特奥蒂瓦坎/奇琴伊察；枪战寻常首都游", visit:"2024-11", publish:"2024-11", conf:"mid", ref:"墨西哥城/金字塔" },
+      { region:"central", country:"墨西哥", place:"坎昆 · 尤卡坦", activity:"黑警、绑架高危区逃离；边境方向接古巴绕路前", visit:"2024-11 ~ 12", publish:"2024-11 ~ 12", conf:"mid", ref:"坎昆/边境" },
+      { region:"central", country:"墨西哥", place:"奇瑞 4S / 保养", activity:"首台绿牌星途在美洲保养；员工围观、「叛变」梗", visit:"2024-12", publish:"2024-12", conf:"mid", ref:"墨西哥奇瑞店保养" },
+
+      { region:"central", country:"古巴", place:"哈瓦那 · 全岛", activity:"2024-12-06 夜袭第41国；深度游后 12 月返回墨西哥接车", visit:"2024-12", publish:"2024-12-06", conf:"high", ref:"夜袭第41国古巴",
+        tip:"非常规绕路：人进古巴，车留墨西哥侧。" },
+
+      { region:"central", country:"伯利兹", place:"伯利兹", activity:"2024-12-24 千辛万苦进入第42国", visit:"2024-12", publish:"2024-12-24", conf:"high", ref:"第42国伯利兹" },
+      { region:"central", country:"危地马拉", place:"边境 · 玛雅小镇 · 首都", activity:"警察盘查、误入走私路线；车辆八大报错；学西语、住玛雅家庭、看火山", visit:"2024-12 ~ 2025-01", publish:"2024-12-25", conf:"high", ref:"危地马拉系列" },
+      { region:"central", country:"萨尔瓦多", place:"萨尔瓦多", activity:"2025-01-06 自驾进入第44国", visit:"2025-01", publish:"2025-01-06", conf:"high", ref:"第44国萨尔瓦多" },
+      { region:"central", country:"洪都拉斯", place:"洪都拉斯", activity:"2025-01-14 进入「谋杀率全球第一」国家；警察搜钱", visit:"2025-01", publish:"2025-01-14", conf:"mid", ref:"谋杀率第一国家" },
+      { region:"central", country:"尼加拉瓜", place:"马那瓜 · 海关", activity:"多次警察拦停；海关没收无人机", visit:"2025-01", publish:"2025-01-24", conf:"high", ref:"尼加拉瓜海关" },
+      { region:"central", country:"巴拿马", place:"巴拿马城", activity:"进入巴拿马；办理海运手续；与网友/港妹/印度老板等相遇", visit:"2025-02 ~ 04", publish:"2025-02 ~ 04", conf:"mid", ref:"巴拿马系列" },
+
+      { region:"central", country:"巴拿马 → 哥伦比亚", place:"达连隘口 · 海运", activity:"2025-04-18 即将巴拿马海运装船；警察局办证波折", visit:"2025-04", publish:"2025-04-18", conf:"high", ref:"巴拿马装船" },
+      { region:"south", country:"哥伦比亚", place:"哥伦比亚", activity:"2025-05-11 绿牌首抵南美洲里程碑；拦路收费、治安惊险", visit:"2025-05", publish:"2025-05-11", conf:"high", ref:"抵达南美洲" },
+
+      { region:"south", country:"厄瓜多尔", place:"厄瓜多尔", activity:"2025-05-28 启程第50国；赤道高原「离太阳最近」", visit:"2025-05 ~ 06", publish:"2025-05-28", conf:"high", ref:"第50国厄瓜多尔" },
+      { region:"south", country:"秘鲁", place:"秘鲁", activity:"2025-06-03 进入第51国；一集超浓缩穿越", visit:"2025-06", publish:"2025-06-03", conf:"high", ref:"第51国秘鲁" },
+      { region:"south", country:"玻利维亚", place:"乌尤尼盐沼", activity:"2025-06-05 第52国；三探天空之镜；战车陷盐湖；偶遇其他博主", visit:"2025-06", publish:"2025-06-05", conf:"high", ref:"第52国玻利维亚",
+        tip:"视频 <a href='https://www.youtube.com/watch?v=Qrn9xvLF-Ww'>天空之镜</a> 为南美段代表集。" },
+
+      { region:"south", country:"阿根廷", place:"阿根廷 · 南下", activity:"玻利维亚后继续南下；街头 100RMB 挑战等", visit:"2025-06", publish:"2025-06", conf:"mid", ref:"阿根廷系列" },
+      { region:"south", country:"阿根廷", place:"乌斯怀亚 / 火地岛", activity:"2025-06-22 冲向世界尽头！穿越美洲最后一站", visit:"2025-06", publish:"2025-06-22", conf:"high", ref:"冲向世界尽头",
+        tip:"2025-08-12 发布「挑战完成!全球首辆穿越美洲的中国绿牌」。" },
+
+      { region:"other", country:"—", place:"车辆海运回国", activity:"2025-09-28 耗时两月，完整穿越美洲的首辆中国新能源车运回国", visit:"2025-09 ~ 10", publish:"2025-09-28", conf:"high", ref:"运回国" },
+      { region:"other", country:"中国", place:"回国", activity:"2025-10-04「坐牢三个月，终于从南美洲回到中国」", visit:"2025-10", publish:"2025-10-04", conf:"high", ref:"回到中国" },
+      { region:"other", country:"—", place:"费用总结", activity:"穿越美洲花多少钱、自媒体收入、车辆可靠性复盘", visit:"2025", publish:"2025", conf:"mid", ref:"花多少钱",
+        tip:"见 playlist 末集《穿越美洲一共花多少钱？》" },
+    ];
+
+    const regionLabel = { south:"南美", north:"北美", central:"中美", other:"准备/收尾" };
+    const COUNTRY_SINGLE = {
+      "中国": "other-cn", "美国": "usa", "墨西哥": "mexico", "古巴": "cuba",
+      "伯利兹": "belize", "危地马拉": "guatemala", "萨尔瓦多": "el-salvador",
+      "洪都拉斯": "honduras", "尼加拉瓜": "nicaragua", "巴拿马": "panama",
+      "哥伦比亚": "colombia", "厄瓜多尔": "ecuador", "秘鲁": "peru",
+      "玻利维亚": "bolivia", "阿根廷": "argentina",
+    };
+    const COUNTRY_SPECIAL = { "巴拿马 → 哥伦比亚": ["panama", "colombia"], "中国 → 美国": ["other-cn", "usa"] };
+
+    function getCountryKeys(country) {
+      if (COUNTRY_SPECIAL[country]) return COUNTRY_SPECIAL[country];
+      if (COUNTRY_SINGLE[country]) return [COUNTRY_SINGLE[country]];
+      return [];
+    }
+    function rowMatchesCountry(row, countryKey) {
+      return countryKey && getCountryKeys(row.country).includes(countryKey);
+    }
+
+    let activeCountry = null;
+    const countryAnchorsPlaced = new Set();
+
+    function setActiveCountryTag(key) {
+      document.querySelectorAll(".country-tag").forEach(tag => {
+        tag.classList.toggle("active", key && tag.dataset.country === key);
+      });
+    }
+    function clearCountryFilter() {
+      activeCountry = null;
+      setActiveCountryTag(null);
+    }
+    function jumpToCountry(key, updateHash = true) {
+      activeCountry = key;
+      document.getElementById("region-filter").value = "all";
+      document.getElementById("search").value = "";
+      setActiveCountryTag(key);
+      renderTable("all", "", key);
+      if (updateHash) history.replaceState(null, "", `#country-${key}`);
+      requestAnimationFrame(() => {
+        document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById(`country-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function renderTable(filterRegion = "all", q = "", countryKey = activeCountry) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      countryAnchorsPlaced.clear();
+      let i = 0;
+      const query = q.trim().toLowerCase();
+      rows.forEach(row => {
+        if (filterRegion !== "all" && row.region !== filterRegion) return;
+        if (countryKey && !rowMatchesCountry(row, countryKey)) return;
+        const hay = [row.country, row.place, row.activity, row.tip, row.ref, row.visit, row.publish].filter(Boolean).join(" ").toLowerCase();
+        if (query && !hay.includes(query)) return;
+        i++;
+        const tr = document.createElement("tr");
+        if (countryKey) tr.classList.add("country-focus");
+        for (const k of getCountryKeys(row.country)) {
+          if (!countryAnchorsPlaced.has(k)) {
+            tr.id = `country-${k}`;
+            countryAnchorsPlaced.add(k);
+            break;
+          }
+        }
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td><span class="region ${row.region}">${regionLabel[row.region]}</span></td>
+          <td>${row.country}</td>
+          <td>${row.place}</td>
+          <td>${row.activity}${row.tip ? `<div class="tip-detail">${row.tip}</div>` : ""}</td>
+          <td>${row.visit}</td>
+          <td>${row.publish}</td>
+          <td><span class="conf ${row.conf}">${row.conf === "high" ? "高" : "中"}</span></td>
+          <td><span class="ref-tag">${row.ref || "—"}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      const tagEl = countryKey ? document.querySelector(`.country-tag[data-country="${countryKey}"]`) : null;
+      document.getElementById("row-count").textContent = countryKey
+        ? `${i} 条 · ${(tagEl?.textContent || countryKey).trim()}`
+        : `${i} 条`;
+    }
+
+    function renderBar() {
+      const phases = [
+        { name:"筹备·海运", start:"2024-03-01", end:"2024-09-29", color:"#7ee787" },
+        { name:"美国", start:"2024-09-30", end:"2024-11-05", color:"#5eb3ff" },
+        { name:"墨西哥", start:"2024-11-06", end:"2024-12-05", color:"#d2a8ff" },
+        { name:"古巴绕路", start:"2024-12-06", end:"2024-12-20", color:"#ff9f43" },
+        { name:"中美洲", start:"2024-12-21", end:"2025-04-17", color:"#c4a8ff" },
+        { name:"巴拿马海运", start:"2025-04-18", end:"2025-05-10", color:"#f0b429" },
+        { name:"南美→尽头", start:"2025-05-11", end:"2025-08-12", color:"#ff7b72" },
+        { name:"运车·回国", start:"2025-08-13", end:"2025-10-04", color:"#7ee787" },
+      ];
+      const min = new Date("2024-03-01").getTime();
+      const max = new Date("2025-11-01").getTime();
+      const span = max - min;
+      const bar = document.getElementById("timeline-bar");
+      bar.innerHTML = "";
+      phases.forEach(p => {
+        const s = new Date(p.start).getTime();
+        const e = new Date(p.end).getTime();
+        const left = ((s - min) / span) * 100;
+        const width = Math.max(((e - s) / span) * 100, 1.5);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${p.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="left:${left}%;width:${width}%;background:${p.color}"></div></div>
+        `;
+        bar.appendChild(row);
+      });
+    }
+
+    document.getElementById("region-filter").addEventListener("change", e => {
+      clearCountryFilter();
+      renderTable(e.target.value, document.getElementById("search").value);
+    });
+    document.getElementById("search").addEventListener("input", e => {
+      clearCountryFilter();
+      renderTable(document.getElementById("region-filter").value, e.target.value);
+    });
+    document.querySelectorAll(".country-tag").forEach(tag => {
+      tag.addEventListener("click", e => {
+        e.preventDefault();
+        const key = tag.dataset.country;
+        if (activeCountry === key) {
+          clearCountryFilter();
+          history.replaceState(null, "", "#timeline");
+          renderTable();
+          return;
+        }
+        jumpToCountry(key);
+      });
+    });
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.match(/^#country-([a-z-]+)$/);
+      if (m) jumpToCountry(m[1], false);
+      else if (location.hash === "#timeline" || location.hash === "") clearCountryFilter();
+    });
+
+    renderBar();
+    renderTable();
+    const hashCountry = location.hash.match(/^#country-([a-z-]+)$/);
+    if (hashCountry) jumpToCountry(hashCountry[1], false);
+  </script>
+</body>
+</html>
